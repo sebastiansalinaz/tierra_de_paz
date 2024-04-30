@@ -1,0 +1,73 @@
+<!-- edit.html -->
+{% extends "layout/layout.html" %}
+{% block title %}Editar Perfil{% endblock %}
+
+{% block content %}
+<section id="content">
+    <main>
+        <div class="card">
+            <div class="card-header">
+                <h1>Editar Perfil</h1>
+            </div>
+            <div class="card-body">
+                <!-- Formulario para editar perfil -->
+                <form action="{{ url_for('guardar_perfil') }}" method="POST" enctype="multipart/form-data" class="edit-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> <!-- Agregar el token CSRF -->
+                
+                    <div class="form-group">
+                        <label for="foto">Fotografía:</label>
+                        <br><br>
+                        <input type="file" id="foto" name="foto" onchange="previewImage(event)" style="display: none;">
+                        {% if current_user.foto_perfil %}
+                            <img id="foto-preview" src="{{ url_for('uploaded_file', filename=current_user.foto_perfil) }}" alt="Preview" class="preview-image">
+                        {% else %}
+                            <p>No hay foto de perfil</p>
+                        {% endif %}
+                        <br>
+                        <label for="foto" class="custom-file-upload">
+                            <i class='bx bx-cloud-upload' style="font-size: 24px; color: #fff;"></i>
+                            <input type="file" id="foto" name="foto" onchange="previewImage(event)" style="display: none;">
+                        </label>
+                    </div>
+                
+                    <br>
+                
+                    <div class="form-group">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" id="nombre" name="nombre" value="{{ current_user.nombre }}" required>
+                    </div>
+                
+                    <div class="form-group">
+                        <label for="correo">Correo:</label>
+                        <input type="email" id="correo" name="correo" value="{{ current_user.correo }}" required>
+                    </div>
+                
+                    <div class="form-group">
+                        <label for="contraseña">Contraseña:</label>
+                        <input type="password" id="contraseña" name="contraseña">
+                    </div>
+                
+                    <input type="submit" value="Guardar cambios" class="btn btn-primary">
+                </form>
+                
+            </div>
+        </div>
+    </main>
+</section>
+
+
+<!-- Script para previsualizar la foto -->
+<script>
+    function previewImage(event) {
+        var input = event.target;
+        var preview = document.getElementById('foto-preview');
+        var reader = new FileReader();
+
+        reader.onload = function() {
+            preview.src = reader.result;
+        }
+
+        reader.readAsDataURL(input.files[0]);
+    }
+</script>
+{% endblock %}

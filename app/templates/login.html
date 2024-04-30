@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="icon" href="static/img/logo.ico" type="image/x-icon">
+    <title>Iniciar Sesión</title>
+</head>
+<body>
+    <div class="container-form login">
+        <div class="information">
+            <div class="info-childs">
+                <h2>¡¡Bienvenido nuevamente!!</h2>
+                <p>Para unirte a nuestro portal por favor Inicia Sesión con tus datos</p>
+               <!--  <input type="button" value="Registrarse" id="sign-in" onclick="redirectRegistro()"> --> 
+            </div>
+        </div>
+        <div class="form-information">
+            <div class="form-information-childs">
+                <div class="icons">
+                    <img src="static/img/logo.png" alt="Google Icon" class="custom-icon">
+                </div>
+                <h2>Iniciar Sesión</h2>
+                <p>Inicia Sesión con tu cuenta</p>
+                <form class="form" action="/login" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <label>
+                        <i class='bx bx-envelope'></i>
+                        <input type="text" name="correo" placeholder="Correo Electrónico">
+                    </label>
+                    <label>
+                        <i class='bx bx-lock-alt'></i>
+                        <input type="password" name="contraseña" placeholder="Contraseña">
+                    </label>
+                    <input type="submit" value="Iniciar Sesión">
+                </form>
+                {% if error_message %}
+                <div id="error-message" class="error-message">
+                    <div class="error-content">
+                        <p>{{ error_message }}</p>
+                        <img src="static/img/error-icon.png" alt="Error Icon" class="error-icon">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+<script src="static/js/script.js"></script>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="icon" href="static/img/logo.ico" type="image/x-icon">
+</head>
+<body>
+    <div class="container-form login"> <!-- Cambio de clase de 'register' a 'login' -->
+        <div class="information">
+            <div class="info-childs">
+                <h2>Bienvenido</h2>
+                <p>Para unirte a nuestro portal por favor Registrarte con tus datos</p>
+                <input type="button" value="Iniciar Sesión" id="sign-in" onclick="redirectLogin()">
+            </div>
+        </div>
+        <div class="form-information">
+            <div class="form-information-childs">
+                <div class="icons">
+                    <img src="static/img/logo.png" alt="Google Icon" class="custom-icon">
+                </div>
+                <h2>Crea una Cuenta</h2>
+                <p>usa tu email para registrarte</p>
+                <form class="form" action="/registro" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> <!-- Agregar el token CSRF -->
+                    <label>
+                        <i class='bx bx-user' ></i>
+                        <input type="text" name="nombre" placeholder="Nombre Completo" required>
+                    </label>
+                    <label>
+                        <i class='bx bx-envelope' ></i>
+                        <input type="email" name="correo" placeholder="Correo Electronico" required>
+                    </label>
+                    <label>
+                        <i class='bx bx-lock-alt' ></i>
+                        <input type="password" name="contraseña" placeholder="Contraseña" required>
+                    </label>
+                    <input type="submit" value="Registrarse">
+                </form>                
+            </div>
+        </div>
+    </div>
+    <script src="static/js/script.js"></script>
+</body>
+</html>

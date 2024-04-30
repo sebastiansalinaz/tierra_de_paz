@@ -1,0 +1,220 @@
+{% extends "layout/layout.html" %}
+
+{% block title %}Documentación{% endblock %}
+
+{% block content %}
+<section id="content">
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        <div class="head-title">
+            <div class="left">
+                <h1>Documentación</h1>
+                <ul class="breadcrumb">
+                    <li>
+                        <a href="#">Panel de control</a>
+                    </li>
+                    <li><i class='bx bx-chevron-right' ></i></li>
+                    <li>
+                        <a class="active" href="#">Inicio</a>
+                    </li>
+                </ul>
+            </div>
+   
+            <!-- Botón del modal personalizado -->
+            <button type="button" id="openModalBtn" class="btn-documento">
+                <i class='bx bx-file'></i>
+                <span class="text">Añadir Documento</span>
+            </button>
+        </div>
+
+        <!-- Modal -->
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h1 class="modal-title fs-5">AÑADIR DOCUMENTO:</h1>
+                <br>
+                <div class="modal-body">
+                    <!-- Formulario para añadir documento -->
+                    <form method="POST" action="/cargar_documento" enctype="multipart/form-data">
+                        <!-- Incluir el token CSRF como un campo oculto -->
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <!-- Input para la descripción -->
+                        <div class="form-group">
+                            <label for="descripcion">DESCRIPCIÓN:</label>
+                            <input type="text" id="descripcion" name="descripcion" class="form-control" placeholder="Ingrese la descripción">
+                        </div>
+                        <!-- Input para cargar el documento -->
+                        <div class="form-group">
+                            <input type="file" id="documento" name="documento" class="form-control" style="display: none;" onchange="showSuccessMessage()">
+                            <label for="documento" class="custom-file-upload">
+                                <i class='bx bx-cloud-upload' style="font-size: 24px; color: #fff;"></i>    
+                            </label>
+                        </div>
+                        <!-- Mensaje de carga exitosa -->
+                        <div id="mensajeCargaExitosa" class="alert alert-success" role="alert" style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 1000; max-width: 300px; padding: 20px; border-radius: 10px; background-color: #d4edda; border-color: #c3e6cb; color: #155724; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); opacity: 0; transition: opacity 0.3s ease-in-out;">
+                            El archivo se cargó correctamente.
+                        </div>
+                        <br>   
+                        <div class="modal-footer">
+                            <button type="button" id="closeModalBtn" class="btn btn-secondary" onclick="closeModal()">Cerrar</button>
+                            <button type="submit" id="saveChangesBtn" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-data">
+            <div class="order">
+                <div class="head">
+                    <h3>Documentos recientes</h3>
+                    <i class='bx bx-search' id="search-icon"></i> <!-- Icono de búsqueda -->
+                    <input type="text" id="search-input" placeholder="Buscar por descripción o fecha"> <!-- Input de búsqueda -->
+                    <i class='bx bx-filter'></i>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Descripción</th>
+                            <th>Fecha del Registro</th>
+                            <th>Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for documento in documentos.items %}
+                        <tr>
+                            <td>{{ documento.descripcion }}</td>
+                            <td>{{ documento.fecha_registro }}</td>
+                            <td>
+                                <a href="{{ url_for('previsualizar_documento', id=documento.id) }}" class="custom-btn" target="_blank">Previsualizar</a>
+                                <a href="{{ url_for('eliminar_documento', id=documento.id) }}" class="custom-btn-eliminar">Eliminar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <br>
+                <div class="pagination-container">
+                    <div class="pagination">
+                        <!-- Botón para retroceder -->
+                        {% if documentos.has_prev %}
+                            <a href="{{ url_for('documentacion', page=documentos.prev_num) }}" class="btn-pagination">&lt;</a>
+                        {% endif %}
+                        
+                        <!-- Indicación de la página actual -->
+                        <span class="pagination-info pagination-info-alt">Página {{ documentos.page }} de {{ documentos.pages }}</span>
+                        
+                        <!-- Botón para avanzar -->
+                        {% if documentos.has_next %}
+                            <a href="{{ url_for('documentacion', page=documentos.next_num) }}" class="btn-pagination">&gt;</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- CONTENIDO PRINCIPAL -->
+</section>
+
+<script>
+    // Obtiene el botón de abrir modal
+    var openModalBtn = document.getElementById("openModalBtn");
+
+    // Obtiene el modal
+    var modal = document.getElementById("myModal");
+
+    // Cuando el usuario hace clic en el botón de abrir modal, muestra el modal
+    openModalBtn.onclick = function() {
+        modal.style.display = "block";
+    }
+
+    // Función para cerrar el modal
+    function closeModal() {
+        modal.style.display = "none";
+    }
+
+    // Cierra el modal al presionar la tecla "Esc"
+    window.onkeydown = function(event) {
+        if (event.key === "Escape") {
+            closeModal();
+        }
+    }
+
+    function showSuccessMessage() {
+        // Mostrar el mensaje de carga exitosa
+        var mensajeCargaExitosa = document.getElementById('mensajeCargaExitosa');
+        mensajeCargaExitosa.style.display = 'block';
+        // Agregar animación de entrada
+        mensajeCargaExitosa.style.opacity = '1';
+        // Configurar temporizador para que desaparezca después de 3 segundos
+        setTimeout(function() {
+            // Agregar animación de salida
+            mensajeCargaExitosa.style.opacity = '0';
+            // Esperar a que termine la animación de salida y luego ocultar el mensaje
+            setTimeout(function() {
+                mensajeCargaExitosa.style.display = 'none';
+            }, 300); // 300 milisegundos para que coincida con la duración de la animación de salida
+        }, 3000); // 3000 milisegundos (3 segundos)
+    }
+
+
+
+     // Script para la funcionalidad de búsqueda
+     var searchIcon = document.getElementById('search-icon');
+     var searchInput = document.getElementById('search-input');
+ 
+     searchIcon.addEventListener('click', function() {
+         if (searchInput.style.display === 'none' || !searchInput.style.display) {
+             searchInput.style.display = 'inline-block';
+             searchInput.focus(); // Coloca el foco en el input
+         } else {
+             searchInput.style.display = 'none';
+             // Limpiar el valor del input y realizar la búsqueda sin paginación
+             searchInput.value = '';
+             search();
+         }
+     });
+
+
+     searchInput.addEventListener('input', function() {
+        search();
+    });
+
+    function search() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = searchInput.value.trim();
+        filter = input.toUpperCase();
+        table = document.querySelector('.table-data table');
+        tr = table.getElementsByTagName('tr');
+    
+        for (i = 0; i < tr.length; i++) {
+            var found = false; // Flag para indicar si se encontró una coincidencia en alguna columna
+            // Itera sobre las celdas de la fila actual
+            for (var j = 0; j < tr[i].cells.length; j++) {
+                td = tr[i].cells[j];
+                if (td && j !== 2) { // Se excluye la tercera columna (columna de opciones)
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        found = true; // Se encontró una coincidencia en alguna columna de descripción o fecha
+                        break; // No es necesario buscar en más columnas
+                    }
+                }
+            }
+            // Oculta o muestra la fila según si se encontró una coincidencia en alguna columna de descripción o fecha
+            if (found) {
+                tr[i].style.display = '';
+            } else if (i !== 0) { // No ocultar la fila si es la fila de los títulos de las columnas
+                tr[i].style.display = 'none';
+            }
+        }
+    }
+
+</script>
+
+
+{% endblock %}
+
+
+
+

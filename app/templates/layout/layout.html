@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="static/img/logo.ico" type="image/x-icon">
+    <title>{% block title %}Título por defecto{% endblock %}</title>
+    <!-- Agrega tus estilos CSS y scripts aquí -->
+    <link rel="stylesheet" href="static/css/dashboard.css">
+</head>
+<body>
+
+    <!-- Navbar y Sidebar -->
+    {% include 'layout/navbar_sidebar.html' %}
+
+    {% block content %}
+    {% endblock %}
+    
+
+    <!-- Scripts JS -->
+    <script src="static/js/dash.js"></script>
+
+</body>
+</html>
+
+
+
+
+ 

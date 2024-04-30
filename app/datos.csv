@@ -1,0 +1,13 @@
+mes,nombre_dia,cantidad_personas,anio
+Enero,Lunes,100,2022
+Enero,Martes,150,2022
+Febrero,Miércoles,80,2022
+Febrero,Jueves,120,2022
+Marzo,Viernes,200,2022
+Marzo,Sábado,180,2022
+Enero,Lunes,120,2023
+Enero,Martes,180,2023
+Febrero,Miércoles,90,2023
+Febrero,Jueves,130,2023
+Marzo,Viernes,220,2023
+Marzo,Sábado,200,2023
