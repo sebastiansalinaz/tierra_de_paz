@@ -11,6 +11,8 @@ from datetime import datetime
 from pytz import timezone
 import pandas as pd
 import plotly.express as px
+from flask import jsonify
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/tierra-de-paz'
@@ -149,11 +151,15 @@ def dashboard():
 @app.route('/eventos')
 @login_required
 def eventos():
+    # Obtener todas las actividades de la base de datos
+    actividades = Actividad.query.all()
+    
     # Obtener todos los registros de usuarios de la base de datos
     registros = Registro.query.all()
 
-    # Renderizar la plantilla de eventos y pasar los registros como contexto
-    return render_template('modules/eventos.html', registros=registros)
+    # Renderizar la plantilla de eventos y pasar las actividades y registros como contexto
+    return render_template('modules/eventos.html', actividades=actividades, registros=registros)
+
 
 
 
@@ -182,14 +188,14 @@ def guardar_actividad():
         db.session.add(nueva_actividad)
         db.session.commit()
 
-        # Redireccionar a donde desees después de guardar la actividad
-        flash('Actividad guardada exitosamente!', 'success')
-        return redirect(url_for('eventos'))  # Redirige a la página de eventos, por ejemplo
+        # Devolver la información de la actividad recién creada al cliente
+        return jsonify({'nombre': nueva_actividad.nombre})
 
     # Manejar el caso donde el método de solicitud no es POST
     # Si llega aquí, podría ser una buena idea mostrar un mensaje de error o redirigir a otra página
     flash('Error al procesar la solicitud', 'error')
-    return redirect(url_for('eventos'))  # Redirige a la página de eventos, por ejemplo
+    return redirect(url_for('eventos'))
+
 
 @app.route('/guardar_registro', methods=['POST'])
 def guardar_registro():
@@ -244,15 +250,22 @@ def guardar_registro():
             return redirect(url_for('eventos'))
 
 
+@app.route('/get_activities', methods=['GET'])
+@login_required
+def get_activities():
+    actividades = Actividad.query.all()
+    actividades_list = [{'nombre': actividad.nombre} for actividad in actividades]
+    return jsonify(actividades_list)
 
 
 
 
 
-@app.route('/busqueda')
+
+@app.route('/proyectos')
 @login_required
 def busqueda():
-    return render_template('modules/busqueda.html')
+    return render_template('modules/proyectos.html')
 
 @app.route('/geovisor')
 @login_required

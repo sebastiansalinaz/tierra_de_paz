@@ -149,6 +149,29 @@ body {
 
 
 
+.btn-group {
+    display: flex;
+    justify-content: center;
+    margin-top: -100px;
+}
+
+.btn-fuente {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s, transform 0.2s;
+    margin: 0 10px;
+}
+
+.btn-fuente:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+}
+
 
 
 
@@ -465,10 +488,8 @@ select:focus {
 }
 
 
-.btn-group {
-    display: flex;
-    justify-content: space-between;
-}
+
+
 
 .btn-fuente {
     background-color: #4CAF50;

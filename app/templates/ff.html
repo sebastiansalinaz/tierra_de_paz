@@ -1,6 +1,32 @@
-<label for="actividad"><b>Actividad:</b></label>
-<select id="actividad" name="actividad" class="form-control">
-    {% for actividad in actividades %}
-        <option value="{{ actividad.id }}">{{ actividad.nombre }}</option>
-    {% endfor %}
-</select>
+@app.route('/guardar_actividad', methods=['POST'])
+@login_required
+def guardar_actividad():
+    if request.method == 'POST':
+        # Verificar el token CSRF
+        if 'csrf_token' not in request.form:
+            flash('Token CSRF faltante. Intente enviar el formulario nuevamente.', 'error')
+            return redirect(url_for('eventos'))
+
+        # Obtener los datos del formulario
+        nombre_actividad = request.form['nombre_actividad']
+        persona_encargada = request.form['persona_encargada']
+        fecha_realizacion = request.form['fecha_realizacion']
+
+        # Crear una nueva instancia de la clase Actividad
+        nueva_actividad = Actividad(
+            nombre=nombre_actividad,
+            persona_encargada=persona_encargada,
+            fecha_realizacion=fecha_realizacion
+        )
+
+        # Agregar la nueva actividad a la base de datos
+        db.session.add(nueva_actividad)
+        db.session.commit()
+
+        # Devolver la información de la actividad recién creada al cliente
+        return jsonify({'nombre': nueva_actividad.nombre})
+
+    # Manejar el caso donde el método de solicitud no es POST
+    # Si llega aquí, podría ser una buena idea mostrar un mensaje de error o redirigir a otra página
+    flash('Error al procesar la solicitud', 'error')
+    return redirect(url_for('eventos'))

@@ -132,11 +132,14 @@
     <div class="modal-content">
         <div class="modal-nav"></div>
         <span class="close" id="closeModalBtnPreliminar" onclick="closeModal('myModalPreliminar')">&times;</span>
-        <h2 class="texto-registro">Seleccionar Opción</h2><br><br><br>
-        <button onclick="openModal('myModalActivity')" class="btn btn-primary">Crear Nueva Actividad</button>
-        <button onclick="openUserForm()" class="btn btn-secondary">Seleccionar Actividad Existente</button>
+        <h2 class="texto-registro" style="margin-bottom: 20px;">Seleccionar Opción</h2>
+        <div class="btn-group" style="margin-top: 20px;">
+            <button onclick="openModal('myModalActivity')" class="btn btn-fuente" style="background-color: var(--azul); font-weight: 530;">Nueva Actividad</button>
+            <button onclick="openUserForm()" class="btn btn-fuente" style="background-color: var(--verde); margin-left: -100px; font-weight: 530;">Actividad Existente</button>
+        </div>
     </div>
 </div>
+
 
 
 
@@ -290,7 +293,12 @@
                     <label for="comunidad"><b>Comunidad:</b></label>
                     <input type="text" id="comunidad" name="comunidad" class="form-control"><br><br>
                     <label for="actividad"><b>Actividad:</b></label>
-                    <input type="text" id="actividad" name="actividad" class="form-control"><br><br>
+<select id="actividad" name="actividad" class="form-control">
+    {% for actividad in actividades %}
+        <option value="{{ actividad.nombre }}">{{ actividad.nombre }}</option>
+    {% endfor %}
+</select><br><br>
+
                 </div>
             </div><br>
 
@@ -322,10 +330,33 @@
     }
 
     // Función para mostrar el formulario de registro de personas
-    function openUserForm() {
-        closeModal('myModalActivity'); // Cerramos el modal de actividad
-        openModal('myModal1'); // Mostramos el modal de registro de usuario
-    }
+function openUserForm() {
+    closeModal('myModalActivity'); // Cerramos el modal de actividad
+    
+    // Obtener la lista actualizada de actividades antes de mostrar el formulario de registro de usuario
+    fetch('/get_activities')
+        .then(response => response.json())
+        .then(data => {
+            // Actualizar las opciones del campo de actividad
+            var select = document.getElementById('actividad');
+            select.innerHTML = ""; // Limpiar las opciones actuales
+            var defaultOption = document.createElement('option');
+            defaultOption.text = "Seleccione una actividad";
+            select.add(defaultOption);
+            data.forEach(actividad => {
+                var option = document.createElement('option');
+                option.value = actividad.nombre;
+                option.text = actividad.nombre;
+                select.add(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al cargar las actividades.');
+        });
+    
+    openModal('myModal1'); // Mostramos el modal de registro de usuario
+}
 
     // Función para asignar la actividad y mostrar el formulario de registro de personas
     function asignarPersona(event) {
