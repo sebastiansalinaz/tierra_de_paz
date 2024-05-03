@@ -59,6 +59,105 @@ body {
 
 
 
+.custom-dialog {
+	display: none;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: #fff;
+	border-radius: 10px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+	padding: 20px;
+	z-index: 9999; /* Asegura que esté por encima de otros elementos */
+	font-family: var(--lato); /* Integrar la fuente de letra */
+}
+
+.custom-dialog-content {
+	text-align: center;
+}
+
+.custom-dialog-buttons {
+	margin-top: 20px;
+}
+
+.custom-dialog-buttons button {
+	margin: 0 10px;
+	padding: 10px 20px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background-color 0.3s, transform 0.2s; /* Transiciones suaves */
+}
+
+.custom-dialog-buttons button:first-child {
+	background-color: #4caf50;
+	color: #fff;
+}
+
+.custom-dialog-buttons button:last-child {
+	background-color: #ff5555;
+	color: #fff;
+}
+
+.custom-dialog-buttons button:hover {
+	transform: translateY(-2px); /* Efecto de levantamiento */
+}
+
+.custom-dialog-buttons button:first-child:hover {
+	background-color: #43a047; /* Cambio de color en hover */
+}
+
+.custom-dialog-buttons button:last-child:hover {
+	background-color: #ff3333; /* Cambio de color en hover */
+}
+
+
+
+
+
+
+/* Estilos para el contenedor que incluye la imagen y el texto */
+#registro-exitoso .contenido {
+    display: flex; /* Hacer que los elementos internos se distribuyan en una fila */
+    align-items: center; /* Centrar verticalmente los elementos */
+}
+
+/* Estilos para el mensaje de registro exitoso */
+#registro-exitoso {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 300px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #d5e4d8; /* Color de fondo */
+    border-color: #cae6d0; /* Color del borde */
+    color: #155724; /* Color del texto */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    font-family: 'Lato', sans-serif; /* Fuente de texto */
+}
+
+/* Estilos para el texto dentro del mensaje */
+#registro-exitoso p {
+    font-family: 'Lato', sans-serif; /* Tipo de letra */
+    font-size: 16px; /* Tamaño de fuente */
+    line-height: 1.5; /* Espaciado entre líneas */
+    margin: 0; /* Elimina el margen por defecto */
+}
+
+/* Estilos para el logo */
+#registro-exitoso img {
+    width: 20px; /* Reducir el tamaño de la imagen */
+    height: auto; /* Mantiene la proporción */
+    margin-right: 10px; /* Espacio a la derecha del logo */
+}
+
+
 
 
 

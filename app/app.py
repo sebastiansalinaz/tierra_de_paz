@@ -257,6 +257,34 @@ def get_activities():
     actividades_list = [{'nombre': actividad.nombre} for actividad in actividades]
     return jsonify(actividades_list)
 
+@app.route('/get_datos_tabla', methods=['GET'])
+@login_required
+def get_datos_tabla():
+    # Obtener todos los registros de la tabla 'Registro'
+    registros = Registro.query.all()
+    
+    # Crear una lista de diccionarios con los datos de los registros
+    datos_tabla = []
+    for registro in registros:
+        datos_tabla.append({
+            'nombres': registro.nombres,
+            'apellidos': registro.apellidos,
+            'tipo_documento': registro.tipo_documento,
+            'numero_documento': registro.numero_documento,
+            'pais': registro.pais,
+            'departamento': registro.departamento,
+            'municipio': registro.municipio,
+            'genero': registro.genero,
+            'edad': registro.edad,
+            'grupo_edad': registro.grupo_edad,
+            'grupo_etnico': registro.grupo_etnico,
+            'discapacidad': registro.discapacidad,
+            'comunidad': registro.comunidad,
+            'actividad': registro.actividad.nombre  # Nombre de la actividad asociada al registro
+        })
+    
+    # Devolver los datos de la tabla en formato JSON
+    return jsonify(datos_tabla)
 
 
 

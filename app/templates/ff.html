@@ -1,3 +1,5 @@
+import os
+
 @app.route('/guardar_actividad', methods=['POST'])
 @login_required
 def guardar_actividad():
@@ -22,6 +24,10 @@ def guardar_actividad():
         # Agregar la nueva actividad a la base de datos
         db.session.add(nueva_actividad)
         db.session.commit()
+
+        # Crear una carpeta para la actividad
+        actividad_folder = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(nombre_actividad))
+        os.makedirs(actividad_folder, exist_ok=True)
 
         # Devolver la información de la actividad recién creada al cliente
         return jsonify({'nombre': nueva_actividad.nombre})
