@@ -29,6 +29,7 @@
             
         </div>
 
+        
         <ul class="box-info">
             <li>
                 <i class='bx bxs-calendar-check'></i>
@@ -52,6 +53,88 @@
                 </span>
             </li>
         </ul>
+
+        <br> 
+
+
+{% for actividad in actividades %}
+    <button class="btn-actividad" id="btn-actividad-{{ actividad.id }}" data-target="myModalActivity{{ actividad.id }}">
+        <span class="text">{{ actividad.nombre }}</span>
+    </button>
+{% endfor %}
+
+
+
+<!-- Modal para cada actividad -->
+{% for actividad in actividades %}
+<div id="myModalActivity{{ actividad.id }}" class="modaly" style="display: none;">
+    <!-- Contenido del modal -->
+    <div class="modal-contentenedor">
+        <!-- Título de la actividad -->
+        <h2>{{ actividad.nombre }}</h2>
+        <!-- Información adicional de la actividad -->
+        <div class="modal-info">
+            <p><strong>Persona Encargada:</strong> {{ actividad.persona_encargada }}</p>
+            <p><strong>Fecha de Creación:</strong> {{ actividad.fecha_realizacion }}</p>
+            <button class="modal-close-btn" onclick="closeModal('myModalActivity{{ actividad.id }}')">Cerrar</button>
+        </div>
+
+    <br>
+        <!-- Tabla para mostrar los registros asociados a la actividad -->
+        <table class="actividad-registros">
+            <thead>
+                <tr>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Tipo de Documento</th>
+                    <th>Número de Documento</th>
+                    <th>País</th>
+                    <th>Departamento</th>
+                    <th>Municipio</th>
+                    <th>Género</th>
+                    <th>Edad</th>
+                    <th>Grupo de Edad</th>
+                    <th>Grupo Étnico</th>
+                    <th>Discapacidad</th>
+                    <th>Comunidad</th>
+                    <th>Actividad</th>
+                    <th>Opciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for registro in actividad.registros %}
+                <tr>
+                    <td>{{ registro.nombres }}</td>
+                    <td>{{ registro.apellidos }}</td>
+                    <td>{{ registro.tipo_documento }}</td>
+                    <td>{{ registro.numero_documento }}</td>
+                    <td>{{ registro.pais }}</td>
+                    <td>{{ registro.departamento }}</td>
+                    <td>{{ registro.municipio }}</td>
+                    <td>{{ registro.genero }}</td>
+                    <td>{{ registro.edad }}</td>
+                    <td>{{ registro.grupo_edad }}</td>
+                    <td>{{ registro.grupo_etnico }}</td>
+                    <td>{{ registro.discapacidad }}</td>
+                    <td>{{ registro.comunidad }}</td>
+                    <td>{{ registro.actividad }}</td>
+                    <td>
+                        <a href="#" class="custom-btn">Editar</a>
+                        <a href="#" class="custom-btn-eliminar">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endfor %}
+
+
+
+
+        
+        
 
         <div class="table-data">
             <div class="order">
@@ -325,8 +408,6 @@
     </div>
 </div>
 
-
-
 <script>
     // Función para abrir el modal
     function openModal(modalId) {
@@ -339,230 +420,234 @@
             modal.style.display = "block"; // Abrir el modal solicitado
         }
     }
-    
+
     // Función para cerrar el modal
     function closeModal(modalId) {
-        var modal = document.getElementById(modalId);
-        if (modal) {
-            modal.style.display = "none";
-        }
+        var modals = document.querySelectorAll('.modal, .modaly'); // Obtener todos los modals
+        modals.forEach(function(modal) {
+            modal.style.display = "none"; // Ocultar todos los modals
+        });
     }
-
     // Función para mostrar el formulario de registro de personas
-function openUserForm() {
-    closeModal('myModalActivity'); // Cerramos el modal de actividad
-    
-    // Obtener la lista actualizada de actividades antes de mostrar el formulario de registro de usuario
-    fetch('/get_activities')
-        .then(response => response.json())
-        .then(data => {
-            // Actualizar las opciones del campo de actividad
-            var select = document.getElementById('actividad');
-            select.innerHTML = ""; // Limpiar las opciones actuales
-            var defaultOption = document.createElement('option');
-            defaultOption.text = "Seleccione una actividad";
-            select.add(defaultOption);
-            data.forEach(actividad => {
-                var option = document.createElement('option');
-                option.value = actividad.nombre;
-                option.text = actividad.nombre;
-                select.add(option);
+    function openUserForm() {
+        closeModal('myModalActivity'); // Cerramos el modal de actividad
+        
+        // Obtener la lista actualizada de actividades antes de mostrar el formulario de registro de usuario
+        fetch('/get_activities')
+            .then(response => response.json())
+            .then(data => {
+                // Actualizar las opciones del campo de actividad
+                var select = document.getElementById('actividad');
+                select.innerHTML = ""; // Limpiar las opciones actuales
+                var defaultOption = document.createElement('option');
+                defaultOption.text = "Seleccione una actividad";
+                select.add(defaultOption);
+                data.forEach(actividad => {
+                    var option = document.createElement('option');
+                    option.value = actividad.nombre;
+                    option.text = actividad.nombre;
+                    select.add(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al cargar las actividades.');
             });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al cargar las actividades.');
-        });
-    
-    openModal('myModal1'); // Mostramos el modal de registro de usuario
-}
-
-
-
-function actualizarTabla() {
-    fetch('/get_datos_tabla')
-        .then(response => response.json())
-        .then(data => {
-            // Limpiar la tabla antes de cargar nuevos datos
-            var tableBody = document.querySelector('.table-data table tbody');
-            tableBody.innerHTML = "";
-
-            // Insertar filas con los datos recibidos en la tabla
-            data.forEach(rowData => {
-                var newRow = document.createElement('tr');
-                newRow.innerHTML = `
-                    <td>${rowData.nombres}</td>
-                    <td>${rowData.apellidos}</td>
-                    <td>${rowData.tipo_documento}</td>
-                    <td>${rowData.numero_documento}</td>
-                    <td>${rowData.pais}</td>
-                    <td>${rowData.departamento}</td>
-                    <td>${rowData.municipio}</td>
-                    <td>${rowData.genero}</td>
-                    <td>${rowData.edad}</td>
-                    <td>${rowData.grupo_edad}</td>
-                    <td>${rowData.grupo_etnico}</td>
-                    <td>${rowData.discapacidad}</td>
-                    <td>${rowData.comunidad}</td>
-                    <td>${rowData.actividad}</td>
-                    <td>
-                        <a href="" class="custom-btn">Editar</a>
-                        <a href="" class="custom-btn-eliminar">Eliminar</a>
-                    </td>
-                `;
-                tableBody.appendChild(newRow);
-            });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al cargar los datos de la tabla.');
-        });
-}
-
-
-
-function asignarPersona(event) {
-    event.preventDefault(); // Evitar que el formulario se envíe automáticamente
-    
-    // Validar los campos del formulario de actividad
-    var nombreActividad = document.getElementById("nombre_actividad").value;
-    var fechaRealizacion = document.getElementById("fecha_realizacion").value;
-    
-    // Verificar que los campos obligatorios no estén vacíos
-    if (nombreActividad.trim() === '' || fechaRealizacion.trim() === '') {
-        alert("Por favor, complete todos los campos de la actividad.");
-        return;
+        
+        openModal('myModal1'); // Mostramos el modal de registro de usuario
     }
-    
-    // Enviar los datos del formulario de actividad al servidor utilizando Fetch API
-    var formData = new FormData(document.getElementById("modalActivityForm"));
-    fetch('/guardar_actividad', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRF-Token': '{{ csrf_token() }}' // Agregar el token CSRF si es necesario
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            // Los datos se guardaron correctamente, mostrar el formulario de registro de usuario
-            openUserForm();
-            
-            // Procesar los datos del nuevo registro
-            response.json().then(data => {
-                // Crear una nueva fila de la tabla con los datos del nuevo registro
-                var newRow = document.createElement('tr');
-                newRow.innerHTML = `
-                    <td>${data.nombres}</td>
-                    <td>${data.apellidos}</td>
-                    <td>${data.tipo_documento}</td>
-                    <td>${data.numero_documento}</td>
-                    <td>${data.pais}</td>
-                    <td>${data.departamento}</td>
-                    <td>${data.municipio}</td>
-                    <td>${data.genero}</td>
-                    <td>${data.edad}</td>
-                    <td>${data.grupo_edad}</td>
-                    <td>${data.grupo_etnico}</td>
-                    <td>${data.discapacidad}</td>
-                    <td>${data.comunidad}</td>
-                    <td>${data.actividad}</td>
-                `;
-                
-                // Insertar la nueva fila en la tabla existente (al final del cuerpo de la tabla)
+
+    function openActivityModal(activityId) {
+        // Obtener la referencia al modal de la actividad
+        var modalId = 'myModalActivity' + activityId;
+        openModal(modalId);
+    }
+
+    // Fragmento de código para manejar los eventos de clic en los botones de actividad
+    {% for actividad in actividades %}
+        var btnActividad{{ actividad.id }} = document.getElementById('btn-actividad-{{ actividad.id }}');
+        btnActividad{{ actividad.id }}.addEventListener('click', function() {
+            var modalId = this.getAttribute('data-target');
+            openModal(modalId);
+        });
+    {% endfor %}
+
+    function actualizarTabla() {
+        fetch('/get_datos_tabla')
+            .then(response => response.json())
+            .then(data => {
+                // Limpiar la tabla antes de cargar nuevos datos
                 var tableBody = document.querySelector('.table-data table tbody');
-                tableBody.appendChild(newRow);
+                tableBody.innerHTML = "";
+
+                // Insertar filas con los datos recibidos en la tabla
+                data.forEach(rowData => {
+                    var newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                        <td>${rowData.nombres}</td>
+                        <td>${rowData.apellidos}</td>
+                        <td>${rowData.tipo_documento}</td>
+                        <td>${rowData.numero_documento}</td>
+                        <td>${rowData.pais}</td>
+                        <td>${rowData.departamento}</td>
+                        <td>${rowData.municipio}</td>
+                        <td>${rowData.genero}</td>
+                        <td>${rowData.edad}</td>
+                        <td>${rowData.grupo_edad}</td>
+                        <td>${rowData.grupo_etnico}</td>
+                        <td>${rowData.discapacidad}</td>
+                        <td>${rowData.comunidad}</td>
+                        <td>${rowData.actividad}</td>
+                        <td>
+                            <a href="" class="custom-btn">Editar</a>
+                            <a href="" class="custom-btn-eliminar">Eliminar</a>
+                        </td>
+                    `;
+                    tableBody.appendChild(newRow);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al cargar los datos de la tabla.');
             });
-    
-            // Llamar a actualizarTabla para actualizar la tabla
-            actualizarTabla();
-        } else {
-            // Hubo un error al guardar los datos, mostrar un mensaje de error
-            alert('Error al guardar los datos de la actividad.');
+    }
+
+    function asignarPersona(event) {
+        event.preventDefault(); // Evitar que el formulario se envíe automáticamente
+        
+        // Validar los campos del formulario de actividad
+        var nombreActividad = document.getElementById("nombre_actividad").value;
+        var fechaRealizacion = document.getElementById("fecha_realizacion").value;
+        
+        // Verificar que los campos obligatorios no estén vacíos
+        if (nombreActividad.trim() === '' || fechaRealizacion.trim() === '') {
+            alert("Por favor, complete todos los campos de la actividad.");
+            return;
         }
-    })
-    
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error al comunicarse con el servidor.');
-    });
-}
-
-
-
-
-
- // Función para manejar el botón de guardar del formulario de registro de personas
-function guardarRegistro(event) {
-    event.preventDefault(); // Evitar que el formulario se envíe automáticamente
-    
-    // Enviar los datos del formulario de registro de personas al servidor utilizando Fetch API
-    var formData = new FormData(document.getElementById("modal1Form"));
-    fetch('/guardar_registro', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRF-Token': '{{ csrf_token() }}' // Agregar el token CSRF si es necesario
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            // Mostrar mensaje de confirmación personalizado
-            document.getElementById("custom-dialog").style.display = "block";
-            // Agregar eventos clic a los botones del diálogo personalizado
-            document.getElementById("custom-dialog-yes").addEventListener("click", function() {
-                // Si se confirma, limpiar el formulario para crear otro usuario
-                document.getElementById("modal1Form").reset();
-                // Cerrar el diálogo
-                document.getElementById("custom-dialog").style.display = "none";
+        
+        // Enviar los datos del formulario de actividad al servidor utilizando Fetch API
+        var formData = new FormData(document.getElementById("modalActivityForm"));
+        fetch('/guardar_actividad', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-Token': '{{ csrf_token() }}' // Agregar el token CSRF si es necesario
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Los datos se guardaron correctamente, mostrar el formulario de registro de usuario
+                openUserForm();
+                
+                // Procesar los datos del nuevo registro
+                response.json().then(data => {
+                    // Crear una nueva fila de la tabla con los datos del nuevo registro
+                    var newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                        <td>${data.nombres}</td>
+                        <td>${data.apellidos}</td>
+                        <td>${data.tipo_documento}</td>
+                        <td>${data.numero_documento}</td>
+                        <td>${data.pais}</td>
+                        <td>${data.departamento}</td>
+                        <td>${data.municipio}</td>
+                        <td>${data.genero}</td>
+                        <td>${data.edad}</td>
+                        <td>${data.grupo_edad}</td>
+                        <td>${data.grupo_etnico}</td>
+                        <td>${data.discapacidad}</td>
+                        <td>${data.comunidad}</td>
+                        <td>${data.actividad}</td>
+                    `;
+                    
+                    // Insertar la nueva fila en la tabla existente (al final del cuerpo de la tabla)
+                    var tableBody = document.querySelector('.table-data table tbody');
+                    tableBody.appendChild(newRow);
+                });
+        
                 // Llamar a actualizarTabla para actualizar la tabla
                 actualizarTabla();
-            });
+            } else {
+                // Hubo un error al guardar los datos, mostrar un mensaje de error
+                alert('Error al guardar los datos de la actividad.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al comunicarse con el servidor.');
+        });
+    }
 
-            document.getElementById("custom-dialog-no").addEventListener("click", function() {
-                // Si no se confirma, cerrar el modal
-                closeModal('myModal1');
-                // Cerrar el diálogo
-                document.getElementById("custom-dialog").style.display = "none";
-            });
+    // Función para manejar el botón de guardar del formulario de registro de personas
+    function guardarRegistro(event) {
+        event.preventDefault(); // Evitar que el formulario se envíe automáticamente
+        
+        // Enviar los datos del formulario de registro de personas al servidor utilizando Fetch API
+        var formData = new FormData(document.getElementById("modal1Form"));
+        fetch('/guardar_registro', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-Token': '{{ csrf_token() }}' // Agregar el token CSRF si es necesario
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Mostrar mensaje de confirmación personalizado
+                document.getElementById("custom-dialog").style.display = "block";
+                // Agregar eventos clic a los botones del diálogo personalizado
+                document.getElementById("custom-dialog-yes").addEventListener("click", function() {
+                    // Si se confirma, limpiar el formulario para crear otro usuario
+                    document.getElementById("modal1Form").reset();
+                    // Cerrar el diálogo
+                    document.getElementById("custom-dialog").style.display = "none";
+                    // Llamar a actualizarTabla para actualizar la tabla
+                    actualizarTabla();
+                });
 
-            // Mostrar el mensaje de registro exitoso
-            document.getElementById("registro-exitoso").style.display = "block";
-            // Agregar animación de entrada
-            document.getElementById("registro-exitoso").style.opacity = '1';
-            // Configurar temporizador para que desaparezca después de 3 segundos
-            setTimeout(function() {
-                // Agregar animación de salida
-                document.getElementById("registro-exitoso").style.opacity = '0';
-                // Esperar a que termine la animación de salida y luego ocultar el mensaje
+                document.getElementById("custom-dialog-no").addEventListener("click", function() {
+                    // Si no se confirma, cerrar el modal
+                    closeModal('myModal1');
+                    // Cerrar el diálogo
+                    document.getElementById("custom-dialog").style.display = "none";
+                });
+
+                // Mostrar el mensaje de registro exitoso
+                document.getElementById("registro-exitoso").style.display = "block";
+                // Agregar animación de entrada
+                document.getElementById("registro-exitoso").style.opacity = '1';
+                // Configurar temporizador para que desaparezca después de 3 segundos
                 setTimeout(function() {
-                    document.getElementById("registro-exitoso").style.display = 'none';
-                }, 300); // 300 milisegundos para que coincida con la duración de la animación de salida
-            }, 3000); // 3000 milisegundos (3 segundos)
-        } else {
-            // Hubo un error al guardar los datos, mostrar un mensaje de error
-            alert('Error al guardar los datos del registro de usuario.');
+                    // Agregar animación de salida
+                    document.getElementById("registro-exitoso").style.opacity = '0';
+                    // Esperar a que termine la animación de salida y luego ocultar el mensaje
+                    setTimeout(function() {
+                        document.getElementById("registro-exitoso").style.display = 'none';
+                    }, 300); // 300 milisegundos para que coincida con la duración de la animación de salida
+                }, 3000); // 3000 milisegundos (3 segundos)
+            } else {
+                // Hubo un error al guardar los datos, mostrar un mensaje de error
+                alert('Error al guardar los datos del registro de usuario.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al comunicarse con el servidor.');
+        });
+    }
+
+    // Agregar evento clic al botón "Guardar" del formulario de registro de personas
+    document.getElementById("btn-guardar").addEventListener("click", guardarRegistro);
+
+    // Función para cerrar el modal al presionar la tecla "Esc"
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "Escape") {
+            closeModal(); // Llamar a closeModal sin argumentos para cerrar el modal activo
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error al comunicarse con el servidor.');
     });
-}
 
-document.getElementById("custom-dialog-no").addEventListener("click", function() {
-    // Si no se confirma, cerrar el modal
-    closeModal('myModal1');
-    // Llamar a actualizarTabla para actualizar la tabla
-    actualizarTabla();
-    // Cerrar el diálogo
-    document.getElementById("custom-dialog").style.display = "none";
-});
-
-
-// Agregar evento clic al botón "Guardar" del formulario de registro de personas
-document.getElementById("btn-guardar").addEventListener("click", guardarRegistro);
 </script>
+
 
 
 

@@ -257,6 +257,7 @@ def get_activities():
     actividades_list = [{'nombre': actividad.nombre} for actividad in actividades]
     return jsonify(actividades_list)
 
+
 @app.route('/get_datos_tabla', methods=['GET'])
 @login_required
 def get_datos_tabla():
@@ -285,6 +286,7 @@ def get_datos_tabla():
     
     # Devolver los datos de la tabla en formato JSON
     return jsonify(datos_tabla)
+
 
 
 
