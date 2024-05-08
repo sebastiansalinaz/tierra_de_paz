@@ -1,62 +1,53 @@
-{% for actividad in actividades %}
-    <!-- Modal para cada actividad -->
-    <div id="myModalActivity{{ actividad.id }}" class="modaly" style="display: none;">
-        
-        <!-- Contenido del modal -->
-        <div class="modal-contentenedor">
-            
-            <!-- Encabezado del modal -->
-            <div class="modal-header">
-                <h2>{{ actividad.nombre }}</h2>
-                <button class="modal-close-btn" onclick="closeModal('myModalActivity{{ actividad.id }}')">Cerrar</button>
-            </div>
-
-            <!-- Información detallada de la actividad -->
-            <div class="modal-body">
-                <p><strong>Persona Encargada:</strong> {{ actividad.persona_encargada }}</p>
-                <p><strong>Fecha de Creación:</strong> {{ actividad.fecha_realizacion }}</p>
-
-                <!-- Tabla para mostrar los registros asociados a la actividad -->
-                <table class="actividad-registros">
-                    <thead>
-                        <tr>
-                            <th>Nombres</th>
-                            <th>Apellidos</th>
-                            <th>Tipo de Documento</th>
-                            <th>Número de Documento</th>
-                            <th>Ubicación</th>
-                            <th>Género</th>
-                            <th>Edad</th>
-                            <th>Grupo Étnico</th>
-                            <th>Discapacidad</th>
-                            <th>Comunidad</th>
-                            <th>Actividad</th>
-                            <th>Opciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for registro in actividad.registros %}
-                            <tr>
-                                <td>{{ registro.nombres }}</td>
-                                <td>{{ registro.apellidos }}</td>
-                                <td>{{ registro.tipo_documento }}</td>
-                                <td>{{ registro.numero_documento }}</td>
-                                <td>{{ registro.municipio }}, {{ registro.departamento }}, {{ registro.pais }}</td>
-                                <td>{{ registro.genero }}</td>
-                                <td>{{ registro.edad }}</td>
-                                <td>{{ registro.grupo_etnico }}</td>
-                                <td>{{ registro.discapacidad }}</td>
-                                <td>{{ registro.comunidad }}</td>
-                                <td>{{ registro.actividad }}</td>
-                                <td>
-                                    <a href="#" class="custom-btn">Editar</a>
-                                    <a href="#" class="custom-btn-eliminar">Eliminar</a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-{% endfor %}
+<table>
+    <thead>
+        <tr>
+            <th>Nombres</th>
+            <th>Apellidos</th>
+            <th>Tipo de Documento</th>
+            <th>Número de Documento</th>
+            <th>País</th>
+            <th>Departamento</th>
+            <th>Municipio</th>
+            <th>Género</th>
+            <th>Edad</th>
+            <th>Grupo de Edad</th>
+            <th>Grupo Étnico</th>
+            <th>Discapacidad</th>
+            <th>Comunidad</th>
+            <th>Actividad</th>
+            <th>Opciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for registro in registros %}
+        <tr>
+            <td>{{ registro.nombres }}</td>
+            <td>{{ registro.apellidos }}</td>
+            <td>{{ registro.tipo_documento }}</td>
+            <td>{{ registro.numero_documento }}</td>
+            <td>{{ registro.pais }}</td>
+            <td>{{ registro.departamento }}</td>
+            <td>{{ registro.municipio }}</td>
+            <td>{{ registro.genero }}</td>
+            <td>{{ registro.edad }}</td>
+            <td>
+                {% if registro.grupo_edad == "menor_18" %}
+                    Menor de 18 años
+                {% elif registro.grupo_edad == "18_49" %}
+                    18 a 49 años
+                {% elif registro.grupo_edad == "50_mas" %}
+                    50 años en adelante
+                {% endif %}
+            </td>
+            <td>{{ registro.grupo_etnico }}</td>
+            <td>{{ registro.discapacidad }}</td>
+            <td>{{ registro.comunidad }}</td>
+            <td>{{ registro.actividad.nombre }}</td>
+            <td>
+                <a href="" class="custom-btn">Editar</a>
+                <a href="" class="custom-btn-eliminar">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

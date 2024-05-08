@@ -12,6 +12,8 @@ from pytz import timezone
 import pandas as pd
 import plotly.express as px
 from flask import jsonify
+from flask import make_response
+
 
 
 app = Flask(__name__)
@@ -286,6 +288,18 @@ def get_datos_tabla():
     
     # Devolver los datos de la tabla en formato JSON
     return jsonify(datos_tabla)
+
+
+
+
+@app.route('/eliminar_registro/<int:registro_id>', methods=['POST'])
+@login_required
+def eliminar_registro(registro_id):
+    registro = Registro.query.get_or_404(registro_id)
+    db.session.delete(registro)
+    db.session.commit()
+    flash('Registro eliminado correctamente.', 'success')
+    return redirect(url_for('eventos'))
 
 
 

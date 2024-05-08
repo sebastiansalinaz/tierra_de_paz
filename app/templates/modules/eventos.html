@@ -57,80 +57,86 @@
         <br> 
 
 
-{% for actividad in actividades %}
-    <button class="btn-actividad" id="btn-actividad-{{ actividad.id }}" data-target="myModalActivity{{ actividad.id }}">
-        <span class="text">{{ actividad.nombre }}</span>
-    </button>
-{% endfor %}
-
-
-
-<!-- Modal para cada actividad -->
-{% for actividad in actividades %}
-<div id="myModalActivity{{ actividad.id }}" class="modaly" style="display: none;">
-    <!-- Contenido del modal -->
-    <div class="modal-contentenedor">
-        <!-- Título de la actividad -->
-        <h2>{{ actividad.nombre }}</h2>
-        <!-- Información adicional de la actividad -->
-        <div class="modal-info">
-            <p><strong>Persona Encargada:</strong> {{ actividad.persona_encargada }}</p>
-            <p><strong>Fecha de Creación:</strong> {{ actividad.fecha_realizacion }}</p>
-            <button class="modal-close-btn" onclick="closeModal('myModalActivity{{ actividad.id }}')">Cerrar</button>
+        {% for actividad in actividades %}
+        <button class="btn-actividad" id="btn-actividad-{{ actividad.id }}" data-target="myModalActivity{{ actividad.id }}" onclick="openModal('myModalActivity{{ actividad.id }}')">
+            <span class="text">{{ actividad.nombre }}</span>
+        </button>
+    
+        <!-- Modal para cada actividad -->
+        <div id="myModalActivity{{ actividad.id }}" class="modaly" style="display: none;">
+            <!-- Contenido del modal -->
+            <div class="modal-contentenedor">
+                <!-- Título de la actividad -->
+                <h2>{{ actividad.nombre }}</h2>
+                <!-- Información adicional de la actividad -->
+                <div class="modal-info">
+                    <p><strong>Persona Encargada:</strong> {{ actividad.persona_encargada }}</p>
+                    <p><strong>Fecha de Creación:</strong> {{ actividad.fecha_realizacion }}</p>
+                    <button onclick="exportarExcel('{{ actividad.id }}')" class="custom-btn">Exportar a Excel</button>
+                    <button class="modal-close-btn" onclick="closeModal('myModalActivity{{ actividad.id }}')">Cerrar</button>
+                </div>
+        
+                <br>
+                <!-- Contenedor de la tabla para mostrar los registros asociados a la actividad -->
+                <div id="contenedor-tabla-{{ actividad.id }}">
+                    <table class="actividad-registros">
+                        <thead>
+                            <tr>
+                                <th>Nombres</th>
+                                <th>Apellidos</th>
+                                <th>Tipo de Documento</th>
+                                <th>Número de Documento</th>
+                                <th>País</th>
+                                <th>Departamento</th>
+                                <th>Municipio</th>
+                                <th>Género</th>
+                                <th>Edad</th>
+                                <th>Grupo de Edad</th>
+                                <th>Grupo Étnico</th>
+                                <th>Discapacidad</th>
+                                <th>Comunidad</th>
+                                <th>Actividad</th>
+                                <th>Opciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for registro in actividad.registros %}
+                            <tr>
+                                <td>{{ registro.nombres }}</td>
+                                <td>{{ registro.apellidos }}</td>
+                                <td>{{ registro.tipo_documento }}</td>
+                                <td>{{ registro.numero_documento }}</td>
+                                <td>{{ registro.pais }}</td>
+                                <td>{{ registro.departamento }}</td>
+                                <td>{{ registro.municipio }}</td>
+                                <td>{{ registro.genero }}</td>
+                                <td>{{ registro.edad }}</td>
+                                <td>
+                                    {% if registro.grupo_edad == "menor_18" %}
+                                        Menor de 18
+                                    {% elif registro.grupo_edad == "18_49" %}
+                                        18 a 49
+                                    {% elif registro.grupo_edad == "50_mas" %}
+                                        50 o mas
+                                    {% endif %}
+                                </td>
+                                <td>{{ registro.grupo_etnico }}</td>
+                                <td>{{ registro.discapacidad }}</td>
+                                <td>{{ registro.comunidad }}</td>
+                                <td>{{ registro.actividad.nombre }}</td>
+                                <td>
+                                    <a href="#" class="custom-btn">Editar</a>
+                                    <a href="#" class="custom-btn-eliminar" data-registro-id="{{ registro.id }}">Eliminar</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div> <!-- Fin del contenedor de la tabla -->
+            </div>
         </div>
-
-    <br>
-        <!-- Tabla para mostrar los registros asociados a la actividad -->
-        <table class="actividad-registros">
-            <thead>
-                <tr>
-                    <th>Nombres</th>
-                    <th>Apellidos</th>
-                    <th>Tipo de Documento</th>
-                    <th>Número de Documento</th>
-                    <th>País</th>
-                    <th>Departamento</th>
-                    <th>Municipio</th>
-                    <th>Género</th>
-                    <th>Edad</th>
-                    <th>Grupo de Edad</th>
-                    <th>Grupo Étnico</th>
-                    <th>Discapacidad</th>
-                    <th>Comunidad</th>
-                    <th>Actividad</th>
-                    <th>Opciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for registro in actividad.registros %}
-                <tr>
-                    <td>{{ registro.nombres }}</td>
-                    <td>{{ registro.apellidos }}</td>
-                    <td>{{ registro.tipo_documento }}</td>
-                    <td>{{ registro.numero_documento }}</td>
-                    <td>{{ registro.pais }}</td>
-                    <td>{{ registro.departamento }}</td>
-                    <td>{{ registro.municipio }}</td>
-                    <td>{{ registro.genero }}</td>
-                    <td>{{ registro.edad }}</td>
-                    <td>{{ registro.grupo_edad }}</td>
-                    <td>{{ registro.grupo_etnico }}</td>
-                    <td>{{ registro.discapacidad }}</td>
-                    <td>{{ registro.comunidad }}</td>
-                    <td>{{ registro.actividad }}</td>
-                    <td>
-                        <a href="#" class="custom-btn">Editar</a>
-                        <a href="#" class="custom-btn-eliminar">Eliminar</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-{% endfor %}
-
-
+    {% endfor %}
+    
 
 
         
@@ -177,14 +183,22 @@
                             <td>{{ registro.municipio }}</td>
                             <td>{{ registro.genero }}</td>
                             <td>{{ registro.edad }}</td>
-                            <td>{{ registro.grupo_edad }}</td>
+                            <td>
+                                {% if registro.grupo_edad == "menor_18" %}
+                                    Menor de 18
+                                {% elif registro.grupo_edad == "18_49" %}
+                                    18 a 49
+                                {% elif registro.grupo_edad == "50_mas" %}
+                                    50 o mas
+                                {% endif %}
+                            </td>
                             <td>{{ registro.grupo_etnico }}</td>
                             <td>{{ registro.discapacidad }}</td>
                             <td>{{ registro.comunidad }}</td>
-                            <td>{{ registro.actividad }}</td>
+                            <td>{{ registro.actividad.nombre }}</td>
                             <td>
                                 <a href="" class="custom-btn">Editar</a>
-                                <a href="" class="custom-btn-eliminar">Eliminar</a>
+                                <a href="#" class="custom-btn-eliminar" data-registro-id="{{ registro.id }}">Eliminar</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -222,10 +236,6 @@
         </div>
     </div>
 </div>
-
-
-
-
 
 
 
@@ -605,12 +615,16 @@
                     actualizarTabla();
                 });
 
+
                 document.getElementById("custom-dialog-no").addEventListener("click", function() {
-                    // Si no se confirma, cerrar el modal
-                    closeModal('myModal1');
-                    // Cerrar el diálogo
-                    document.getElementById("custom-dialog").style.display = "none";
+                 // Si no se confirma, cerrar el modal
+                closeModal('myModal1');
+                // Cerrar el diálogo
+                 document.getElementById("custom-dialog").style.display = "none";
+                // Llamar a actualizarTabla para actualizar la tabla
+                 actualizarTabla();
                 });
+
 
                 // Mostrar el mensaje de registro exitoso
                 document.getElementById("registro-exitoso").style.display = "block";
@@ -646,16 +660,67 @@
         }
     });
 
+  
+    function exportarExcel(actividadId) {
+        // Obtener el contenedor de la tabla de registros asociados a la actividad
+        var contenedorTabla = document.getElementById('contenedor-tabla-' + actividadId);
+        if (!contenedorTabla) {
+            alert("No se encontró el contenedor de la tabla de registros para la actividad " + actividadId);
+            return;
+        }
+        
+        // Obtener la tabla de registros asociados a la actividad dentro del contenedor
+        var table = contenedorTabla.querySelector('.actividad-registros');
+        if (!table) {
+            alert("No se encontró la tabla de registros para la actividad " + actividadId);
+            return;
+        }
+        
+        // Crear un libro de Excel
+        var wb = XLSX.utils.table_to_book(table, {sheet: "Registros"});
+        
+        // Guardar el libro de Excel como un archivo
+        XLSX.writeFile(wb, 'registros_actividad_' + actividadId + '.xlsx');
+    }
+    
+
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            var eliminarBotones = document.querySelectorAll('.custom-btn-eliminar');
+            eliminarBotones.forEach(function(boton) {
+                boton.addEventListener('click', function() {
+                    var registroId = this.dataset.registroId;
+                    eliminarRegistro(registroId);
+                });
+            });
+    
+            function eliminarRegistro(registroId) {
+                fetch('/eliminar_registro/' + registroId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token() }}'  // Asegúrate de incluir el token CSRF
+                    },
+                })
+                .then(function(response) {
+                    if (response.ok) {
+                        // Recargar la página o actualizar la tabla de registros
+                        window.location.reload();
+                    } else {
+                        throw new Error('Hubo un problema al eliminar el registro.');
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error:', error);
+                    alert('Hubo un problema al eliminar el registro.');
+                });
+            }
+        });
+    
+    
+    
 </script>
 
-
-
-
 {% endblock %}
-
-
-
-
-
 
 
