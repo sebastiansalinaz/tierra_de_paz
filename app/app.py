@@ -164,9 +164,9 @@ def dashboard():
     return render_template('dashboard.html')
 
 
-@app.route('/eventos')
+@app.route('/usuarios')
 @login_required
-def eventos():
+def usuarios():
     # Obtener todas las actividades de la base de datos
     actividades = Actividad.query.all()
     
@@ -174,7 +174,7 @@ def eventos():
     registros = Registro.query.all()
 
     # Renderizar la plantilla de eventos y pasar las actividades y registros como contexto
-    return render_template('modules/eventos.html', actividades=actividades, registros=registros)
+    return render_template('modules/usuarios.html', actividades=actividades, registros=registros)
 
 
 
@@ -186,7 +186,7 @@ def guardar_actividad():
         # Verificar el token CSRF
         if 'csrf_token' not in request.form:
             flash('Token CSRF faltante. Intente enviar el formulario nuevamente.', 'error')
-            return redirect(url_for('eventos'))
+            return redirect(url_for('usuarios'))
 
         # Obtener los datos del formulario
         nombre_actividad = request.form['nombre_actividad']
@@ -210,7 +210,7 @@ def guardar_actividad():
     # Manejar el caso donde el método de solicitud no es POST
     # Si llega aquí, podría ser una buena idea mostrar un mensaje de error o redirigir a otra página
     flash('Error al procesar la solicitud', 'error')
-    return redirect(url_for('eventos'))
+    return redirect(url_for('usuarios'))
 
 
 @app.route('/guardar_registro', methods=['POST'])
@@ -260,10 +260,10 @@ def guardar_registro():
 
             # Redirige a una página de éxito o a donde desees
             flash('Registro exitoso!', 'success')
-            return redirect(url_for('eventos'))
+            return redirect(url_for('usuarios'))
         else:
             flash('No se encontró la actividad especificada', 'error')
-            return redirect(url_for('eventos'))
+            return redirect(url_for('usuarios'))
 
 
 @app.route('/get_activities', methods=['GET'])
@@ -313,7 +313,7 @@ def eliminar_registro(registro_id):
     db.session.delete(registro)
     db.session.commit()
     flash('Registro eliminado correctamente.', 'success')
-    return redirect(url_for('eventos'))
+    return redirect(url_for('usuarios'))
 
 
 
@@ -325,9 +325,9 @@ def eliminar_registro(registro_id):
 def busqueda():
     return render_template('modules/proyectos.html')
 
-@app.route('/geovisor')
+@app.route('/eventos')
 @login_required
-def geovisor():
+def eventos():
     df = pd.read_csv('datos.csv')
 
     bar_fig = px.bar(df, x='mes', y='cantidad_personas', title='Cantidad de personas por mes', labels={'cantidad_personas': 'Cantidad de personas'})
@@ -339,31 +339,17 @@ def geovisor():
     bar_html = bar_fig.to_html(full_html=False)
     pie_html = pie_fig.to_html(full_html=False)
 
-    return render_template('modules/geovisor.html', bar_html=bar_html, pie_html=pie_html)
+    return render_template('modules/eventos.html', bar_html=bar_html, pie_html=pie_html)
 
 @app.route('/actualizacion')
 @login_required
 def actualizacion():
     return render_template('modules/actualizacion.html')
 
-@app.route('/catalogo')
+@app.route('/recursos')
 @login_required
 def catalogo():
-    page = request.args.get('page', 1, type=int)
-    per_page = 7
-
-    search_term = request.args.get('search', '')
-
-    if search_term:
-        catalogos = Catalogo.query.filter(or_(Catalogo.descripcion.contains(search_term),
-                                              Catalogo.fecha_registro.contains(search_term))) \
-                                   .order_by(Catalogo.fecha_registro.desc()) \
-                                   .paginate(page=page, per_page=per_page)
-    else:
-        catalogos = Catalogo.query.order_by(Catalogo.fecha_registro.desc()) \
-                                   .paginate(page=page, per_page=per_page)
-
-    return render_template('modules/catalogo.html', catalogos=catalogos)
+ return render_template('modules/recursos.html')
 
 @app.route('/cargar_catalogo', methods=['POST'])
 def cargar_catalogo():

@@ -18,8 +18,8 @@
         </a>
 
         <ul class="side-menu top">
-            <li {% if request.path == url_for('eventos') %}class="active"{% endif %}>
-                <a href="{{ url_for('eventos') }}">
+            <li {% if request.path == url_for('usuarios') %}class="active"{% endif %}>
+                <a href="{{ url_for('usuarios') }}">
                     <i class='bx bxs-group' ></i>
                     <span class="text">Registro y Actualización<br>  de Usuarios</span>
                 </a>
@@ -30,8 +30,8 @@
                     <span class="text">Proyectos</span>
                 </a>
             </li>
-            <li {% if request.path == url_for('geovisor') %}class="active"{% endif %}>
-                <a href="{{ url_for('geovisor') }}">
+            <li {% if request.path == url_for('eventos') %}class="active"{% endif %}>
+                <a href="{{ url_for('eventos') }}">
                     <i class='bx bx-notepad' ></i>
                     <span class="text">Eventos y Capacitaciones</span>
                 </a>
