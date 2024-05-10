@@ -1,53 +1,37 @@
-<table>
-    <thead>
-        <tr>
-            <th>Nombres</th>
-            <th>Apellidos</th>
-            <th>Tipo de Documento</th>
-            <th>Número de Documento</th>
-            <th>País</th>
-            <th>Departamento</th>
-            <th>Municipio</th>
-            <th>Género</th>
-            <th>Edad</th>
-            <th>Grupo de Edad</th>
-            <th>Grupo Étnico</th>
-            <th>Discapacidad</th>
-            <th>Comunidad</th>
-            <th>Actividad</th>
-            <th>Opciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for registro in registros %}
-        <tr>
-            <td>{{ registro.nombres }}</td>
-            <td>{{ registro.apellidos }}</td>
-            <td>{{ registro.tipo_documento }}</td>
-            <td>{{ registro.numero_documento }}</td>
-            <td>{{ registro.pais }}</td>
-            <td>{{ registro.departamento }}</td>
-            <td>{{ registro.municipio }}</td>
-            <td>{{ registro.genero }}</td>
-            <td>{{ registro.edad }}</td>
-            <td>
-                {% if registro.grupo_edad == "menor_18" %}
-                    Menor de 18 años
-                {% elif registro.grupo_edad == "18_49" %}
-                    18 a 49 años
-                {% elif registro.grupo_edad == "50_mas" %}
-                    50 años en adelante
-                {% endif %}
-            </td>
-            <td>{{ registro.grupo_etnico }}</td>
-            <td>{{ registro.discapacidad }}</td>
-            <td>{{ registro.comunidad }}</td>
-            <td>{{ registro.actividad.nombre }}</td>
-            <td>
-                <a href="" class="custom-btn">Editar</a>
-                <a href="" class="custom-btn-eliminar">Eliminar</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<script>
+    // Función para abrir el modal
+    function openModal(modalId) {
+        var modal = document.getElementById(modalId);
+        var modalPreliminar = document.getElementById('myModalPreliminar');
+        if (modalPreliminar) {
+            modalPreliminar.style.display = "none"; // Cerrar el modal preliminar
+        }
+        if (modal) {
+            modal.style.display = "block"; // Abrir el modal solicitado
+        }
+    }
+
+    // Función para cerrar el modal
+    function closeModal(modalId) {
+        var modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = "none"; // Ocultar el modal solicitado
+        }
+    }
+
+    // Función para cerrar el modal al hacer clic en el botón "Cancelar"
+    function cancelarEliminarRegistro() {
+        closeModal('confirmarEliminarRegistroModal');
+    }
+
+    // Función para cerrar el modal al hacer clic en el símbolo "x"
+    function cerrarModal(modalId) {
+        closeModal(modalId);
+    }
+
+    // Resto del código...
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Resto del código...
+    });
+</script>

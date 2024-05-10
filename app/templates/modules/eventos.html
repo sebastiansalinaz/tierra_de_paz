@@ -126,7 +126,7 @@
                                 <td>{{ registro.actividad.nombre }}</td>
                                 <td>
                                     <a href="#" class="custom-btn">Editar</a>
-                                    <a href="#" class="custom-btn-eliminar" data-registro-id="{{ registro.id }}">Eliminar</a>
+                                    <a href="#" class="custom-btn-eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -220,6 +220,25 @@
 
 
 
+
+
+
+<!-- Diálogo emergente para confirmar eliminación de registro -->
+<div id="confirmarEliminarRegistroModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" onclick="cerrarModal('confirmarEliminarRegistroModal')">&times;</span>
+            <h2>Confirmar eliminación de registro</h2>
+        </div>
+        <div class="modal-body">
+            <p>¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="cerrarModal('confirmarEliminarRegistroModal')">Cancelar</button>
+            <a href="#" id="confirmarEliminarRegistroBtn" class="btn-delete">Eliminar registro</a>
+        </div>
+    </div>
+</div>
 
 
 
@@ -437,6 +456,16 @@
         modals.forEach(function(modal) {
             modal.style.display = "none"; // Ocultar todos los modals
         });
+    }
+
+
+    function cancelarEliminarRegistro() {
+        closeModal('confirmarEliminarRegistroModal');
+    }
+
+    // Función para cerrar el modal al hacer clic en el símbolo "x"
+    function cerrarModal(modalId) {
+        closeModal(modalId);
     }
     // Función para mostrar el formulario de registro de personas
     function openUserForm() {
@@ -685,14 +714,28 @@
     
 
     
+
         document.addEventListener('DOMContentLoaded', function() {
             var eliminarBotones = document.querySelectorAll('.custom-btn-eliminar');
             eliminarBotones.forEach(function(boton) {
                 boton.addEventListener('click', function() {
                     var registroId = this.dataset.registroId;
-                    eliminarRegistro(registroId);
+                    mostrarConfirmarEliminarRegistroModal(registroId);
                 });
             });
+    
+            function mostrarConfirmarEliminarRegistroModal(registroId) {
+                var modal = document.getElementById('confirmarEliminarRegistroModal');
+                if (modal) {
+                    // Configurar el botón "Eliminar registro" para que ejecute la función eliminarRegistro
+                    var confirmarEliminarRegistroBtn = document.getElementById('confirmarEliminarRegistroBtn');
+                    confirmarEliminarRegistroBtn.onclick = function() {
+                        eliminarRegistro(registroId);
+                        cerrarModal('confirmarEliminarRegistroModal');
+                    };
+                    openModal('confirmarEliminarRegistroModal');
+                }
+            }
     
             function eliminarRegistro(registroId) {
                 fetch('/eliminar_registro/' + registroId, {
@@ -715,7 +758,25 @@
                     alert('Hubo un problema al eliminar el registro.');
                 });
             }
+    
+            // Función para abrir el modal
+            function openModal(modalId) {
+                var modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.style.display = "block"; // Abrir el modal solicitado
+                }
+            }
+    
+            // Función para cerrar el modal
+            function cerrarModal(modalId) {
+                var modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.style.display = "none"; // Cerrar el modal solicitado
+                }
+            }
         });
+
+    
     
     
     

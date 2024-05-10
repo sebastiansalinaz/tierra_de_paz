@@ -51,15 +51,18 @@ class Catalogo(db.Model):
     fecha_registro = db.Column(db.DateTime, default=lambda: datetime.now(timezone('America/Bogota')))
     archivo = db.Column(db.String(100))
 
-
 class Actividad(db.Model):
+    __tablename__ = 'actividad'
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
     persona_encargada = db.Column(db.String(100), nullable=True)
     fecha_realizacion = db.Column(db.Date, nullable=False)
+    proyecto_id = db.Column(db.Integer, db.ForeignKey('proyecto.id'), nullable=True)  # Ahora es opcional
     registros = db.relationship('Registro', backref='actividad', lazy=True)
 
+
 class Registro(db.Model):
+    __tablename__ = 'registro'  # Agregando el nombre de la tabla explícitamente
     id = db.Column(db.Integer, primary_key=True)
     nombres = db.Column(db.String(100), nullable=False)
     apellidos = db.Column(db.String(100), nullable=False)
@@ -76,6 +79,17 @@ class Registro(db.Model):
     comunidad = db.Column(db.String(100), nullable=False)
     actividad_id = db.Column(db.Integer, db.ForeignKey('actividad.id'), nullable=False)
 
+class Proyecto(db.Model):
+    __tablename__ = 'proyecto'  # Agregando el nombre de la tabla explícitamente
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100), nullable=False)
+    descripcion = db.Column(db.String(255), nullable=False)
+    cluster = db.Column(db.String(50), nullable=False)
+    responsable = db.Column(db.String(100), nullable=False)
+    fecha_inicio = db.Column(db.Date, nullable=False)
+    fecha_finalizacion = db.Column(db.Date, nullable=False)
+    estado = db.Column(db.String(20), nullable=False)
+    actividades = db.relationship('Actividad', backref='proyecto', lazy=True)
 
 
 
