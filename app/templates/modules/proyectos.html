@@ -18,12 +18,161 @@
                     </li>
                 </ul>
             </div>
+            <button id="btn-open-modal1" class="btn-evento" onclick="openModal('myModalPreliminar')">
+                <i class='bx bx-book-bookmark'></i>
+                <span class="text">Registrar Un Nuevo Proyecto</span>
+            </button>
         </div>
 
-        
-            
+        <ul class="box-info">
+            <li>
+                <i class='bx bxs-book-add'></i>
+                <span class="text">
+                    <h3>17</h3>
+                    <h3>PROYECTOS</h3>
+                    <p>Registrados</p>
+                </span>
+            </li>
+            <li>
+                <i class='bx bxs-select-multiple'></i>
+                <span class="text">
+                    <h3>14</h3>
+                    <h3>PROYECTOS</h3>
+                    <p>Activos</p>
+                </span>
+            </li>
+            <li>
+                <i class='bx bxs-box'></i>
+                <span class="text">
+                    <h3>3 </h3>
+                    <h3>PROYECTOS</h3>
+                    <p>Terminados</p>
+                </span>
+            </li>
+        </ul>
+
+        <!-- Modal -->
+        <div id="myModalPreliminar" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('myModalPreliminar')">&times;</span>
+                <h2>Registrar Nuevo Proyecto</h2>
+                <form action="{{ url_for('crear_proyecto') }}" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" id="nombre" name="nombre" required><br><br>
+                    
+                    <label for="descripcion">Descripción:</label>
+                    <input type="text" id="descripcion" name="descripcion" required><br><br>
+
+                    <label for="cluster">Cluster:</label>
+                    <select id="cluster" name="cluster" required>
+                        <option value="Cluster de Agua, Saneamiento e Higiene (WASH)">Cluster de Agua, Saneamiento e Higiene (WASH)</option>
+                        <option value="Cluster de Alimentación y Nutrición">Cluster de Alimentación y Nutrición</option>
+                        <option value="Cluster de Educación">Cluster de Educación</option>
+                    </select><br><br>
+
+                    <label for="responsable">Responsable:</label>
+                    <input type="text" id="responsable" name="responsable" required><br><br>
+
+                    <label for="fecha_inicio">Fecha de Inicio:</label>
+                    <input type="date" id="fecha_inicio" name="fecha_inicio" required><br><br>
+
+                    <label for="fecha_finalizacion">Fecha de Finalización:</label>
+                    <input type="date" id="fecha_finalizacion" name="fecha_finalizacion" required><br><br>
+
+                    <label for="estado">Estado:</label>
+                    <select id="estado" name="estado" required>
+                        <option value="Activo">Activo</option>
+                        <option value="Cerrado">Inactivo</option>
+                    </select><br><br>
+
+                    <input type="submit" value="Crear Proyecto">
+                </form>
+            </div>
+        </div>
+
+        <div class="table-data">
+            <div class="order">
+                <div class="head">
+                    <h3>Proyectos creados recientemente</h3>
+                    <i class='bx bx-search' id="search-icon"></i>
+                    <input type="text" id="search-input" placeholder="Buscar por nombre o descripción">
+                    <i class='bx bx-filter'></i>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Cluster</th>
+                            <th>Responsable</th>
+                            <th>Fecha de Inicio</th>
+                            <th>Fecha de Finalización</th>
+                            <th>Estado</th>
+                            <th>Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Aquí se cargarán dinámicamente los proyectos -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
     <!-- CONTENIDO PRINCIPAL -->
 </section>
+
+<script>
+    // Función para abrir el modal
+    function openModal(modalId) {
+        var modal = document.getElementById(modalId);
+        modal.style.display = "block";
+    }
+
+    // Función para cerrar el modal
+    function closeModal(modalId) {
+        var modal = document.getElementById(modalId);
+        modal.style.display = "none";
+    }
+
+    // Función para actualizar la tabla de proyectos desde el servidor
+    function actualizarTablaProyectos() {
+        fetch('/get_datos_tabla_proyectos')
+            .then(response => response.json())
+            .then(data => {
+                var tableBody = document.querySelector('.table-data table tbody');
+                tableBody.innerHTML = "";
+
+                data.forEach(rowData => {
+                    var newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                        <td>${rowData.nombre}</td>
+                        <td>${rowData.descripcion}</td>
+                        <td>${rowData.cluster}</td>
+                        <td>${rowData.responsable}</td>
+                        <td>${rowData.fecha_inicio}</td>
+                        <td>${rowData.fecha_finalizacion}</td>
+                        <td>${rowData.estado}</td>
+                        <td>
+                            <a href="" class="custom-btn">Editar</a>
+                            <a href="#" class="custom-btn-eliminar" data-proyecto-id="${rowData.id}">Eliminar</a>
+                        </td>
+                    `;
+                    tableBody.appendChild(newRow);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al cargar los datos de la tabla de proyectos.');
+            });
+    }
+
+    // Llamar a la función para actualizar la tabla de proyectos al cargar la página
+    window.addEventListener('load', function() {
+        actualizarTablaProyectos();
+    });
+</script>
+
 {% endblock %}

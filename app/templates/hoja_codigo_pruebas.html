@@ -1,37 +1,41 @@
-<script>
-    // Función para abrir el modal
-    function openModal(modalId) {
-        var modal = document.getElementById(modalId);
-        var modalPreliminar = document.getElementById('myModalPreliminar');
-        if (modalPreliminar) {
-            modalPreliminar.style.display = "none"; // Cerrar el modal preliminar
-        }
-        if (modal) {
-            modal.style.display = "block"; // Abrir el modal solicitado
-        }
-    }
+@app.route('/crear_proyecto', methods=['POST'])
+@login_required
+def crear_proyecto():
+    if request.method == 'POST':
+        # Obtener los datos del formulario
+        nombre = request.form.get('nombre')
+        descripcion = request.form.get('descripcion')
+        cluster = request.form.get('cluster')
+        responsable = request.form.get('responsable')
+        fecha_inicio = request.form.get('fecha_inicio')
+        fecha_finalizacion = request.form.get('fecha_finalizacion')
+        estado = request.form.get('estado')
+        
+        # Crear un nuevo objeto Proyecto con los datos del formulario
+        nuevo_proyecto = Proyecto(nombre=nombre, descripcion=descripcion, cluster=cluster,
+                                  responsable=responsable, fecha_inicio=fecha_inicio,
+                                  fecha_finalizacion=fecha_finalizacion, estado=estado)
+        # Guardar el nuevo proyecto en la base de datos
+        db.session.add(nuevo_proyecto)
+        db.session.commit()
+        
+        flash('¡Proyecto creado exitosamente!', 'success')
+        return redirect(url_for('proyectos'))  # Redireccionar a la página de proyectos
 
-    // Función para cerrar el modal
-    function closeModal(modalId) {
-        var modal = document.getElementById(modalId);
-        if (modal) {
-            modal.style.display = "none"; // Ocultar el modal solicitado
-        }
-    }
+    # Redireccionar a la página de proyectos si se accede a la ruta por métodos diferentes a POST
+    return redirect(url_for('proyectos'))
 
-    // Función para cerrar el modal al hacer clic en el botón "Cancelar"
-    function cancelarEliminarRegistro() {
-        closeModal('confirmarEliminarRegistroModal');
-    }
+# Definición del modelo Proyecto
+class Proyecto(db.Model):
+    __tablename__ = 'proyecto'  # Agregando el nombre de la tabla explícitamente
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100), nullable=False)
+    descripcion = db.Column(db.String(255), nullable=False)
+    cluster = db.Column(db.String(50), nullable=False)
+    responsable = db.Column(db.String(100), nullable=False)
+    fecha_inicio = db.Column(db.Date, nullable=False)
+    fecha_finalizacion = db.Column(db.Date, nullable=False)
+    estado = db.Column(db.String(20), nullable=False)
+    actividades = db.relationship('Actividad', backref='proyecto', lazy=True)
 
-    // Función para cerrar el modal al hacer clic en el símbolo "x"
-    function cerrarModal(modalId) {
-        closeModal(modalId);
-    }
-
-    // Resto del código...
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Resto del código...
-    });
-</script>
+    # Aquí se podría agregar la relación con las actividades

@@ -322,8 +322,61 @@ def eliminar_registro(registro_id):
 
 @app.route('/proyectos')
 @login_required
-def busqueda():
+def proyectos():
     return render_template('modules/proyectos.html')
+
+@app.route('/crear_proyecto', methods=['POST'])
+@login_required
+def crear_proyecto():
+    if request.method == 'POST':
+        # Obtener los datos del formulario
+        nombre = request.form.get('nombre')
+        descripcion = request.form.get('descripcion')
+        cluster = request.form.get('cluster')
+        responsable = request.form.get('responsable')
+        fecha_inicio = request.form.get('fecha_inicio')
+        fecha_finalizacion = request.form.get('fecha_finalizacion')
+        estado = request.form.get('estado')
+        
+        # Crear un nuevo objeto Proyecto con los datos del formulario
+        nuevo_proyecto = Proyecto(nombre=nombre, descripcion=descripcion, cluster=cluster,
+                                  responsable=responsable, fecha_inicio=fecha_inicio,
+                                  fecha_finalizacion=fecha_finalizacion, estado=estado)
+        # Guardar el nuevo proyecto en la base de datos
+        db.session.add(nuevo_proyecto)
+        db.session.commit()
+        
+        flash('¡Proyecto creado exitosamente!', 'success')
+        return redirect(url_for('proyectos'))  # Redireccionar a la página de proyectos
+
+    # Redireccionar a la página de proyectos si se accede a la ruta por métodos diferentes a POST
+    return redirect(url_for('proyectos'))
+
+
+@app.route('/get_datos_tabla_proyectos', methods=['GET'])
+@login_required
+def get_datos_tabla_proyectos():
+    # Obtener todos los registros de la tabla 'Proyecto'
+    proyectos = Proyecto.query.all()
+    
+    # Crear una lista de diccionarios con los datos de los proyectos
+    datos_tabla_proyectos = []
+    for proyecto in proyectos:
+        datos_tabla_proyectos.append({
+            'nombre': proyecto.nombre,
+            'descripcion': proyecto.descripcion,
+            'cluster': proyecto.cluster,
+            'responsable': proyecto.responsable,
+            'fecha_inicio': proyecto.fecha_inicio,
+            'fecha_finalizacion': proyecto.fecha_finalizacion,
+            'estado': proyecto.estado
+        })
+    
+    # Devolver los datos de la tabla en formato JSON
+    return jsonify(datos_tabla_proyectos)
+
+
+
 
 @app.route('/eventos')
 @login_required
@@ -341,97 +394,15 @@ def eventos():
 
     return render_template('modules/eventos.html', bar_html=bar_html, pie_html=pie_html)
 
-@app.route('/actualizacion')
-@login_required
-def actualizacion():
-    return render_template('modules/actualizacion.html')
+
 
 @app.route('/recursos')
 @login_required
 def catalogo():
  return render_template('modules/recursos.html')
 
-@app.route('/cargar_catalogo', methods=['POST'])
-def cargar_catalogo():
-    if request.method == 'POST':
-        descripcion = request.form['descripcion']
-        archivo = request.files['documento']
-        catalogo = Catalogo(descripcion=descripcion, archivo=archivo.filename)
-        db.session.add(catalogo)
-        db.session.commit()
-        archivo.save(f"uploads/{secure_filename(archivo.filename)}")
-        return redirect(url_for('catalogo'))
-
-@app.route('/previsualizar_catalogo/<int:id>')
-def previsualizar_catalogo(id):
-    catalogo = db.session.get(Catalogo, id)
-    if catalogo:
-        return send_from_directory(app.config['UPLOAD_FOLDER'], catalogo.archivo, as_attachment=False)
-    else:
-        flash('Catalogo no encontrado', 'error')
-        return redirect(url_for('catalogo'))
-
-@app.route('/eliminar_catalogo/<int:id>')
-def eliminar_catalogo(id):
-    catalogo = db.session.get(Catalogo, id)
-    if catalogo:
-        db.session.delete(catalogo)
-        db.session.commit()
-        return redirect(url_for('catalogo'))
-    else:
-        flash('Catalogo no encontrado', 'error')
-        return redirect(url_for('catalogo'))
-
-@app.route('/documentacion')
-@login_required
-def documentacion():
-    page = request.args.get('page', 1, type=int)
-    per_page = 7
-
-    search_term = request.args.get('search', '')
-
-    if search_term:
-        documentos = Documento.query.filter(or_(Documento.descripcion.contains(search_term),
-                                                 Documento.archivo.contains(search_term))) \
-                                    .order_by(Documento.fecha_registro.desc()) \
-                                    .paginate(page=page, per_page=per_page)
-    else:
-        documentos = Documento.query.order_by(Documento.fecha_registro.desc()) \
-                                    .paginate(page=page, per_page=per_page)
-
-    return render_template('modules/documentacion.html', documentos=documentos)
 
 
-@app.route('/cargar_documento', methods=['POST'])
-def cargar_documento():
-    if request.method == 'POST':
-        descripcion = request.form['descripcion']
-        archivo = request.files['documento']
-        documento = Documento(descripcion=descripcion, archivo=archivo.filename)
-        db.session.add(documento)
-        db.session.commit()
-        archivo.save(f"uploads/{secure_filename(archivo.filename)}")
-        return redirect(url_for('documentacion'))
-
-@app.route('/previsualizar_documento/<int:id>')
-def previsualizar_documento(id):
-    documento = db.session.get(Documento, id)
-    if documento:
-        return send_from_directory(app.config['UPLOAD_FOLDER'], documento.archivo, as_attachment=False)
-    else:
-        flash('Documento no encontrado', 'error')
-        return redirect(url_for('documentacion'))
-
-@app.route('/eliminar_documento/<int:id>')
-def eliminar_documento(id):
-    documento = db.session.get(Documento, id)
-    if documento:
-        db.session.delete(documento)
-        db.session.commit()
-        return redirect(url_for('documentacion'))
-    else:
-        flash('Documento no encontrado', 'error')
-        return redirect(url_for('documentacion'))
 
 @app.route('/editar_perfil')
 @login_required
