@@ -1,0 +1,21 @@
+{% extends "layout/layout.html" %}
+{% block title %}Editar Proyecto{% endblock %}
+
+{% block content %}
+<section id="content">
+    <h1>Editar Proyecto</h1>
+    <form action="{{ url_for('editar_proyecto', proyecto_id=proyecto.id) }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" value="{{ proyecto.nombre }}" required><br><br>
+
+        <label for="descripcion">Descripción:</label>
+        <input type="text" id="descripcion" name="descripcion" value="{{ proyecto.descripcion }}" required><br><br>
+
+        <!-- Agrega los campos restantes aquí -->
+
+        <input type="submit" value="Actualizar Proyecto">
+    </form>
+</section>
+{% endblock %}

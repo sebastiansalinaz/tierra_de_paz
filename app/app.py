@@ -319,11 +319,16 @@ def eliminar_registro(registro_id):
 
 
 
-
 @app.route('/proyectos')
 @login_required
 def proyectos():
-    return render_template('modules/proyectos.html')
+    # Obtener todos los proyectos de la base de datos
+    proyectos = Proyecto.query.all()
+    
+    # Renderizar la plantilla de proyectos y pasar los proyectos como contexto
+    return render_template('modules/proyectos.html', proyectos=proyectos)
+
+
 
 @app.route('/crear_proyecto', methods=['POST'])
 @login_required
@@ -363,12 +368,13 @@ def get_datos_tabla_proyectos():
     datos_tabla_proyectos = []
     for proyecto in proyectos:
         datos_tabla_proyectos.append({
+            'id': proyecto.id,
             'nombre': proyecto.nombre,
             'descripcion': proyecto.descripcion,
             'cluster': proyecto.cluster,
             'responsable': proyecto.responsable,
-            'fecha_inicio': proyecto.fecha_inicio,
-            'fecha_finalizacion': proyecto.fecha_finalizacion,
+            'fecha_inicio': proyecto.fecha_inicio.strftime('%Y-%m-%d'),  # Formato de fecha YYYY-MM-DD
+            'fecha_finalizacion': proyecto.fecha_finalizacion.strftime('%Y-%m-%d'),  # Formato de fecha YYYY-MM-DD
             'estado': proyecto.estado
         })
     
@@ -376,6 +382,45 @@ def get_datos_tabla_proyectos():
     return jsonify(datos_tabla_proyectos)
 
 
+
+
+@app.route('/editar_proyecto/<int:proyecto_id>', methods=['GET', 'POST'])
+@login_required
+def editar_proyecto(proyecto_id):
+    proyecto = Proyecto.query.get_or_404(proyecto_id)
+
+    if request.method == 'POST':
+        proyecto.nombre = request.form['nombre']
+        proyecto.descripcion = request.form['descripcion']
+        proyecto.cluster = request.form['cluster']
+        proyecto.responsable = request.form['responsable']
+        proyecto.fecha_inicio = request.form['fecha_inicio']
+        proyecto.fecha_finalizacion = request.form['fecha_finalizacion']
+        proyecto.estado = request.form['estado']
+
+        db.session.commit()
+
+        flash('¡Proyecto actualizado exitosamente!', 'success')
+        return redirect(url_for('proyectos'))
+
+    return render_template('editar_proyecto.html', proyecto=proyecto)
+
+
+@app.route('/get_proyecto/<int:proyecto_id>', methods=['GET'])
+@login_required
+def get_proyecto(proyecto_id):
+    proyecto = Proyecto.query.get_or_404(proyecto_id)
+    proyecto_data = {
+        'id': proyecto.id,
+        'nombre': proyecto.nombre,
+        'descripcion': proyecto.descripcion,
+        'cluster': proyecto.cluster,
+        'responsable': proyecto.responsable,
+        'fecha_inicio': proyecto.fecha_inicio,
+        'fecha_finalizacion': proyecto.fecha_finalizacion,
+        'estado': proyecto.estado
+    }
+    return jsonify(proyecto_data)
 
 
 @app.route('/eventos')

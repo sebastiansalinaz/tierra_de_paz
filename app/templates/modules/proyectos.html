@@ -138,41 +138,45 @@
     }
 
     // Función para actualizar la tabla de proyectos desde el servidor
-    function actualizarTablaProyectos() {
-        fetch('/get_datos_tabla_proyectos')
-            .then(response => response.json())
-            .then(data => {
-                var tableBody = document.querySelector('.table-data table tbody');
-                tableBody.innerHTML = "";
+function actualizarTablaProyectos() {
+    fetch('/get_datos_tabla_proyectos')
+        .then(response => response.json())
+        .then(data => {
+            var tableBody = document.querySelector('.table-data table tbody');
+            tableBody.innerHTML = "";
 
-                data.forEach(rowData => {
-                    var newRow = document.createElement('tr');
-                    newRow.innerHTML = `
-                        <td>${rowData.nombre}</td>
-                        <td>${rowData.descripcion}</td>
-                        <td>${rowData.cluster}</td>
-                        <td>${rowData.responsable}</td>
-                        <td>${rowData.fecha_inicio}</td>
-                        <td>${rowData.fecha_finalizacion}</td>
-                        <td>${rowData.estado}</td>
-                        <td>
-                            <a href="" class="custom-btn">Editar</a>
-                            <a href="#" class="custom-btn-eliminar" data-proyecto-id="${rowData.id}">Eliminar</a>
-                        </td>
-                    `;
-                    tableBody.appendChild(newRow);
-                });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error al cargar los datos de la tabla de proyectos.');
+            data.forEach(rowData => {
+                var newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>${rowData.nombre}</td>
+                    <td>${rowData.descripcion}</td>
+                    <td>${rowData.cluster}</td>
+                    <td>${rowData.responsable}</td>
+                    <td>${rowData.fecha_inicio}</td>
+                    <td>${rowData.fecha_finalizacion}</td>
+                    <td>${rowData.estado}</td>
+                    <td>
+                        <a href="#" class="custom-btn" onclick="editarProyecto(${rowData.id})">Gestionar Proyecto</a>
+                        <a href="#" class="custom-btn-eliminar" data-proyecto-id="${rowData.id}">Eliminar</a>
+                    </td>
+                `;
+                tableBody.appendChild(newRow);
             });
-    }
+        })
+}
 
     // Llamar a la función para actualizar la tabla de proyectos al cargar la página
     window.addEventListener('load', function() {
         actualizarTablaProyectos();
     });
+
+
+    // Función para editar un proyecto
+function editarProyecto(proyectoId) {
+    // Redirigir al usuario a la página de edición del proyecto con el ID del proyecto
+    window.location.href = `/editar_proyecto/${proyectoId}`;
+}
+
 </script>
 
 {% endblock %}
