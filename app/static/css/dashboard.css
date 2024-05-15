@@ -1244,8 +1244,106 @@ select:focus {
 
 
 
+/* Estilos para la tarjeta de edición de proyecto */
 
+.edit-project-container {
+    width: 80%; /* Ancho ajustado */
+    max-width: 1200px; /* Ancho máximo */
+    margin: 20px auto;
+    border-radius: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    font-family: var(--poppins); /* Fuente de letra más agradable */
+}
 
+.edit-project-header {
+    position: relative;
+    background-color: #3f729b; /* Azul oscuro */
+    color: #fff;
+    padding: 20px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    font-weight: bold; /* Texto en negrita */
+    text-align: center;
+}
+
+.edit-project-header::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #3f729b; /* Misma tonalidad de azul */
+}
+
+.edit-project-body {
+    padding: 20px;
+}
+
+.edit-form-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px; /* Reducción del margen inferior */
+}
+
+.edit-form-group {
+    flex: 1;
+    margin-right: 10px; /* Reducción del margen derecho */
+}
+
+.edit-form-group:last-child {
+    margin-right: 0;
+}
+
+.edit-form-group label {
+    font-style: var(--poppins); /* Fuente de letra más agradable */
+    margin-bottom: 3px; /* Reducir el espacio entre las etiquetas */
+    font-weight: bold; /* Poner el texto en negrita */
+    display: block; /* Mostrar la etiqueta como bloque para ocupar todo el ancho */
+    font-size: 14px; /* Reducción del tamaño de fuente */
+}
+
+.edit-input,
+.edit-select {
+    width: 100%; /* Ancho completo */
+    padding: 8px; /* Reducción del espaciado vertical */
+    border: 1px solid #ced4da; /* Borde sólido */
+    border-radius: 5px; /* Borde redondeado */
+    font-size: 14px; /* Reducción del tamaño de fuente */
+    color: #333; /* Color de texto más oscuro */
+    background-color: #f8f9fa; /* Fondo gris claro */
+    transition: border-color 0.3s ease; /* Transición suave para el color del borde */
+    font-family: var(--poppins); /* Utiliza la fuente de letra Poppins */
+    margin-bottom: 5px; /* Reducción del espacio entre los inputs */
+    outline: none; /* Eliminar el borde de enfoque predeterminado */
+}
+
+.edit-input:focus,
+.edit-select:focus {
+    border-color: #1a1a1b; /* Cambiar el color del borde al tener el foco */
+}
+
+.edit-submit-btn {
+    width: 100%;
+    padding: 10px 0; /* Reducción del padding */
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 14px; /* Reducción del tamaño de fuente */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-family: var(--poppins);
+    margin-top: 10px; /* Espacio entre el último campo y el botón */
+}
+
+.edit-submit-btn:hover {
+    background-color: #0056b3;
+}
 
 
 

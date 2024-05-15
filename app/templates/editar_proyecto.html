@@ -3,55 +3,69 @@
 
 {% block content %}
 <section id="content">
-    <h1>Editar Proyecto</h1>
-    <form action="{{ url_for('editar_proyecto', proyecto_id=proyecto.id) }}" method="post">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-        <div class="form-group">
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" value="{{ proyecto.nombre }}" class="form-control" required>
+    <div class="edit-project-container">
+        <div class="edit-project-header">
+            <h1>Editar Proyecto</h1>
         </div>
+        <div class="edit-project-body">
+            <form action="{{ url_for('editar_proyecto', proyecto_id=proyecto.id) }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-        <div class="form-group">
-            <label for="descripcion">Descripción:</label>
-            <input type="text" id="descripcion" name="descripcion" value="{{ proyecto.descripcion }}" class="form-control" required>
+                <div class="edit-form-row">
+                    <div class="edit-form-group">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" id="nombre" name="nombre" value="{{ proyecto.nombre }}" class="edit-input" required>
+                    </div>
+
+                    <div class="edit-form-group">
+                        <label for="descripcion">Descripción:</label>
+                        <input type="text" id="descripcion" name="descripcion" value="{{ proyecto.descripcion }}" class="edit-input" required>
+                    </div>
+
+                    <div class="edit-form-group">
+                        <label for="cluster">Cluster:</label>
+                        <select id="cluster" name="cluster" class="edit-select" required>
+                            <option value="Cluster de Agua, Saneamiento e Higiene (WASH)">Cluster de Agua, Saneamiento e Higiene (WASH)</option>
+                            <option value="Cluster de Alimentación y Nutrición">Cluster de Alimentación y Nutrición</option>
+                            <option value="Cluster de Educación">Cluster de Educación</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="edit-form-row">
+                    <div class="edit-form-group">
+                        <label for="responsable">Responsable:</label>
+                        <input type="text" id="responsable" name="responsable" value="{{ proyecto.responsable }}" class="edit-input" required>
+                    </div>
+
+                    <div class="edit-form-group">
+                        <label for="fecha_inicio">Fecha de Inicio:</label>
+                        <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{ proyecto.fecha_inicio }}" class="edit-input" required>
+                    </div>
+
+                    <div class="edit-form-group">
+                        <label for="fecha_finalizacion">Fecha de Finalización:</label>
+                        <input type="date" id="fecha_finalizacion" name="fecha_finalizacion" value="{{ proyecto.fecha_finalizacion }}" class="edit-input" required>
+                    </div>
+                </div>
+
+                <div class="edit-form-row">
+                    <div class="edit-form-group">
+                        <label for="estado">Estado:</label>
+                        <select id="estado" name="estado" class="edit-select" required>
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="edit-form-row">
+                    <div class="edit-form-group">
+                        <button type="submit" class="edit-submit-btn">Actualizar Proyecto</button>
+                    </div>
+                </div>
+            </form>
         </div>
-
-        <!-- Agrega los campos restantes aquí -->
-
-        <button type="submit" class="btn btn-primary">Actualizar Proyecto</button>
-    </form>
+    </div>
 </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<style>
-   
-</style>
-
-
-
-
 {% endblock %}
