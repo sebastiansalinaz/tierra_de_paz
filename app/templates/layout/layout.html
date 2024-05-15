@@ -7,6 +7,8 @@
     <title>{% block title %}Título por defecto{% endblock %}</title>
     <!-- Agrega tus estilos CSS y scripts aquí -->
     <link rel="stylesheet" href="static/css/dashboard.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
 </head>
 <body>
@@ -19,7 +21,7 @@
     
 
     <!-- Scripts JS -->
-    <script src="static/js/dash.js"></script>
+    <script src="{{ url_for('static', filename='js/dash.js') }}"></script>
 
 </body>
 </html>

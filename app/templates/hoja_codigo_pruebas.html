@@ -1,41 +1,36 @@
-@app.route('/crear_proyecto', methods=['POST'])
-@login_required
-def crear_proyecto():
-    if request.method == 'POST':
-        # Obtener los datos del formulario
-        nombre = request.form.get('nombre')
-        descripcion = request.form.get('descripcion')
-        cluster = request.form.get('cluster')
-        responsable = request.form.get('responsable')
-        fecha_inicio = request.form.get('fecha_inicio')
-        fecha_finalizacion = request.form.get('fecha_finalizacion')
-        estado = request.form.get('estado')
-        
-        # Crear un nuevo objeto Proyecto con los datos del formulario
-        nuevo_proyecto = Proyecto(nombre=nombre, descripcion=descripcion, cluster=cluster,
-                                  responsable=responsable, fecha_inicio=fecha_inicio,
-                                  fecha_finalizacion=fecha_finalizacion, estado=estado)
-        # Guardar el nuevo proyecto en la base de datos
-        db.session.add(nuevo_proyecto)
-        db.session.commit()
-        
-        flash('¡Proyecto creado exitosamente!', 'success')
-        return redirect(url_for('proyectos'))  # Redireccionar a la página de proyectos
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="static/img/logo.ico" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='img/logo.ico') }}" type="image/x-icon">
 
-    # Redireccionar a la página de proyectos si se accede a la ruta por métodos diferentes a POST
-    return redirect(url_for('proyectos'))
+    <title>{% block title %}Título por defecto{% endblock %}</title>
+    <!-- Agrega tus estilos CSS y scripts aquí -->
+    <link rel="stylesheet" href="static/css/dashboard.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
-# Definición del modelo Proyecto
-class Proyecto(db.Model):
-    __tablename__ = 'proyecto'  # Agregando el nombre de la tabla explícitamente
-    id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    descripcion = db.Column(db.String(255), nullable=False)
-    cluster = db.Column(db.String(50), nullable=False)
-    responsable = db.Column(db.String(100), nullable=False)
-    fecha_inicio = db.Column(db.Date, nullable=False)
-    fecha_finalizacion = db.Column(db.Date, nullable=False)
-    estado = db.Column(db.String(20), nullable=False)
-    actividades = db.relationship('Actividad', backref='proyecto', lazy=True)
 
-    # Aquí se podría agregar la relación con las actividades
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+</head>
+<body>
+
+    <!-- Navbar y Sidebar -->
+    {% include 'layout/navbar_sidebar.html' %}
+
+    {% block content %}
+    {% endblock %}
+    
+
+    <!-- Scripts JS -->
+    <script src="static/js/dash.js"></script>
+
+</body>
+</html>
+
+
+
+
+ 

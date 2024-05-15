@@ -13,7 +13,7 @@
     <!-- BARRA LATERAL -->
     <section id="sidebar">
         <a href="{{ url_for('dashboard') }}" class="brand">
-            <img src="static/img/logo.png" alt="Logo">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
             <span class="text">VISOR HUMANITARIO</span>
         </a>
 
