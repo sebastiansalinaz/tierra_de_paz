@@ -388,7 +388,8 @@ def get_datos_tabla_proyectos():
 @login_required
 def editar_proyecto(proyecto_id):
     proyecto = Proyecto.query.get_or_404(proyecto_id)
-
+    actividades = Actividad.query.all()  # Obtener todas las actividades
+    
     if request.method == 'POST':
         proyecto.nombre = request.form['nombre']
         proyecto.descripcion = request.form['descripcion']
@@ -403,7 +404,8 @@ def editar_proyecto(proyecto_id):
         flash('¡Proyecto actualizado exitosamente!', 'success')
         return redirect(url_for('proyectos'))
 
-    return render_template('editar_proyecto.html', proyecto=proyecto)
+    return render_template('editar_proyecto.html', proyecto=proyecto, actividades=actividades)  # Pasar las actividades como contexto
+
 
 
 @app.route('/get_proyecto/<int:proyecto_id>', methods=['GET'])
@@ -421,6 +423,37 @@ def get_proyecto(proyecto_id):
         'estado': proyecto.estado
     }
     return jsonify(proyecto_data)
+
+
+@app.route('/agregar_beneficiarios/<int:proyecto_id>', methods=['POST'])
+@login_required
+def agregar_beneficiarios(proyecto_id):
+    if request.method == 'POST':
+        actividad_id = request.form['actividad']
+        proyecto = Proyecto.query.get_or_404(proyecto_id)
+        actividad = Actividad.query.get_or_404(actividad_id)
+        
+        # Recuperar todas las actividades creadas anteriormente
+        actividades = Actividad.query.all()
+        
+        beneficiarios_seleccionados = request.form.getlist('beneficiarios')
+
+        # Itera sobre los IDs de los beneficiarios seleccionados y crea registros asociados con la actividad
+        for beneficiario_id in beneficiarios_seleccionados:
+            # Comprueba si ya existe un registro para este beneficiario y esta actividad
+            if not Registro.query.filter_by(beneficiario_id=beneficiario_id, actividad_id=actividad.id).first():
+                # Crea un nuevo registro para el beneficiario asociado con la actividad
+                nuevo_registro = Registro(beneficiario_id=beneficiario_id, actividad_id=actividad.id)
+                db.session.add(nuevo_registro)
+
+        # Guarda los cambios en la base de datos
+        db.session.commit()
+
+        flash('Beneficiarios agregados exitosamente al proyecto.', 'success')
+        return redirect(url_for('proyectos'))
+
+
+
 
 
 @app.route('/eventos')

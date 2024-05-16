@@ -1,36 +1,28 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="static/img/logo.ico" type="image/x-icon">
-    <link rel="icon" href="{{ url_for('static', filename='img/logo.ico') }}" type="image/x-icon">
-
-    <title>{% block title %}Título por defecto{% endblock %}</title>
-    <!-- Agrega tus estilos CSS y scripts aquí -->
-    <link rel="stylesheet" href="static/css/dashboard.css">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dashboard.css') }}">
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
-</head>
-<body>
-
-    <!-- Navbar y Sidebar -->
-    {% include 'layout/navbar_sidebar.html' %}
-
-    {% block content %}
-    {% endblock %}
-    
-
-    <!-- Scripts JS -->
-    <script src="static/js/dash.js"></script>
-
-</body>
-</html>
-
-
-
-
- 
+<!-- Modal -->
+<div class="modal fade" id="modalSeleccionActividad" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Seleccione una o más actividades</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="{{ url_for('agregar_beneficiarios', proyecto_id=proyecto.id) }}" method="post">
+            <label for="actividad">Seleccione una o más actividades:</label>
+            <select id="actividad" name="actividad" multiple>
+                {% for actividad in actividades %}
+                    <option value="{{ actividad.id }}">{{ actividad.nombre }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary">Agregar Beneficiarios</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  

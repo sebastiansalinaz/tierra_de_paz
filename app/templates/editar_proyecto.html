@@ -1,11 +1,11 @@
 {% extends "layout/layout.html" %}
-{% block title %}Editar Proyecto{% endblock %}
+{% block title %}{{ proyecto.nombre }}{% endblock %}
 
 {% block content %}
 <section id="content">
     <div class="edit-project-container">
         <div class="edit-project-header">
-            <h1>Editar Proyecto</h1>
+            <h1>{{ proyecto.nombre }}</h1>
         </div>
         <div class="edit-project-body">
             <form action="{{ url_for('editar_proyecto', proyecto_id=proyecto.id) }}" method="post">
@@ -66,6 +66,58 @@
                 </div>
             </form>
         </div>
+        <div>
+            <button type="button" class="boton-act boton-act-secondary" data-toggle="modal" data-target="#modalSeleccionActividad">
+                Seleccionar Actividad
+            </button>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="modalSeleccionActividad" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Seleccione una o más actividades</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="{{ url_for('agregar_beneficiarios', proyecto_id=proyecto.id) }}" method="post">
+            <label>Seleccione una o más actividades:</label>
+            <div class="form-check">
+              {% for actividad in actividades %}
+                <input class="form-check-input" type="checkbox" id="actividad{{ actividad.id }}" name="actividad[]" value="{{ actividad.id }}">
+                <label class="form-check-label" for="actividad{{ actividad.id }}">
+                  {{ actividad.nombre }}
+                </label>
+                <br>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="boton-act boton-act-secondary" style="" data-dismiss="modal">Cerrar</button>
+            <button type="submit" class="boton-act boton-act-primary" >Agregar Beneficiarios</button>
+        </div>
+        
+        </form>
+      </div>
     </div>
+  </div>
+ </div>
+ </div>
 </section>
+
+<script>
+    $(document).ready(function(){
+        $('#modalSeleccionActividad').on('shown.bs.modal', function () {
+            $('#actividad').focus();
+        });
+    });
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 {% endblock %}
