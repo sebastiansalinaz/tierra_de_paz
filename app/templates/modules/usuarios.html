@@ -20,21 +20,17 @@
                 </ul>
             </div>
 
- 
-            
             <button id="btn-open-modal1" class="btn-evento" onclick="openModal('myModalPreliminar')">
                 <i class='bx bx-user-plus'></i>
                 <span class="text">Registrar Usuario</span>
             </button>
-            
         </div>
 
-        
         <ul class="box-info">
             <li>
                 <i class='bx bxs-user-check'></i>
                 <span class="text">
-                    <h3>1,020 
+                    <h3>1,020 </h3>
                     <h3>USUARIOS</h3>
                     <p>Registrados</p>
                 </span>
@@ -57,20 +53,22 @@
             </li>
         </ul>
 
-        <br> 
-
+        <br>
 
         {% for actividad in actividades %}
         <button class="btn-actividad" id="btn-actividad-{{ actividad.id }}" data-target="myModalActivity{{ actividad.id }}" onclick="openModal('myModalActivity{{ actividad.id }}')">
             <span class="text">{{ actividad.nombre }}</span>
         </button>
-    
+
         <!-- Modal para cada actividad -->
         <div id="myModalActivity{{ actividad.id }}" class="modaly" style="display: none;">
             <!-- Contenido del modal -->
             <div class="modal-contentenedor">
                 <!-- Título de la actividad -->
-                <h2>{{ actividad.nombre }}</h2>
+                <h2>ACTIVIDAD PRINCIPAL: {{ actividad.nombre }}</h2>
+                {% if actividad.subactividad_nombres %}
+                <p>ACTIVIDADES RELACIONADAS: {{ actividad.subactividad_nombres | join(', ') }}</p>
+                {% endif %}
                 <!-- Información adicional de la actividad -->
                 <div class="modal-info">
                     <p><strong>Persona Encargada:</strong> {{ actividad.persona_encargada }}</p>
@@ -78,7 +76,7 @@
                     <button onclick="exportarExcel('{{ actividad.id }}')" class="custom-btn">Exportar a Excel</button>
                     <button class="modal-close-btn" onclick="closeModal('myModalActivity{{ actividad.id }}')">Cerrar</button>
                 </div>
-        
+
                 <br>
                 <!-- Contenedor de la tabla para mostrar los registros asociados a la actividad -->
                 <div id="contenedor-tabla-{{ actividad.id }}">
@@ -138,12 +136,7 @@
                 </div> <!-- Fin del contenedor de la tabla -->
             </div>
         </div>
-    {% endfor %}
-    
-
-
-        
-        
+        {% endfor %}
 
         <div class="table-data">
             <div class="order">
@@ -153,7 +146,7 @@
                     <input type="text" id="search-input" placeholder="Buscar por nombre o documento"> <!-- Input de búsqueda -->
                     <i class='bx bx-filter'></i>
                 </div>
-                
+
                 <table>
                     <thead>
                         <tr>
@@ -200,8 +193,8 @@
                             <td>{{ registro.comunidad }}</td>
                             <td>{{ registro.actividad.nombre }}</td>
                             <td>
-                                <a href="" class="custom-btn">Editar</a>
-                                <a href="#" class="custom-btn-eliminar" data-registro-id="{{ registro.id }}">Eliminar</a>
+                                <a href="#" class="custom-btn">Editar</a>
+                                <a href="#" class="custom-btn-eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -209,9 +202,7 @@
                 </table>
             </div>
         </div>
-             
     </main>
-    <!-- CONTENIDO PRINCIPAL -->
 </section>
 
 
@@ -277,11 +268,18 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <!-- Aquí van los campos para ingresar los detalles de la actividad -->
             <label for="nombre_actividad"><b>Nombre de la Actividad:</b></label>
-            <input type="text" id="nombre_actividad" name="nombre_actividad" class="form-control"><br><br>
+            <input type="text" id="nombre_actividad" name="nombre_actividad" class="form-control" required><br><br>
             <label for="persona_encargada"><b>Persona Encargada:</b></label>
             <input type="text" id="persona_encargada" name="persona_encargada" class="form-control"><br><br>
             <label for="fecha_realizacion"><b>Fecha de Realización:</b></label>
-            <input type="date" id="fecha_realizacion" name="fecha_realizacion" class="form-control"><br><br>
+            <input type="date" id="fecha_realizacion" name="fecha_realizacion" class="form-control" required><br><br>
+            <label for="parent_id"><b>Actividad Padre (opcional):</b></label>
+            <select id="parent_id" name="parent_id" class="form-control">
+                <option value="">-- Ninguna --</option>
+                {% for actividad in actividades %}
+                    <option value="{{ actividad.id }}">{{ actividad.nombre }}</option>
+                {% endfor %}
+            </select><br><br>
             <button type="submit" class="btn btn-primary">Guardar</button>
         </form>
     </div>

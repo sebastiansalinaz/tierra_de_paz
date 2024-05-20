@@ -39,17 +39,6 @@ class Usuario(db.Model, UserMixin):
     contraseña = db.Column(db.String(400), nullable=False)
     foto_perfil = db.Column(db.String(200))  
 
-class Documento(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    descripcion = db.Column(db.String(100))
-    fecha_registro = db.Column(db.DateTime, default=lambda: datetime.now(timezone('America/Bogota')))
-    archivo = db.Column(db.String(100))
-
-class Catalogo(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    descripcion = db.Column(db.String(100))
-    fecha_registro = db.Column(db.DateTime, default=lambda: datetime.now(timezone('America/Bogota')))
-    archivo = db.Column(db.String(100))
 
 class Actividad(db.Model):
     __tablename__ = 'actividad'
@@ -57,8 +46,20 @@ class Actividad(db.Model):
     nombre = db.Column(db.String(100), nullable=False)
     persona_encargada = db.Column(db.String(100), nullable=True)
     fecha_realizacion = db.Column(db.Date, nullable=False)
-    proyecto_id = db.Column(db.Integer, db.ForeignKey('proyecto.id'), nullable=True)  # Ahora es opcional
+    proyecto_id = db.Column(db.Integer, db.ForeignKey('proyecto.id'), nullable=True)
     registros = db.relationship('Registro', backref='actividad', lazy=True)
+    subactividades = db.relationship('Actividad', backref=db.backref('parent', remote_side=[id]), lazy=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('actividad.id'), nullable=True)
+
+    def get_all_registros(self):
+        registros = self.registros.copy()
+        for subactividad in self.subactividades:
+            registros.extend(subactividad.get_all_registros())
+        return registros
+
+    def get_subactividad_nombres(self):
+        return [sub.nombre for sub in self.subactividades]
+
 
 
 class Registro(db.Model):
@@ -167,14 +168,19 @@ def dashboard():
 @app.route('/usuarios')
 @login_required
 def usuarios():
-    # Obtener todas las actividades de la base de datos
     actividades = Actividad.query.all()
-    
-    # Obtener todos los registros de usuarios de la base de datos
     registros = Registro.query.all()
 
-    # Renderizar la plantilla de eventos y pasar las actividades y registros como contexto
-    return render_template('modules/usuarios.html', actividades=actividades, registros=registros)
+    actividades_with_subregistros = []
+    for actividad in actividades:
+        actividad_dict = actividad.__dict__
+        actividad_dict['registros'] = actividad.get_all_registros()
+        actividad_dict['subactividad_nombres'] = actividad.get_subactividad_nombres()
+        actividades_with_subregistros.append(actividad_dict)
+
+    return render_template('modules/usuarios.html', actividades=actividades_with_subregistros, registros=registros)
+
+
 
 
 
@@ -192,12 +198,14 @@ def guardar_actividad():
         nombre_actividad = request.form['nombre_actividad']
         persona_encargada = request.form['persona_encargada']
         fecha_realizacion = request.form['fecha_realizacion']
+        parent_id = request.form.get('parent_id')
 
         # Crear una nueva instancia de la clase Actividad
         nueva_actividad = Actividad(
             nombre=nombre_actividad,
             persona_encargada=persona_encargada,
-            fecha_realizacion=fecha_realizacion
+            fecha_realizacion=fecha_realizacion,
+            parent_id=parent_id if parent_id else None
         )
 
         # Agregar la nueva actividad a la base de datos
@@ -211,6 +219,7 @@ def guardar_actividad():
     # Si llega aquí, podría ser una buena idea mostrar un mensaje de error o redirigir a otra página
     flash('Error al procesar la solicitud', 'error')
     return redirect(url_for('usuarios'))
+
 
 
 @app.route('/guardar_registro', methods=['POST'])
@@ -451,6 +460,26 @@ def agregar_beneficiarios(proyecto_id):
 
         flash('Beneficiarios agregados exitosamente al proyecto.', 'success')
         return redirect(url_for('proyectos'))
+
+
+
+@app.route('/get_estadisticas_proyectos')
+def get_estadisticas_proyectos():
+    # Lógica para obtener las estadísticas de proyectos desde la base de datos
+    proyectos_registrados = Proyecto.query.count()
+    proyectos_activos = Proyecto.query.filter_by(estado='Activo').count()
+    proyectos_terminados = Proyecto.query.filter_by(estado='Inactivo').count()
+
+    # Crear un diccionario con las estadísticas
+    estadisticas = {
+        'registrados': proyectos_registrados,
+        'activos': proyectos_activos,
+        'terminados': proyectos_terminados
+    }
+
+    # Devolver los datos en formato JSON
+    return jsonify(estadisticas)
+
 
 
 

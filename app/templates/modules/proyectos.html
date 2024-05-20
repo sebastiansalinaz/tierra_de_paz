@@ -28,7 +28,7 @@
             <li>
                 <i class='bx bxs-book-add'></i>
                 <span class="text">
-                    <h3>17</h3>
+                    <h3 id="proyectos-registrados">0</h3>
                     <h3>PROYECTOS</h3>
                     <p>Registrados</p>
                 </span>
@@ -36,7 +36,7 @@
             <li>
                 <i class='bx bxs-select-multiple'></i>
                 <span class="text">
-                    <h3>14</h3>
+                    <h3 id="proyectos-activos">0</h3>
                     <h3>PROYECTOS</h3>
                     <p>Activos</p>
                 </span>
@@ -44,12 +44,12 @@
             <li>
                 <i class='bx bxs-box'></i>
                 <span class="text">
-                    <h3>3 </h3>
+                    <h3 id="proyectos-terminados">0</h3>
                     <h3>PROYECTOS</h3>
                     <p>Terminados</p>
                 </span>
             </li>
-        </ul>
+          </ul>
 
         <!-- Modal -->
         <div id="myModalPreliminar" class="modal">
@@ -59,36 +59,36 @@
                 <form action="{{ url_for('crear_proyecto') }}" method="post">
                       <!-- Agregamos el campo CSRF -->
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
+            <br><br>
                     <label for="nombre">Nombre:</label>
                     <input type="text" id="nombre" name="nombre" required><br><br>
-                    
+                    <br>
                     <label for="descripcion">Descripción:</label>
                     <input type="text" id="descripcion" name="descripcion" required><br><br>
-
+                    <br>
                     <label for="cluster">Cluster:</label>
                     <select id="cluster" name="cluster" required>
                         <option value="Cluster de Agua, Saneamiento e Higiene (WASH)">Cluster de Agua, Saneamiento e Higiene (WASH)</option>
                         <option value="Cluster de Alimentación y Nutrición">Cluster de Alimentación y Nutrición</option>
                         <option value="Cluster de Educación">Cluster de Educación</option>
                     </select><br><br>
-
+                    <br>
                     <label for="responsable">Responsable:</label>
                     <input type="text" id="responsable" name="responsable" required><br><br>
-
+                    <br>
                     <label for="fecha_inicio">Fecha de Inicio:</label>
                     <input type="date" id="fecha_inicio" name="fecha_inicio" required><br><br>
-
+                    <br>
                     <label for="fecha_finalizacion">Fecha de Finalización:</label>
                     <input type="date" id="fecha_finalizacion" name="fecha_finalizacion" required><br><br>
-
+                    <br>
                     <label for="estado">Estado:</label>
                     <select id="estado" name="estado" required>
                         <option value="Activo">Activo</option>
                         <option value="Inactivo">Inactivo</option>
                     </select><br><br>
 
-                    <input type="submit" value="Crear Proyecto">
+                    <input type="submit" class="btn btn-primary" value="Crear Proyecto">
                 </form>
             </div>
         </div>
@@ -179,6 +179,22 @@ function editarProyecto(proyectoId) {
     window.location.href = `/editar_proyecto/${proyectoId}`;
 }
 
+
+ // Función para actualizar las estadísticas de proyectos
+ function actualizarEstadisticasProyectos() {
+    fetch('/get_estadisticas_proyectos')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('proyectos-registrados').textContent = data.registrados;
+            document.getElementById('proyectos-activos').textContent = data.activos;
+            document.getElementById('proyectos-terminados').textContent = data.terminados;
+        });
+}
+
+// Llamar a la función para actualizar las estadísticas de proyectos al cargar la página
+window.addEventListener('load', function() {
+    actualizarEstadisticasProyectos();
+});
 </script>
 
 {% endblock %}

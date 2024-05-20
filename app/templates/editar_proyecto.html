@@ -85,6 +85,7 @@
         </div>
         <div class="modal-body">
           <form action="{{ url_for('agregar_beneficiarios', proyecto_id=proyecto.id) }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <label>Seleccione una o más actividades:</label>
             <div class="form-check">
               {% for actividad in actividades %}

@@ -1,28 +1,207 @@
-<!-- Modal -->
-<div class="modal fade" id="modalSeleccionActividad" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Seleccione una o más actividades</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+{% extends "layout/layout.html" %}
+
+{% block title %}Eventos{% endblock %}
+
+{% block content %}
+<section id="content">
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        <div class="head-title">
+            <div class="left">
+                <h1>REGISTRO DE USUARIOS</h1>
+                <ul class="breadcrumb">
+                    <li>
+                        <a href="#">Registro de Usuarios</a>
+                    </li>
+                    <li><i class='bx bx-chevron-right'></i></li>
+                    <li>
+                        <a class="active" href="/dashboard">Inicio</a>
+                    </li>
+                </ul>
+            </div>
+
+            <button id="btn-open-modal1" class="btn-evento" onclick="openModal('myModalPreliminar')">
+                <i class='bx bx-user-plus'></i>
+                <span class="text">Registrar Usuario</span>
+            </button>
         </div>
-        <div class="modal-body">
-          <form action="{{ url_for('agregar_beneficiarios', proyecto_id=proyecto.id) }}" method="post">
-            <label for="actividad">Seleccione una o más actividades:</label>
-            <select id="actividad" name="actividad" multiple>
-                {% for actividad in actividades %}
-                    <option value="{{ actividad.id }}">{{ actividad.nombre }}</option>
-                {% endfor %}
-            </select>
-            <button type="submit" class="btn btn-primary">Agregar Beneficiarios</button>
-          </form>
+
+        <ul class="box-info">
+            <li>
+                <i class='bx bxs-user-check'></i>
+                <span class="text">
+                    <h3>1,020 </h3>
+                    <h3>USUARIOS</h3>
+                    <p>Registrados</p>
+                </span>
+            </li>
+            <li>
+                <i class='bx bxs-user-voice'></i>
+                <span class="text">
+                    <h3>634</h3>
+                    <h3>USUARIOS</h3>
+                    <p>Beneficiados</p>
+                </span>
+            </li>
+            <li>
+                <i class='bx bxs-user-x'></i>
+                <span class="text">
+                    <h3>76 </h3>
+                    <h3>USUARIOS</h3>
+                    <p>Inhabilitados</p>
+                </span>
+            </li>
+        </ul>
+
+        <br>
+
+        {% for actividad in actividades %}
+        <button class="btn-actividad" id="btn-actividad-{{ actividad.id }}" data-target="myModalActivity{{ actividad.id }}" onclick="openModal('myModalActivity{{ actividad.id }}')">
+            <span class="text">{{ actividad.nombre }}</span>
+        </button>
+
+        <!-- Modal para cada actividad -->
+        <div id="myModalActivity{{ actividad.id }}" class="modaly" style="display: none;">
+            <!-- Contenido del modal -->
+            <div class="modal-contentenedor">
+                <!-- Título de la actividad -->
+                <h2>ACTIVIDAD PRINCIPAL: {{ actividad.nombre }}</h2>
+                {% if actividad.subactividad_nombres %}
+                <p>ACTIVIDADES RELACIONADAS: {{ actividad.subactividad_nombres | join(', ') }}</p>
+                {% endif %}
+                <!-- Información adicional de la actividad -->
+                <div class="modal-info">
+                    <p><strong>Persona Encargada:</strong> {{ actividad.persona_encargada }}</p>
+                    <p><strong>Fecha de Creación:</strong> {{ actividad.fecha_realizacion }}</p>
+                    <button onclick="exportarExcel('{{ actividad.id }}')" class="custom-btn">Exportar a Excel</button>
+                    <button class="modal-close-btn" onclick="closeModal('myModalActivity{{ actividad.id }}')">Cerrar</button>
+                </div>
+
+                <br>
+                <!-- Contenedor de la tabla para mostrar los registros asociados a la actividad -->
+                <div id="contenedor-tabla-{{ actividad.id }}">
+                    <table class="actividad-registros">
+                        <thead>
+                            <tr>
+                                <th>Nombres</th>
+                                <th>Apellidos</th>
+                                <th>Tipo de Documento</th>
+                                <th>Número de Documento</th>
+                                <th>País</th>
+                                <th>Departamento</th>
+                                <th>Municipio</th>
+                                <th>Género</th>
+                                <th>Edad</th>
+                                <th>Grupo de Edad</th>
+                                <th>Grupo Étnico</th>
+                                <th>Discapacidad</th>
+                                <th>Comunidad</th>
+                                <th>Actividad</th>
+                                <th>Opciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for registro in actividad.registros %}
+                            <tr>
+                                <td>{{ registro.nombres }}</td>
+                                <td>{{ registro.apellidos }}</td>
+                                <td>{{ registro.tipo_documento }}</td>
+                                <td>{{ registro.numero_documento }}</td>
+                                <td>{{ registro.pais }}</td>
+                                <td>{{ registro.departamento }}</td>
+                                <td>{{ registro.municipio }}</td>
+                                <td>{{ registro.genero }}</td>
+                                <td>{{ registro.edad }}</td>
+                                <td>
+                                    {% if registro.grupo_edad == "menor_18" %}
+                                        Menor de 18
+                                    {% elif registro.grupo_edad == "18_49" %}
+                                        18 a 49
+                                    {% elif registro.grupo_edad == "50_mas" %}
+                                        50 o mas
+                                    {% endif %}
+                                </td>
+                                <td>{{ registro.grupo_etnico }}</td>
+                                <td>{{ registro.discapacidad }}</td>
+                                <td>{{ registro.comunidad }}</td>
+                                <td>{{ registro.actividad.nombre }}</td>
+                                <td>
+                                    <a href="#" class="custom-btn">Editar</a>
+                                    <a href="#" class="custom-btn-eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div> <!-- Fin del contenedor de la tabla -->
+            </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        {% endfor %}
+
+        <div class="table-data">
+            <div class="order">
+                <div class="head">
+                    <h3>Registros Recientes</h3>
+                    <i class='bx bx-search' id="search-icon"></i> <!-- Icono de búsqueda -->
+                    <input type="text" id="search-input" placeholder="Buscar por nombre o documento"> <!-- Input de búsqueda -->
+                    <i class='bx bx-filter'></i>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombres</th>
+                            <th>Apellidos</th>
+                            <th>Tipo de Documento</th>
+                            <th>Número de Documento</th>
+                            <th>País</th>
+                            <th>Departamento</th>
+                            <th>Municipio</th>
+                            <th>Género</th>
+                            <th>Edad</th>
+                            <th>Grupo de Edad</th>
+                            <th>Grupo Étnico</th>
+                            <th>Discapacidad</th>
+                            <th>Comunidad</th>
+                            <th>Actividad</th>
+                            <th>Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for registro in registros %}
+                        <tr>
+                            <td>{{ registro.nombres }}</td>
+                            <td>{{ registro.apellidos }}</td>
+                            <td>{{ registro.tipo_documento }}</td>
+                            <td>{{ registro.numero_documento }}</td>
+                            <td>{{ registro.pais }}</td>
+                            <td>{{ registro.departamento }}</td>
+                            <td>{{ registro.municipio }}</td>
+                            <td>{{ registro.genero }}</td>
+                            <td>{{ registro.edad }}</td>
+                            <td>
+                                {% if registro.grupo_edad == "menor_18" %}
+                                    Menor de 18
+                                {% elif registro.grupo_edad == "18_49" %}
+                                    18 a 49
+                                {% elif registro.grupo_edad == "50_mas" %}
+                                    50 o mas
+                                {% endif %}
+                            </td>
+                            <td>{{ registro.grupo_etnico }}</td>
+                            <td>{{ registro.discapacidad }}</td>
+                            <td>{{ registro.comunidad }}</td>
+                            <td>{{ registro.actividad.nombre }}</td>
+                            <td>
+                                <a href="#" class="custom-btn">Editar</a>
+                                <a href="#" class="custom-btn-eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
-  
+    </main>
+</section>
+{% endblock %}
