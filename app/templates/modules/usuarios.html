@@ -66,8 +66,17 @@
             <div class="modal-contentenedor">
                 <!-- Título de la actividad -->
                 <h2>ACTIVIDAD PRINCIPAL: {{ actividad.nombre }}</h2>
+                {% if actividad.actividad_padre %}
+                <p>ACTIVIDAD PADRE: 
+                    <button class="btn-actividad-padre" onclick="openModal('myModalActivity{{ actividad.actividad_padre.id }}')">{{ actividad.actividad_padre.nombre }}</button>
+                </p>
+                {% endif %}
                 {% if actividad.subactividad_nombres %}
-                <p>ACTIVIDADES RELACIONADAS: {{ actividad.subactividad_nombres | join(', ') }}</p>
+                <p>ACTIVIDADES RELACIONADAS: 
+                    {% for subactividad_nombre in actividad.subactividad_nombres %}
+                    <button class="btn-subactividad" onclick="openSubactivityModal('{{ subactividad_nombre }}')">{{ subactividad_nombre }}</button>
+                    {% endfor %}
+                </p>
                 {% endif %}
                 <!-- Información adicional de la actividad -->
                 <div class="modal-info">
@@ -440,16 +449,21 @@
 
 <script>
     // Función para abrir el modal
-    function openModal(modalId) {
-        var modal = document.getElementById(modalId);
-        var modalPreliminar = document.getElementById('myModalPreliminar');
-        if (modalPreliminar) {
-            modalPreliminar.style.display = "none"; // Cerrar el modal preliminar
-        }
-        if (modal) {
-            modal.style.display = "block"; // Abrir el modal solicitado
-        }
+function openModal(modalId) {
+    var modal = document.getElementById(modalId);
+    var allModals = document.querySelectorAll('.modaly');
+    
+    // Cerrar todos los modales activos
+    allModals.forEach(function(modal) {
+        modal.style.display = "none";
+    });
+
+    // Abrir el modal solicitado
+    if (modal) {
+        modal.style.display = "block";
     }
+}
+
 
     // Función para cerrar el modal
     function closeModal(modalId) {
@@ -778,8 +792,23 @@
         });
 
     
-    
-    
+        // Función para abrir un modal de subactividad y cerrar el modal actual
+    function openSubactivityModal(subactividadNombre) {
+        // Obtener el modal actual (el que está visible)
+        var currentModal = document.querySelector('.modaly[style*="display: block"]');
+        // Cerrar el modal actual
+        if (currentModal) {
+            currentModal.style.display = 'none';
+        }
+
+        // Buscar y abrir el modal correspondiente a la subactividad
+        var allModals = document.querySelectorAll('.modaly');
+        allModals.forEach(modal => {
+            if (modal.querySelector('h2').textContent.includes(subactividadNombre)) {
+                openModal(modal.id);
+            }
+        });
+    }
     
 </script>
 

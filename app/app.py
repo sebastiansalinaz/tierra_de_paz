@@ -13,6 +13,7 @@ import pandas as pd
 import plotly.express as px
 from flask import jsonify
 from flask import make_response
+from sqlalchemy.orm import joinedload
 
 
 
@@ -50,6 +51,8 @@ class Actividad(db.Model):
     registros = db.relationship('Registro', backref='actividad', lazy=True)
     subactividades = db.relationship('Actividad', backref=db.backref('parent', remote_side=[id]), lazy=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('actividad.id'), nullable=True)
+    actividad_padre = db.relationship('Actividad', remote_side=[id], back_populates='subactividades')
+
 
     def get_all_registros(self):
         registros = self.registros.copy()
@@ -57,8 +60,12 @@ class Actividad(db.Model):
             registros.extend(subactividad.get_all_registros())
         return registros
 
-    def get_subactividad_nombres(self):
-        return [sub.nombre for sub in self.subactividades]
+    def get_all_subactividad_nombres(self):
+        subactividad_nombres = [sub.nombre for sub in self.subactividades]
+        for sub in self.subactividades:
+            subactividad_nombres.extend(sub.get_all_subactividad_nombres())
+        return subactividad_nombres
+
 
 
 
@@ -165,17 +172,19 @@ def dashboard():
     return render_template('dashboard.html')
 
 
+
+
 @app.route('/usuarios')
 @login_required
 def usuarios():
-    actividades = Actividad.query.all()
+    actividades = Actividad.query.options(joinedload(Actividad.actividad_padre)).all()
     registros = Registro.query.all()
 
     actividades_with_subregistros = []
     for actividad in actividades:
         actividad_dict = actividad.__dict__
         actividad_dict['registros'] = actividad.get_all_registros()
-        actividad_dict['subactividad_nombres'] = actividad.get_subactividad_nombres()
+        actividad_dict['subactividad_nombres'] = actividad.get_all_subactividad_nombres()
         actividades_with_subregistros.append(actividad_dict)
 
     return render_template('modules/usuarios.html', actividades=actividades_with_subregistros, registros=registros)
