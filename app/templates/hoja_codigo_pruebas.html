@@ -1,28 +1,50 @@
-{% for actividad in actividades %}
-    <button class="btn-actividad" id="btn-actividad-{{ actividad.id }}" data-target="myModalActivity{{ actividad.id }}" onclick="openModal('myModalActivity{{ actividad.id }}')">
-        <span class="text">{{ actividad.nombre }}</span>
-    </button>
+/* Botones de editar y eliminar dentro de la tabla */
+.modal-info .option {
+    display: flex;
+    gap: 10px; /* Espacio entre los botones */
+    justify-content: center;
+    align-items: center;
+}
 
-    <!-- Modal para cada actividad -->
-    <div id="myModalActivity{{ actividad.id }}" class="modaly" style="display: none;">
-        <!-- Contenido del modal -->
-        <div class="modal-contentenedor">
-            <!-- Título de la actividad -->
-            <h2>ACTIVIDAD PRINCIPAL: {{ actividad.nombre }}</h2>
-            {% if actividad.actividad_padre %}
-                <p>ACTIVIDAD PADRE: 
-                    <button class="btn-actividad-padre" onclick="openModal('myModalActivity{{ actividad.actividad_padre.id }}')">{{ actividad.actividad_padre.nombre }}</button>
-                </p>
-            {% endif %}
+/* Estilo específico para el botón de editar */
+.modal-info .option .editar {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
 
-            {% if actividad.subactividad_nombres %}
-                <p>ACTIVIDADES RELACIONADAS: 
-                    {% for subactividad_nombre in actividad.subactividad_nombres %}
-                        <button class="btn-subactividad" onclick="openSubactivityModal('{{ subactividad_nombre }}')">{{ subactividad_nombre }}</button>
-                    {% endfor %}
-                </p>
-            {% endif %}
-        </div>
+/* Estilo específico para el botón de eliminar */
+.modal-info .option .eliminar {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+/* Cambiar el color de fondo al pasar el ratón sobre los botones */
+.modal-info .option .editar:hover {
+    background-color: #45a049;
+}
+
+.modal-info .option .eliminar:hover {
+    background-color: #d32f2f;
+}
+
     </div>
+</div>
 {% endfor %}
-

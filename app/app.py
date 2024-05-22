@@ -284,6 +284,70 @@ def guardar_registro():
             return redirect(url_for('usuarios'))
 
 
+
+@app.route('/obtener_registro/<int:registro_id>', methods=['GET'])
+@login_required
+def obtener_registro(registro_id):
+    registro = Registro.query.get_or_404(registro_id)
+    registro_dict = {
+        'id': registro.id,
+        'nombres': registro.nombres,
+        'apellidos': registro.apellidos,
+        'tipo_documento': registro.tipo_documento,
+        'numero_documento': registro.numero_documento,
+        'pais': registro.pais,
+        'departamento': registro.departamento,
+        'municipio': registro.municipio,
+        'genero': registro.genero,
+        'edad': registro.edad,
+        'grupo_edad': registro.grupo_edad,
+        'grupo_etnico': registro.grupo_etnico,
+        'discapacidad': registro.discapacidad,
+        'comunidad': registro.comunidad,
+        'actividad': registro.actividad.nombre
+    }
+    return jsonify(registro_dict)
+
+
+@app.route('/editar_registro', methods=['POST'])
+@login_required
+def editar_registro():
+    registro_id = request.form.get('id')
+    registro = Registro.query.get_or_404(registro_id)
+
+    # Actualizar los campos del registro con los datos del formulario
+    registro.nombres = request.form.get('nombres')
+    registro.apellidos = request.form.get('apellidos')
+    registro.tipo_documento = request.form.get('tipo_documento')
+    registro.numero_documento = request.form.get('numero_documento')
+    registro.pais = request.form.get('pais')
+    registro.departamento = request.form.get('departamento')
+    registro.municipio = request.form.get('municipio')
+    registro.genero = request.form.get('genero')
+    registro.edad = request.form.get('edad')
+    registro.grupo_edad = request.form.get('grupo_edad')
+    registro.grupo_etnico = request.form.get('grupo_etnico')
+    registro.discapacidad = request.form.get('discapacidad')
+    registro.comunidad = request.form.get('comunidad')
+
+    # Si la actividad se selecciona a través de un select, asegúrate de obtenerla correctamente
+    actividad_nombre = request.form.get('actividad')
+    actividad = Actividad.query.filter_by(nombre=actividad_nombre).first()
+    registro.actividad = actividad
+
+    # Guardar los cambios en la base de datos
+    db.session.commit()
+
+    flash('Registro actualizado correctamente', 'success')
+
+    # Redireccionar a alguna página después de editar el registro
+    # Puedes redirigir a la página de detalles del registro o a cualquier otra página que desees
+    return redirect(url_for('usuarios', registro_id=registro.id))
+
+
+
+
+
 @app.route('/get_activities', methods=['GET'])
 @login_required
 def get_activities():

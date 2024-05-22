@@ -465,15 +465,39 @@ input[type="text"]:focus {
 .modal-contentenedor {
     font-family: 'Poppins', sans-serif; /* Agrega la fuente Poppins al contenido del modal */
     background-color: #fefefe; /* Fondo blanco */
-    margin: 10% auto; /* Centra vertical y horizontalmente */
+    margin: 5% auto; /* Centra vertical y horizontalmente */
     padding: 20px;
     border-radius: 10px; /* Bordes redondeados */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
-    width: 90%; /* Ancho del contenido del modal (ajustado) */
+    width: 80%; /* Ancho del contenido del modal */
     max-width: 800px; /* Ancho máximo del contenido del modal */
     position: relative; /* Posición relativa para permitir centrado vertical */
-    overflow: auto; /* Habilita el desplazamiento si el contenido es demasiado grande */
+    overflow-x: hidden; /* Oculta el desplazamiento horizontal */
 }
+
+
+/* Evita saltos de línea en los encabezados de la tabla dentro del modal */
+.modal-contentenedor table th {
+    white-space: nowrap;
+}
+
+/* Estilos para los botones de editar y eliminar dentro de la tabla */
+.modal-info .option a {
+    display: inline-block; /* Cambia la visualización de los botones a en línea */
+    margin-right: 10px; /* Añade un margen derecho entre los botones */
+}
+
+/* Estilo específico para el botón de eliminar para separarlo visualmente */
+.modal-info .option .eliminar {
+    margin-right: 0; /* Elimina el margen derecho del botón de eliminar */
+}
+
+
+.modal-tabla-contenedor {
+    margin-top: 20px; /* Margen superior para separar de la información adicional */
+    overflow-x: auto; /* Habilita el desplazamiento horizontal si es necesario */
+}
+
 
 /* Estilos para la tabla dentro del modal */
 .actividad-registros {
@@ -497,7 +521,6 @@ input[type="text"]:focus {
     background-color: #f2f2f2; /* Color de fondo gris claro para filas pares */
 }
 
-
 /* Estilo para el botón de cierre del modal */
 .modal-close-btn {
     background-color: #f44336; /* Color de fondo rojo */
@@ -515,6 +538,87 @@ input[type="text"]:focus {
     background-color: #d32f2f; /* Color de fondo rojo oscuro */
 }
 
+
+
+/* Encabezado del modal */
+.modal-header-actividad {
+    background-color: #f4f4f4; /* Fondo gris claro */
+    padding: 15px; /* Espaciado interno */
+    border-bottom: 2px solid #ddd; /* Línea inferior */
+    border-radius: 10px 10px 0 0; /* Bordes superiores redondeados */
+    width: 100%; /* Asegura que el encabezado ocupe todo el ancho */
+    box-sizing: border-box; /* Incluye el padding y el borde en el ancho */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.modal-header-actividad h2 {
+    font-size: 24px; /* Tamaño de fuente */
+    margin: 0; /* Sin margen */
+    color: #333; /* Color de texto */
+}
+
+.modal-header-actividad p {
+    font-size: 18px; /* Tamaño de fuente */
+    margin: 10px 0 0; /* Margen superior */
+    color: #555; /* Color de texto */
+}
+
+.modal-info p {
+    font-size: 16px; /* Tamaño de fuente */
+    color: #333; /* Color de texto */
+    margin: 10px 0; /* Margen */
+}
+
+.modal-info p strong {
+    color: #555; /* Color del texto en negrita */
+}
+
+/* Botón de actividad padre */
+.btn-actividad-padre, .btn-subactividad {
+    background-color: #52b1f0; /* Color de fondo */
+    color: white; /* Color del texto */
+    border: 2px solid transparent; /* Borde sólido transparente */
+    padding: 8px 16px; /* Espaciado interno */
+    text-align: center; /* Alineación del texto */
+    text-decoration: none; /* Sin subrayado */
+    display: inline-block; /* Muestra como bloque en línea */
+    font-size: 14px; /* Tamaño del texto */
+    margin: 5px 0; /* Margen */
+    cursor: pointer;
+    border-radius: 5px; /* Bordes redondeados */
+    transition: background-color 0.3s, border-color 0.3s, transform 0.2s; /* Transiciones suaves */
+}
+
+/* Efecto de hover para los botones */
+.btn-actividad-padre:hover, .btn-subactividad:hover {
+    background-color: #0e8cdd; /* Cambia el color de fondo al pasar el mouse */
+    border-color: #0e8cdd; /* Cambia el color del borde al pasar el mouse */
+    transform: translateY(-2px); /* Desplaza ligeramente hacia arriba al pasar el mouse */
+}
+
+/* Estilos para la tabla dentro del modal */
+.actividad-registros {
+    width: 100%; /* Ancho completo */
+    margin: auto; /* Centra la tabla horizontalmente */
+    border-collapse: collapse; /* Colapsa los bordes de la tabla */
+}
+
+.actividad-registros th,
+.actividad-registros td {
+    padding: 8px; /* Espaciado interno */
+    border-bottom: 1px solid #ddd; /* Borde inferior delgado */
+    text-align: left; /* Alineación del texto a la izquierda */
+}
+
+.actividad-registros th {
+    background-color: #f2f2f2; /* Color de fondo gris claro para las cabeceras */
+}
+
+.actividad-registros tbody tr:nth-child(even) {
+    background-color: #f2f2f2; /* Color de fondo gris claro para filas pares */
+}
 
 
 
@@ -653,6 +757,8 @@ input[type="number"]:focus {
     overflow-y: auto; /* Agrega una barra de desplazamiento vertical cuando la tabla es demasiado larga */
     display: block; /* Para permitir que la barra de desplazamiento funcione correctamente */
 }
+
+
 
 
 
@@ -1649,52 +1755,51 @@ input[type="file"]:focus {
 
 
 
-
-#content main .table-data {
-	display: flex;
-	flex-wrap: wrap;
-	grid-gap: 24px;
-	margin-top: 24px;
-	width: 100%;
-	color: var(--dark);
+  #content main .table-data {
+    display: flex;
+    flex-wrap: wrap;
+    grid-gap: 24px;
+    margin-top: 24px;
+    width: 100%;
+    color: var(--dark);
 }
 #content main .table-data > div {
-	border-radius: 20px;
-	background: var(--light);
-	padding: 24px;
-	overflow-x: auto;
+    border-radius: 20px;
+    background: var(--light);
+    padding: 24px;
+    overflow-x: auto;
 }
 #content main .table-data .head {
-	display: flex;
-	align-items: center;
-	grid-gap: 16px;
-	margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    grid-gap: 16px;
+    margin-bottom: 24px;
 }
 #content main .table-data .head h3 {
-	margin-right: auto;
-	font-size: 24px;
-	font-weight: 600;
+    margin-right: auto;
+    font-size: 24px;
+    font-weight: 600;
 }
 #content main .table-data .head .bx {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 #content main .table-data .order table {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
+    border-collapse: collapse;
 }
 
 #content main .table-data .order table th,
 #content main .table-data .order table td {
+    white-space: nowrap; /* Evita saltos de línea */
     padding: 12px 16px;
     font-size: 16px;
     border-bottom: 1px solid var(--grey);
+    text-align: center;
 }
 
 #content main .table-data .order table td {
-    display: table-cell; /* Asegura que cada celda se comporte como una celda de tabla */
-    vertical-align: middle; /* Alinea verticalmente el contenido de las celdas */
+    vertical-align: middle;
 }
 
 #content main .table-data .order table tbody tr:hover {
@@ -1703,56 +1808,73 @@ input[type="file"]:focus {
 
 #content main .table-data .order table tbody tr td:first-child {
     padding-left: 6px;
+    text-align: left;
 }
 
+#content main .table-data .order table tbody tr td:last-child {
+    text-align: center;
+}
 
 #content main .table-data .order table tr td .status {
-	font-size: 10px;
-	padding: 6px 16px;
-	color: var(--light);
-	border-radius: 20px;
-	font-weight: 700;
+    font-size: 10px;
+    padding: 6px 16px;
+    color: var(--light);
+    border-radius: 20px;
+    font-weight: 700;
 }
 #content main .table-data .order table tr td .status.completed {
-	background: var(--blue);
+    background: var(--blue);
 }
 #content main .table-data .order table tr td .status.process {
-	background: var(--yellow);
+    background: var(--yellow);
 }
 #content main .table-data .order table tr td .status.pending {
-	background: var(--orange);
+    background: var(--orange);
 }
 
+#content main .table-data .order table tbody tr td.options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+#content main .table-data .order table tbody tr td.options a {
+    display: inline-block;
+}
 
 #content main .table-data .todo {
-	flex-grow: 1;
-	flex-basis: 300px;
+    flex-grow: 1;
+    flex-basis: 300px;
 }
 #content main .table-data .todo .todo-list {
-	width: 100%;
+    width: 100%;
 }
 #content main .table-data .todo .todo-list li {
-	width: 100%;
-	margin-bottom: 16px;
-	background: var(--grey);
-	border-radius: 10px;
-	padding: 14px 20px;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+    width: 100%;
+    margin-bottom: 16px;
+    background: var(--grey);
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 #content main .table-data .todo .todo-list li .bx {
-	cursor: pointer;
+    cursor: pointer;
 }
 #content main .table-data .todo .todo-list li.completed {
-	border-left: 10px solid var(--blue);
+    border-left: 10px solid var(--blue);
 }
 #content main .table-data .todo .todo-list li.not-completed {
-	border-left: 10px solid var(--orange);
+    border-left: 10px solid var(--orange);
 }
 #content main .table-data .todo .todo-list li:last-child {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
+
+
+
 /* MAIN */
 /* CONTENT */
 
