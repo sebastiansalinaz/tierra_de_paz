@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_bcrypt import generate_password_hash, check_password_hash
@@ -14,6 +14,13 @@ import plotly.express as px
 from flask import jsonify
 from flask import make_response
 from sqlalchemy.orm import joinedload
+from reportlab.lib.pagesizes import letter, landscape
+from reportlab.pdfgen import canvas
+from io import BytesIO
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, PageBreak
+
 
 
 
@@ -88,7 +95,7 @@ class Registro(db.Model):
     actividad_id = db.Column(db.Integer, db.ForeignKey('actividad.id'), nullable=False)
 
 class Proyecto(db.Model):
-    __tablename__ = 'proyecto'  # Agregando el nombre de la tabla explícitamente
+    __tablename__ = 'proyecto'
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
     descripcion = db.Column(db.String(255), nullable=False)
@@ -98,6 +105,7 @@ class Proyecto(db.Model):
     fecha_finalizacion = db.Column(db.Date, nullable=False)
     estado = db.Column(db.String(20), nullable=False)
     actividades = db.relationship('Actividad', backref='proyecto', lazy=True)
+
 
 
 
@@ -231,6 +239,8 @@ def guardar_actividad():
 
 
 
+
+
 @app.route('/guardar_registro', methods=['POST'])
 def guardar_registro():
     if request.method == 'POST':
@@ -276,13 +286,23 @@ def guardar_registro():
             db.session.add(nuevo_registro)
             db.session.commit()
 
-            # Redirige a una página de éxito o a donde desees
+            # Determinar la página de redirección según la URL de referencia
+            redirect_page = 'usuarios' if '/usuarios' in request.referrer else 'editar_proyecto'
+            
+            # Obtener el proyecto_id de la ruta actual si es editar_proyecto
+            proyecto_id = None
+            if redirect_page == 'editar_proyecto':
+                proyecto_id = request.referrer.split('/')[-1]
+
+            # Redirige a la página correspondiente
             flash('Registro exitoso!', 'success')
-            return redirect(url_for('usuarios'))
+            if proyecto_id:
+                return redirect(url_for(redirect_page, proyecto_id=proyecto_id))
+            else:
+                return redirect(url_for(redirect_page))
         else:
             flash('No se encontró la actividad especificada', 'error')
-            return redirect(url_for('usuarios'))
-
+            return redirect(url_for('usuarios'))  # Otra opción es redirigir a la página de usuarios en caso de error
 
 
 @app.route('/obtener_registro/<int:registro_id>', methods=['GET'])
@@ -470,7 +490,7 @@ def get_datos_tabla_proyectos():
 @login_required
 def editar_proyecto(proyecto_id):
     proyecto = Proyecto.query.get_or_404(proyecto_id)
-    actividades = Actividad.query.all()  # Obtener todas las actividades
+    actividades = Actividad.query.all()
     
     if request.method == 'POST':
         proyecto.nombre = request.form['nombre']
@@ -481,12 +501,24 @@ def editar_proyecto(proyecto_id):
         proyecto.fecha_finalizacion = request.form['fecha_finalizacion']
         proyecto.estado = request.form['estado']
 
+        actividades_seleccionadas = request.form.getlist('actividades[]')
+        actividades = Actividad.query.filter(Actividad.id.in_(actividades_seleccionadas)).all()
+        
+        proyecto.actividades = actividades
+
         db.session.commit()
 
         flash('¡Proyecto actualizado exitosamente!', 'success')
         return redirect(url_for('proyectos'))
 
-    return render_template('editar_proyecto.html', proyecto=proyecto, actividades=actividades)  # Pasar las actividades como contexto
+    # Recuperar registros de las actividades relacionadas con el proyecto
+    actividades_del_proyecto = proyecto.actividades
+    registros = []
+    for actividad in actividades_del_proyecto:
+        registros.extend(actividad.get_all_registros())
+    
+    return render_template('editar_proyecto.html', proyecto=proyecto, actividades=actividades, registros=registros)
+
 
 
 
@@ -507,32 +539,10 @@ def get_proyecto(proyecto_id):
     return jsonify(proyecto_data)
 
 
-@app.route('/agregar_beneficiarios/<int:proyecto_id>', methods=['POST'])
-@login_required
-def agregar_beneficiarios(proyecto_id):
-    if request.method == 'POST':
-        actividad_id = request.form['actividad']
-        proyecto = Proyecto.query.get_or_404(proyecto_id)
-        actividad = Actividad.query.get_or_404(actividad_id)
-        
-        # Recuperar todas las actividades creadas anteriormente
-        actividades = Actividad.query.all()
-        
-        beneficiarios_seleccionados = request.form.getlist('beneficiarios')
 
-        # Itera sobre los IDs de los beneficiarios seleccionados y crea registros asociados con la actividad
-        for beneficiario_id in beneficiarios_seleccionados:
-            # Comprueba si ya existe un registro para este beneficiario y esta actividad
-            if not Registro.query.filter_by(beneficiario_id=beneficiario_id, actividad_id=actividad.id).first():
-                # Crea un nuevo registro para el beneficiario asociado con la actividad
-                nuevo_registro = Registro(beneficiario_id=beneficiario_id, actividad_id=actividad.id)
-                db.session.add(nuevo_registro)
 
-        # Guarda los cambios en la base de datos
-        db.session.commit()
 
-        flash('Beneficiarios agregados exitosamente al proyecto.', 'success')
-        return redirect(url_for('proyectos'))
+
 
 
 
@@ -552,6 +562,105 @@ def get_estadisticas_proyectos():
 
     # Devolver los datos en formato JSON
     return jsonify(estadisticas)
+
+
+
+
+
+
+
+@app.route('/generate_pdf/<int:proyecto_id>')
+@login_required
+def generate_pdf(proyecto_id):
+    # Obtener datos del proyecto
+    proyecto = Proyecto.query.get(proyecto_id)
+
+    # Obtener todas las actividades asociadas al proyecto
+    actividades = Actividad.query.filter_by(proyecto_id=proyecto_id).all()
+    
+    # Obtener los registros asociados a estas actividades
+    registros = Registro.query.filter(Registro.actividad_id.in_([actividad.id for actividad in actividades])).all()
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=landscape(letter))  # Tamaño de página horizontal
+    elements = []
+
+    # Logo de la empresa
+    logo_path = os.path.join('static', 'img', 'logo.png')
+    if os.path.exists(logo_path):
+        elements.append(Image(logo_path, width=75, height=50))
+
+    # Título del informe
+    styles = getSampleStyleSheet()
+    elements.append(Spacer(1, 12))
+    elements.append(Paragraph("FUNDACION TIERRA DE PAZ", styles['Title']))
+    elements.append(Spacer(1, 12))
+
+    # Detalles del proyecto
+    project_details = [
+        f"Proyecto: {proyecto.nombre}",
+        f"Descripción: {proyecto.descripcion}",
+        f"Responsable: {proyecto.responsable}",
+        f"Fecha de Inicio: {proyecto.fecha_inicio}",
+        f"Fecha de Finalización: {proyecto.fecha_finalizacion}",
+        f"Estado: {proyecto.estado}"
+    ]
+    for detail in project_details:
+        elements.append(Paragraph(detail, styles['Normal']))
+        elements.append(Spacer(1, 6))
+
+    # Crear la tabla de registros de usuarios
+    data = [
+        ["Nombres", "Apellidos", "Tipo de Documento", "Número de Documento", "País", "Departamento", "Municipio", "Género", "Edad", "Grupo de Edad", "Grupo Étnico", "Discapacidad", "Comunidad", "Actividad"]
+    ]
+    for registro in registros:
+        # Truncar campos si son cadenas de texto y superan los 6 caracteres
+        truncated_row = []
+        for i, field in enumerate([registro.nombres, registro.apellidos, registro.tipo_documento, registro.numero_documento, registro.pais,
+                      registro.departamento, registro.municipio, registro.genero, registro.edad, registro.grupo_edad,
+                      registro.grupo_etnico, registro.discapacidad, registro.comunidad, registro.actividad.nombre]):
+            if isinstance(field, str):
+                if i == 3:  # Índice 3 corresponde al campo "Número de Documento"
+                    truncated_field = field  # No truncar este campo
+                else:
+                    truncated_field = field[:6] + '...' if len(field) > 6 else field
+            else:
+                truncated_field = field
+            truncated_row.append(truncated_field)
+        data.append(truncated_row)
+
+    # Ajustar el tamaño de la fuente y los márgenes de la tabla
+    table_style = [
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 8),  # Reducir el tamaño de la fuente
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 4),  # Reducir el espacio entre filas
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('LEFTPADDING', (0, 0), (-1, -1), 2),  # Margen izquierdo
+        ('RIGHTPADDING', (0, 0), (-1, -1), 2),  # Margen derecho
+        ('TOPPADDING', (0, 0), (-1, -1), 2),  # Margen superior
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),  # Margen inferior
+    ]
+
+    table = Table(data)
+    table.setStyle(TableStyle(table_style))
+
+    # Rotar la tabla 90 grados en sentido contrario a las agujas del reloj
+    elements.append(table)
+
+    # Pie de página
+    elements.append(Spacer(1, 24))
+    elements.append(Paragraph("Este es un informe generado automáticamente por el sistema.", styles['Italic']))
+
+    doc.build(elements)
+
+    buffer.seek(0)
+    return send_file(buffer, as_attachment=True, download_name=f'proyecto_{proyecto_id}.pdf', mimetype='application/pdf')
+
+
 
 
 

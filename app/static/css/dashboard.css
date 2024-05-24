@@ -255,7 +255,7 @@ body {
 }
 
 .btn-fuente {
-    background-color: #4CAF50;
+    background-color: #328635;
     color: white;
     padding: 8px 16px;
     border: none;
@@ -625,6 +625,8 @@ input[type="text"]:focus {
 
 
 
+
+
     /* Estilos para botones */
     .btn-cancel {
         background-color: #ccc;
@@ -803,11 +805,25 @@ select:focus {
 }
 
 
+/* Estilo para los botones */
+.btn-evento {
+    background-color: #328b35;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-evento:hover {
+    background-color: #37632c;
+}
 
 
 
 .btn-fuente {
-    background-color: #4CAF50;
+    background-color: #37943a;
     color: white;
     padding: 5px 10px;
     border: none;
@@ -1348,8 +1364,6 @@ select:focus {
 }
 
 
-
-
 /* Estilos para la tarjeta de edición de proyecto */
 
 .edit-project-container {
@@ -1360,6 +1374,7 @@ select:focus {
     background-color: #fff;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     font-family: var(--poppins); /* Fuente de letra más agradable */
+    overflow: hidden; /* Ajuste de desbordamiento */
 }
 
 .edit-project-header {
@@ -1451,6 +1466,27 @@ select:focus {
     background-color: #0056b3;
 }
 
+.table-data {
+    overflow-x: auto; /* Agregado para el desplazamiento horizontal */
+    margin-top: 20px; /* Ajuste del margen superior */
+}
+
+.table {
+    width: 100%; /* Ancho completo */
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.table th {
+    background-color: #f4f4f4;
+}
+
+
 
 
 
@@ -1470,6 +1506,16 @@ select:focus {
 }
 
 
+.button-container {
+    display: flex;
+    justify-content: center; /* Centra horizontalmente los botones */
+    margin-top: 20px; /* Espacio entre el formulario y los botones */
+}
+
+.button-container button {
+    width: 200px; /* Ancho específico para los botones */
+    margin: 0 10px; /* Espacio entre los botones */
+}
 
 
 

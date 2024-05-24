@@ -66,47 +66,327 @@
                 </div>
             </form>
         </div>
-        <div>
-            <button type="button" class="boton-act boton-act-secondary" data-toggle="modal" data-target="#modalSeleccionActividad">
-                Seleccionar Actividad
+
+       
+
+       
+
+
+            <!-- Contenedor para los botones -->
+            <div class="button-container">
+                   <!-- Botón para generar PDF -->
+            <button id="btn-generate-pdf" class="btn-delete" onclick="generatePDF({{ proyecto.id }})">
+                <i class='bx bxs-file-pdf'></i>
+                <span class="text">Generar Informe PDF</span>
             </button>
+            
+                <!-- Botón 1 -->
+                <button id="btn-open-modal1" class="btn-evento" onclick="openModal('myModalPreliminar')">
+                   
+                    <span class="text">Crear Actividad o Usuarios</span>
+                </button>
+                <!-- Botón 2 -->
+                <button type="button" class="boton-act boton-act-secondary" data-toggle="modal" data-target="#modalSeleccionActividad">
+                    Seleccionar Actividades
+                </button>
+        
+            </div>
+            <br>  <br>  
+
+
+            <!-- Tabla para mostrar registros -->
+        <div class="table-data">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombres</th>
+                        <th>Apellidos</th>
+                        <th>Tipo de Documento</th>
+                        <th>Número de Documento</th>
+                        <th>País</th>
+                        <th>Departamento</th>
+                        <th>Municipio</th>
+                        <th>Género</th>
+                        <th>Edad</th>
+                        <th>Grupo de Edad</th>
+                        <th>Grupo Étnico</th>
+                        <th>Discapacidad</th>
+                        <th>Comunidad</th>
+                        <th>Actividad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for registro in registros %}
+                    <tr>
+                        <td>{{ registro.nombres }}</td>
+                        <td>{{ registro.apellidos }}</td>
+                        <td>{{ registro.tipo_documento }}</td>
+                        <td>{{ registro.numero_documento }}</td>
+                        <td>{{ registro.pais }}</td>
+                        <td>{{ registro.departamento }}</td>
+                        <td>{{ registro.municipio }}</td>
+                        <td>{{ registro.genero }}</td>
+                        <td>{{ registro.edad }}</td>
+                        <td>
+                            {% if registro.grupo_edad == "menor_18" %}
+                                Menor de 18
+                            {% elif registro.grupo_edad == "18_49" %}
+                                18 a 49
+                            {% elif registro.grupo_edad == "50_mas" %}
+                                50 o mas
+                            {% endif %}
+                        </td>
+                        <td>{{ registro.grupo_etnico }}</td>
+                        <td>{{ registro.discapacidad }}</td>
+                        <td>{{ registro.comunidad }}</td>
+                        <td>{{ registro.actividad.nombre }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        </div> 
+        <div>
+
+           
+        
+
+
+
 
 
 
 <!-- Modal -->
 <div class="modal fade" id="modalSeleccionActividad" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Seleccione una o más actividades</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form action="{{ url_for('agregar_beneficiarios', proyecto_id=proyecto.id) }}" method="post">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <label>Seleccione una o más actividades:</label>
-            <div class="form-check">
-              {% for actividad in actividades %}
-                <input class="form-check-input" type="checkbox" id="actividad{{ actividad.id }}" name="actividad[]" value="{{ actividad.id }}">
-                <label class="form-check-label" for="actividad{{ actividad.id }}">
-                  {{ actividad.nombre }}
-                </label>
-                <br>
-              {% endfor %}
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Seleccione una o más actividades</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="boton-act boton-act-secondary" style="" data-dismiss="modal">Cerrar</button>
-            <button type="submit" class="boton-act boton-act-primary" >Agregar Beneficiarios</button>
+            <div class="modal-body">
+                <label>Seleccione una o más actividades:</label>
+                <form id="actividadForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="form-check">
+                        {% for actividad in actividades %}
+                            <input class="form-check-input" type="checkbox" id="actividad{{ actividad.id }}" name="actividades[]" value="{{ actividad.id }}">
+                            <label class="form-check-label" for="actividad{{ actividad.id }}">
+                                {{ actividad.nombre }}
+                            </label>
+                            <br>
+                        {% endfor %}
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="boton-act boton-act-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="boton-act boton-act-primary" onclick="agregarActividadesSeleccionadas()">Agregar Actividades</button>
+            </div>
         </div>
-        
-        </form>
-      </div>
     </div>
-  </div>
- </div>
+</div>
+
+
+
+
+
+
+
+<!-- Modal preliminar para seleccionar entre crear una nueva actividad o seleccionar una existente -->
+<div id="myModalPreliminar" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-nav"></div>
+        <span class="close" id="closeModalBtnPreliminar" onclick="closeModal('myModalPreliminar')">&times;</span>
+        <h2 class="texto-registro" style="margin-bottom: 20px;">Seleccionar Opción</h2>
+        <div class="btn-group" style="margin-top: 20px;">
+            <button onclick="openModal('myModalActivity')" class="btn btn-fuente" style="background-color: var(--azul); font-weight: 530;">Nueva Actividad</button>
+            <button onclick="openUserForm()" class="btn btn-fuente" style="background-color: #4caf50; margin-left: -100px; font-weight: 530;">Actividad Existente</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal para ingresar detalles de la actividad -->
+<div id="myModalActivity" class="modal" style="display: none;">
+    <!-- Contenido del modal -->
+    <div class="modal-content">
+        <div class="modal-nav">
+            <!-- Agrega más botones según sea necesario para más modales -->
+        </div>
+        <span class="close" id="closeModalBtnActivity" onclick="closeModal('myModalActivity')">&times;</span>
+        <h2 class="texto-registro">Agregar Actividad</h2><br><br><br>
+        
+        
+        <form id="crearActividadForm" onsubmit="crearActividad(event)" action="/guardar_actividad" method="post">
+            <!-- Agregamos el campo CSRF -->
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <!-- Aquí van los campos para ingresar los detalles de la actividad -->
+            <label for="nombre_actividad"><b>Nombre de la Actividad:</b></label>
+            <input type="text" id="nombre_actividad" name="nombre_actividad" class="form-control" required><br><br>
+            <label for="persona_encargada"><b>Persona Encargada:</b></label>
+            <input type="text" id="persona_encargada" name="persona_encargada" class="form-control"><br><br>
+            <label for="fecha_realizacion"><b>Fecha de Realización:</b></label>
+            <input type="date" id="fecha_realizacion" name="fecha_realizacion" class="form-control" required><br><br>
+            <label for="parent_id"><b>Actividad Padre (opcional):</b></label>
+            <select id="parent_id" name="parent_id" class="form-control">
+                <option value="">-- Ninguna --</option>
+                {% for actividad in actividades %}
+                    <option value="{{ actividad.id }}">{{ actividad.nombre }}</option>
+                {% endfor %}
+            </select><br><br>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+<!-- Modal 1 -->
+<div id="myModal1" class="modal" style="display: none;">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <div class="modal-nav">
+            <!-- Agrega más botones según sea necesario para más modales -->
+        </div>
+        <span class="close" id="closeModalBtn1" onclick="closeModal('myModal1')">&times;</span>
+        <h2 class="texto-registro">REGISTRAR USUARIO</h2><br><br><br>
+        
+        <form id="modal1Form" action="{{ url_for('guardar_registro') }}" method="post">
+            <div style="display: flex; justify-content: space-between;">
+                <div style="flex: 1; padding-right: 10px;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <label for="nombres"><b>Nombres:</b></label>
+                    <input type="text" id="nombres" name="nombres" class="form-control"><br><br>
+                    <label for="apellidos"><b>Apellidos:</b></label>
+                    <input type="text" id="apellidos" name="apellidos" class="form-control"><br><br>
+                    <label for="tipo_documento"><b>Tipo de documento:</b></label>
+                    <select name="tipo_documento" id="tipo_documento" class="form-control">
+                        <option value="cedula">Cédula</option>
+                        <option value="registro_civil">Registro Civil</option>
+                        <option value="pasaporte">Pasaporte</option>
+                        <option value="tarjeta_identidad">Tarjeta de Identidad</option>
+                    </select><br><br>
+                    <label for="numero_documento"><b>Número de documento:</b></label>
+                    <input type="text" id="numero_documento" name="numero_documento" class="form-control"><br><br>
+                    <label for="pais"><b>País:</b></label>
+                    <select name="pais" id="pais" class="form-control">
+                        <option value="Argentina">Argentina</option>
+                        <option value="Bolivia">Bolivia</option>
+                        <option value="Brazil">Brazil</option>
+                        <option value="Chile">Chile</option>
+                        <option value="Colombia">Colombia</option>
+                        <option value="Costa Rica">Costa Rica</option>
+                        <option value="Cuba">Cuba</option>
+                        <option value="Dominican Republic">Dominican Republic</option>
+                        <option value="Ecuador">Ecuador</option>
+                        <option value="El Salvador">El Salvador</option>
+                        <option value="Guatemala">Guatemala</option>
+                        <option value="Haiti">Haiti</option>
+                        <option value="Honduras">Honduras</option>
+                        <option value="Mexico">Mexico</option>
+                        <option value="Nicaragua">Nicaragua</option>
+                        <option value="Panama">Panama</option>
+                        <option value="Paraguay">Paraguay</option>
+                        <option value="Peru">Peru</option>
+                        <option value="Puerto Rico">Puerto Rico</option>
+                        <option value="Uruguay">Uruguay</option>
+                        <option value="Venezuela">Venezuela</option>
+                    </select><br><br>
+                    <label for="departamento"><b>Departamento:</b></label>
+                    <select name="departamento" id="departamento" class="form-control">
+                        <option value="">Seleccione un departamento</option>
+                        <option value="Amazonas">Amazonas</option>
+                        <option value="Antioquia">Antioquia</option>
+                        <option value="Arauca">Arauca</option>
+                        <option value="Atlántico">Atlántico</option>
+                        <option value="Bolívar">Bolívar</option>
+                        <option value="Boyacá">Boyacá</option>
+                        <option value="Caldas">Caldas</option>
+                        <option value="Caquetá">Caquetá</option>
+                        <option value="Casanare">Casanare</option>
+                        <option value="Cauca">Cauca</option>
+                        <option value="Cesar">Cesar</option>
+                        <option value="Chocó">Chocó</option>
+                        <option value="Córdoba">Córdoba</option>
+                        <option value="Cundinamarca">Cundinamarca</option>
+                        <option value="Guainía">Guainía</option>
+                        <option value="Guaviare">Guaviare</option>
+                        <option value="Huila">Huila</option>
+                        <option value="La Guajira">La Guajira</option>
+                        <option value="Magdalena">Magdalena</option>
+                        <option value="Meta">Meta</option>
+                        <option value="Nariño">Nariño</option>
+                        <option value="Norte de Santander">Norte de Santander</option>
+                        <option value="Putumayo">Putumayo</option>
+                        <option value="Quindío">Quindío</option>
+                        <option value="Risaralda">Risaralda</option>
+                        <option value="San Andrés y Providencia">San Andrés y Providencia</option>
+                        <option value="Santander">Santander</option>
+                        <option value="Sucre">Sucre</option>
+                        <option value="Tolima">Tolima</option>
+                        <option value="Valle del Cauca">Valle del Cauca</option>
+                        <option value="Vaupés">Vaupés</option>
+                        <option value="Vichada">Vichada</option>
+                    </select><br><br>
+                    <label for="municipio"><b>Municipio:</b></label>
+                    <input type="text" id="municipio" name="municipio" class="form-control"><br><br>
+                </div>
+                <div style="flex: 1; padding-left: 10px;">
+                    <label for="genero"><b>Género:</b></label>
+                    <select name="genero" id="genero" class="form-control">
+                        <option value="masculino">Masculino</option>
+                        <option value="femenino">Femenino</option>
+                        <option value="no_especifica">No Especifica</option>
+                    </select><br><br>
+                    <label for="edad"><b>Edad:</b></label>
+                    <input type="number" id="edad" name="edad" class="form-control"><br><br>
+                    <label for="grupo_edad"><b>Grupo de Edad:</b></label>
+                    <select name="grupo_edad" id="grupo_edad" class="form-control">
+                        <option value="menor_18">Menor de 18 años</option>
+                        <option value="18_49">18 a 49 años</option>
+                        <option value="50_mas">50 años en adelante</option>
+                    </select><br><br>
+                    <label for="grupo_etnico"><b>Grupo Étnico:</b></label>
+                    <select name="grupo_etnico" id="grupo_etnico" class="form-control">
+                        <option value="mestizo">Mestizo</option>
+                        <option value="afro">Afro</option>
+                        <option value="campesino">Campesino</option>
+                        <option value="indigena">Indígena</option>
+                    </select><br><br>
+                    <label for="discapacidad"><b>Discapacidad:</b></label>
+                    <select name="discapacidad" id="discapacidad" class="form-control">
+                        <option value="si">Sí</option>
+                        <option value="no">No</option>
+                    </select><br><br>
+                    <label for="comunidad"><b>Comunidad:</b></label>
+                    <input type="text" id="comunidad" name="comunidad" class="form-control"><br><br>
+                    <label for="actividad"><b>Actividad:</b></label>
+<select id="actividad" name="actividad" class="form-control">
+    {% for actividad in actividades %}
+        <option value="{{ actividad.nombre }}">{{ actividad.nombre }}</option>
+    {% endfor %}
+</select><br><br>
+
+                </div>
+            </div><br>
+
+            <button type="submit" id="btn-guardar" class="btn btn-primary">Guardar</button>
+        </form>
+    </div>
+</div>
+
+
+
+
+
  </div>
 </section>
 
@@ -116,6 +396,248 @@
             $('#actividad').focus();
         });
     });
+
+     // Función para abrir el modal
+     function openModal(modalId) {
+        var modal = document.getElementById(modalId);
+        modal.style.display = "block";
+    }
+
+// Función para cerrar el modal y volver al anterior si existe
+function closeModal(modalId) {
+    var modal = document.getElementById(modalId);
+    modal.style.display = "none";
+}
+
+
+
+function generatePDF(proyectoId) {
+    window.location.href = `/generate_pdf/${proyectoId}`;
+}
+
+
+    function agregarActividadesSeleccionadas() {
+        const checkboxes = document.querySelectorAll('#actividadForm input[type="checkbox"]:checked');
+        const form = document.querySelector('form[action="{{ url_for('editar_proyecto', proyecto_id=proyecto.id) }}"]');
+        
+        checkboxes.forEach(checkbox => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'actividades[]';
+            input.value = checkbox.value;
+            form.appendChild(input);
+        });
+    
+        $('#modalSeleccionActividad').modal('hide');
+    }
+
+    
+
+
+
+    // Función para mostrar el formulario de registro de personas
+    function openUserForm() {
+        closeModal('myModalActivity'); // Cerramos el modal de actividad
+        
+        // Obtener la lista actualizada de actividades antes de mostrar el formulario de registro de usuario
+        fetch('/get_activities')
+            .then(response => response.json())
+            .then(data => {
+                // Actualizar las opciones del campo de actividad
+                var select = document.getElementById('actividad');
+                select.innerHTML = ""; // Limpiar las opciones actuales
+                var defaultOption = document.createElement('option');
+                defaultOption.text = "Seleccione una actividad";
+                select.add(defaultOption);
+                data.forEach(actividad => {
+                    var option = document.createElement('option');
+                    option.value = actividad.nombre;
+                    option.text = actividad.nombre;
+                    select.add(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al cargar las actividades.');
+            });
+        
+        openModal('myModal1'); // Mostramos el modal de registro de usuario
+    }
+
+    function openActivityModal(activityId) {
+        // Obtener la referencia al modal de la actividad
+        var modalId = 'myModalActivity' + activityId;
+        openModal(modalId);
+    }
+
+    // Fragmento de código para manejar los eventos de clic en los botones de actividad
+    {% for actividad in actividades %}
+        var btnActividad{{ actividad.id }} = document.getElementById('btn-actividad-{{ actividad.id }}');
+        btnActividad{{ actividad.id }}.addEventListener('click', function() {
+            var modalId = this.getAttribute('data-target');
+            openModal(modalId);
+        });
+    {% endfor %}
+
+   
+
+// Función para manejar el envío del formulario de creación de actividad
+function crearActividad(event) {
+    event.preventDefault(); // Evitar que el formulario se envíe automáticamente
+    
+    // Obtener los datos del formulario de creación de actividad
+    var formData = new FormData(document.getElementById("crearActividadForm"));
+    
+    // Enviar los datos del formulario mediante AJAX
+    fetch('/guardar_actividad', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-Token': '{{ csrf_token() }}' // Agregar el token CSRF si es necesario
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            // Los datos se guardaron correctamente, puedes realizar alguna acción, como mostrar un mensaje de éxito
+            console.log("Actividad creada correctamente.");
+            // Aquí puedes realizar alguna acción adicional si la creación fue exitosa
+            
+            // Después de guardar exitosamente el registro
+            window.location.reload();
+        } else {
+            // Hubo un error al guardar los datos, mostrar un mensaje de error
+            console.error("Error al crear la actividad.");
+            // Aquí puedes mostrar un mensaje de error al usuario u otra acción
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        // Manejar el error de red, por ejemplo, mostrando un mensaje al usuario
+    });
+}
+
+// Agregar evento submit al formulario de creación de actividad
+document.getElementById("crearActividadForm").addEventListener("submit", crearActividad);
+
+
+
+    function asignarPersona(event) {
+        event.preventDefault(); // Evitar que el formulario se envíe automáticamente
+        
+        // Validar los campos del formulario de actividad
+        var nombreActividad = document.getElementById("nombre_actividad").value;
+        var fechaRealizacion = document.getElementById("fecha_realizacion").value;
+        
+        // Verificar que los campos obligatorios no estén vacíos
+        if (nombreActividad.trim() === '' || fechaRealizacion.trim() === '') {
+            alert("Por favor, complete todos los campos de la actividad.");
+            return;
+        }
+        
+        // Enviar los datos del formulario de actividad al servidor utilizando Fetch API
+        var formData = new FormData(document.getElementById("modalActivityForm"));
+        fetch('/guardar_actividad', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-Token': '{{ csrf_token() }}' // Agregar el token CSRF si es necesario
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Los datos se guardaron correctamente, mostrar el formulario de registro de usuario
+                openUserForm();
+                
+                // Procesar los datos del nuevo registro
+                response.json().then(data => {
+                    // Crear una nueva fila de la tabla con los datos del nuevo registro
+                    var newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                        <td>${data.nombres}</td>
+                        <td>${data.apellidos}</td>
+                        <td>${data.tipo_documento}</td>
+                        <td>${data.numero_documento}</td>
+                        <td>${data.pais}</td>
+                        <td>${data.departamento}</td>
+                        <td>${data.municipio}</td>
+                        <td>${data.genero}</td>
+                        <td>${data.edad}</td>
+                        <td>${data.grupo_edad}</td>
+                        <td>${data.grupo_etnico}</td>
+                        <td>${data.discapacidad}</td>
+                        <td>${data.comunidad}</td>
+                        <td>${data.actividad}</td>
+                    `;
+                    
+                    // Insertar la nueva fila en la tabla existente (al final del cuerpo de la tabla)
+                    var tableBody = document.querySelector('.table-data table tbody');
+                    tableBody.appendChild(newRow);
+                });
+        
+                // Llamar a actualizarTabla para actualizar la tabla
+                actualizarTabla();
+            } else {
+                // Hubo un error al guardar los datos, mostrar un mensaje de error
+                alert('Error al guardar los datos de la actividad.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al comunicarse con el servidor.');
+        });
+    }
+
+   
+        // Función para manejar el envío del formulario de registro de usuario
+function guardarRegistro(event) {
+    event.preventDefault(); // Evitar que el formulario se envíe automáticamente
+    
+    // Enviar los datos del formulario de registro de personas al servidor utilizando Fetch API
+    var formData = new FormData(document.getElementById("modal1Form"));
+    fetch('/guardar_registro', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-Token': '{{ csrf_token() }}' // Agregar el token CSRF si es necesario
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            // Mostrar el mensaje de registro exitoso
+            document.getElementById("registro-exitoso").style.display = "block";
+            // Configurar temporizador para que desaparezca después de 3 segundos
+            setTimeout(function() {
+                document.getElementById("registro-exitoso").style.display = 'none';
+            }, 3000); // 3000 milisegundos (3 segundos)
+        } else {
+            // Mostrar mensaje de error
+            alert('Error al guardar los datos del registro de usuario.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al comunicarse con el servidor.');
+    });
+}
+
+// Agregar evento submit al formulario de registro de usuario
+document.getElementById("modal1Form").addEventListener("submit", guardarRegistro);
+
+        
+      
+    
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === "Escape") {
+        var openModals = document.querySelectorAll('.modal.show');
+        openModals.forEach(function(modal) {
+            closeModal(modal.id);
+        });
+    }
+});
+
+
+
 </script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

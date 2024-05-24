@@ -1,50 +1,33 @@
-/* Botones de editar y eliminar dentro de la tabla */
-.modal-info .option {
-    display: flex;
-    gap: 10px; /* Espacio entre los botones */
-    justify-content: center;
-    align-items: center;
-}
+# Crear la tabla de registros de usuarios
+data = [
+    ["Nombres", "Apellidos", "Tipo de Documento", "Número de Documento", "País", "Departamento", "Municipio", "Género", "Edad", "Grupo de Edad", "Grupo Étnico", "Discapacidad", "Comunidad", "Actividad"]
+]
+for registro in registros:
+    data.append([
+        registro.nombres, registro.apellidos, registro.tipo_documento, registro.numero_documento, registro.pais,
+        registro.departamento, registro.municipio, registro.genero, registro.edad, 
+        "Menor de 18" if registro.grupo_edad == "menor_18" else "18 a 49" if registro.grupo_edad == "18_49" else "50 o más",
+        registro.grupo_etnico, "Sí" if registro.discapacidad == "si" else "No",
+        registro.comunidad, registro.actividad.nombre
+    ])
 
-/* Estilo específico para el botón de editar */
-.modal-info .option .editar {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 14px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-}
+# Ajustar el tamaño de la fuente de la tabla
+table_style = [
+    ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+    ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+    ('FONTSIZE', (0, 0), (-1, 0), 8),  # Reducir el tamaño de la fuente
+    ('BOTTOMPADDING', (0, 0), (-1, 0), 4),  # Reducir el espacio entre filas
+    ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+    ('GRID', (0, 0), (-1, -1), 1, colors.black),
+]
 
-/* Estilo específico para el botón de eliminar */
-.modal-info .option .eliminar {
-    background-color: #f44336;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 14px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-}
+# Ajustar el tamaño de los márgenes de la tabla
+table_style.append(('LEFTPADDING', (0, 0), (-1, -1), 2))  # Margen izquierdo
+table_style.append(('RIGHTPADDING', (0, 0), (-1, -1), 2))  # Margen derecho
+table_style.append(('TOPPADDING', (0, 0), (-1, -1), 2))  # Margen superior
+table_style.append(('BOTTOMPADDING', (0, 0), (-1, -1), 2))  # Margen inferior
 
-/* Cambiar el color de fondo al pasar el ratón sobre los botones */
-.modal-info .option .editar:hover {
-    background-color: #45a049;
-}
-
-.modal-info .option .eliminar:hover {
-    background-color: #d32f2f;
-}
-
-    </div>
-</div>
-{% endfor %}
+table = Table(data)
+table.setStyle(TableStyle(table_style))
