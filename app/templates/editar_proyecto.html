@@ -22,13 +22,16 @@
                         <input type="text" id="descripcion" name="descripcion" value="{{ proyecto.descripcion }}" class="edit-input" required>
                     </div>
 
-                    <div class="edit-form-group">
+                    <div class="edit-form-group" id="cluster_select">
                         <label for="cluster">Cluster:</label>
-                        <select id="cluster" name="cluster" class="edit-select" required>
+                        <select id="cluster_select_option" name="cluster" class="edit-select" required>
+                            <option value="" disabled selected>Seleccione un Cluster</option>
                             <option value="Cluster de Agua, Saneamiento e Higiene (WASH)">Cluster de Agua, Saneamiento e Higiene (WASH)</option>
                             <option value="Cluster de Alimentación y Nutrición">Cluster de Alimentación y Nutrición</option>
                             <option value="Cluster de Educación">Cluster de Educación</option>
+                            <option value="nuevo">Agregar Nuevo</option>
                         </select>
+                        <input type="text" id="cluster_text" name="cluster" placeholder="Nuevo Cluster" style="display: none;" class="edit-input"><br><br>
                     </div>
                 </div>
 
@@ -53,12 +56,12 @@
                     <div class="edit-form-group">
                         <label for="estado">Estado:</label>
                         <select id="estado" name="estado" class="edit-select" required>
-                            <option value="Activo">Activo</option>
-                            <option value="Inactivo">Inactivo</option>
+                            <option value="Activo" {% if estado_proyecto == 'activo' %} selected {% endif %}>Activo</option>
+                            <option value="Inactivo" {% if estado_proyecto == 'inactivo' %} selected {% endif %}>Inactivo</option>
                         </select>
                     </div>
                 </div>
-
+                
                 <div class="edit-form-row">
                     <div class="edit-form-group">
                         <button type="submit" class="edit-submit-btn">Actualizar Proyecto</button>
@@ -66,6 +69,9 @@
                 </div>
             </form>
         </div>
+
+
+
 
        
 
@@ -94,66 +100,66 @@
             <br>  <br>  
 
 
-            <!-- Tabla para mostrar registros -->
-        <div class="table-data">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Nombres</th>
-                        <th>Apellidos</th>
-                        <th>Tipo de Documento</th>
-                        <th>Número de Documento</th>
-                        <th>País</th>
-                        <th>Departamento</th>
-                        <th>Municipio</th>
-                        <th>Género</th>
-                        <th>Edad</th>
-                        <th>Grupo de Edad</th>
-                        <th>Grupo Étnico</th>
-                        <th>Discapacidad</th>
-                        <th>Comunidad</th>
-                        <th>Actividad</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for registro in registros %}
-                    <tr>
-                        <td>{{ registro.nombres }}</td>
-                        <td>{{ registro.apellidos }}</td>
-                        <td>{{ registro.tipo_documento }}</td>
-                        <td>{{ registro.numero_documento }}</td>
-                        <td>{{ registro.pais }}</td>
-                        <td>{{ registro.departamento }}</td>
-                        <td>{{ registro.municipio }}</td>
-                        <td>{{ registro.genero }}</td>
-                        <td>{{ registro.edad }}</td>
-                        <td>
-                            {% if registro.grupo_edad == "menor_18" %}
-                                Menor de 18
-                            {% elif registro.grupo_edad == "18_49" %}
-                                18 a 49
-                            {% elif registro.grupo_edad == "50_mas" %}
-                                50 o mas
-                            {% endif %}
-                        </td>
-                        <td>{{ registro.grupo_etnico }}</td>
-                        <td>{{ registro.discapacidad }}</td>
-                        <td>{{ registro.comunidad }}</td>
-                        <td>{{ registro.actividad.nombre }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+<!-- Tabla para mostrar registros -->
+<div class="table-data">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombres</th>
+                <th>Apellidos</th>
+                <th>Tipo de Documento</th>
+                <th>Número de Documento</th>
+                <th>País</th>
+                <th>Departamento</th>
+                <th>Municipio</th>
+                <th>Género</th>
+                <th>Edad</th>
+                <th>Grupo de Edad</th>
+                <th>Grupo Étnico</th>
+                <th>Discapacidad</th>
+                <th>Comunidad</th>
+                <th>Actividad</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for registro in registros %}
+                <tr>
+                    <td>{{ registro.nombres }}</td>
+                    <td>{{ registro.apellidos }}</td>
+                    <td>{{ registro.tipo_documento }}</td>
+                    <td>{{ registro.numero_documento }}</td>
+                    <td>{{ registro.pais }}</td>
+                    <td>{{ registro.departamento }}</td>
+                    <td>{{ registro.municipio }}</td>
+                    <td>{{ registro.genero }}</td>
+                    <td>{{ registro.edad }}</td>
+                    <td>
+                        {% if registro.grupo_edad == "menor_18" %}
+                            Menor de 18
+                        {% elif registro.grupo_edad == "18_49" %}
+                            18 a 49
+                        {% elif registro.grupo_edad == "50_mas" %}
+                            50 o más
+                        {% endif %}
+                    </td>
+                    <td>{{ registro.grupo_etnico }}</td>
+                    <td>{{ registro.discapacidad }}</td>
+                    <td>{{ registro.comunidad }}</td>
+                    <td>{{ registro.actividad.nombre }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+
         </div>
         </div> 
         <div>
 
            
-        
-
-
-
-
 
 
 <!-- Modal -->
@@ -172,7 +178,7 @@
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="form-check">
                         {% for actividad in actividades %}
-                            <input class="form-check-input" type="checkbox" id="actividad{{ actividad.id }}" name="actividades[]" value="{{ actividad.id }}">
+                            <input class="form-check-input" type="checkbox" id="actividad{{ actividad.id }}" name="actividades[]" value="{{ actividad.id }}" {% if actividad.id in actividades_seleccionadas %} checked {% endif %}>
                             <label class="form-check-label" for="actividad{{ actividad.id }}">
                                 {{ actividad.nombre }}
                             </label>
@@ -188,7 +194,6 @@
         </div>
     </div>
 </div>
-
 
 
 
@@ -409,6 +414,19 @@ function closeModal(modalId) {
     modal.style.display = "none";
 }
 
+
+
+    document.getElementById("cluster_select_option").addEventListener("change", function() {
+        var clusterSelectOption = document.getElementById("cluster_select_option");
+        var clusterText = document.getElementById("cluster_text");
+        if (clusterSelectOption.value === "nuevo") {
+            clusterText.style.display = "block";
+            clusterText.setAttribute("required", "required"); // Hacer que el campo de texto sea requerido si se selecciona "Agregar Nuevo"
+        } else {
+            clusterText.style.display = "none";
+            clusterText.removeAttribute("required"); // Quitar la propiedad requerida si no se selecciona "Agregar Nuevo"
+        }
+    });
 
 
 function generatePDF(proyectoId) {

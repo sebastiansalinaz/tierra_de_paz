@@ -1379,7 +1379,7 @@ select:focus {
 
 .edit-project-header {
     position: relative;
-    background-color: #3f729b; /* Azul oscuro */
+    background-color: #007bff; /* Azul oscuro */
     color: #fff;
     padding: 20px;
     border-top-left-radius: 20px;

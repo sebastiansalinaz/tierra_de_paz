@@ -486,6 +486,7 @@ def get_datos_tabla_proyectos():
 
 
 
+
 @app.route('/editar_proyecto/<int:proyecto_id>', methods=['GET', 'POST'])
 @login_required
 def editar_proyecto(proyecto_id):
@@ -501,6 +502,7 @@ def editar_proyecto(proyecto_id):
         proyecto.fecha_finalizacion = request.form['fecha_finalizacion']
         proyecto.estado = request.form['estado']
 
+        # Obtener las actividades seleccionadas para este proyecto
         actividades_seleccionadas = request.form.getlist('actividades[]')
         actividades = Actividad.query.filter(Actividad.id.in_(actividades_seleccionadas)).all()
         
@@ -514,10 +516,17 @@ def editar_proyecto(proyecto_id):
     # Recuperar registros de las actividades relacionadas con el proyecto
     actividades_del_proyecto = proyecto.actividades
     registros = []
+    unique_ids = set()
     for actividad in actividades_del_proyecto:
-        registros.extend(actividad.get_all_registros())
+        for registro in actividad.get_all_registros():
+            if registro.id not in unique_ids:
+                unique_ids.add(registro.id)
+                registros.append(registro)
     
-    return render_template('editar_proyecto.html', proyecto=proyecto, actividades=actividades, registros=registros)
+    # Definir estado_proyecto basado en el estado actual del proyecto
+    estado_proyecto = proyecto.estado.lower()
+
+    return render_template('editar_proyecto.html', proyecto=proyecto, actividades=actividades, registros=registros, estado_proyecto=estado_proyecto)
 
 
 
