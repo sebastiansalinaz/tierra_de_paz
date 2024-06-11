@@ -153,8 +153,6 @@
 </div>
 
 
-
-
         </div>
         </div> 
         <div>
@@ -194,7 +192,6 @@
         </div>
     </div>
 </div>
-
 
 
 
@@ -402,6 +399,15 @@
         });
     });
 
+    $(document).ready(function(){
+        $('#modalSeleccionActividad').on('shown.bs.modal', function () {
+            // Itera sobre las actividades seleccionadas y marca los checkboxes correspondientes
+            {% for actividad_id in actividades_seleccionadas %}
+                $('#actividad{{ actividad_id }}').prop('checked', true);
+            {% endfor %}
+        });
+    });
+
      // Función para abrir el modal
      function openModal(modalId) {
         var modal = document.getElementById(modalId);
@@ -605,45 +611,6 @@ document.getElementById("crearActividadForm").addEventListener("submit", crearAc
         });
     }
 
-   
-        // Función para manejar el envío del formulario de registro de usuario
-function guardarRegistro(event) {
-    event.preventDefault(); // Evitar que el formulario se envíe automáticamente
-    
-    // Enviar los datos del formulario de registro de personas al servidor utilizando Fetch API
-    var formData = new FormData(document.getElementById("modal1Form"));
-    fetch('/guardar_registro', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRF-Token': '{{ csrf_token() }}' // Agregar el token CSRF si es necesario
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            // Mostrar el mensaje de registro exitoso
-            document.getElementById("registro-exitoso").style.display = "block";
-            // Configurar temporizador para que desaparezca después de 3 segundos
-            setTimeout(function() {
-                document.getElementById("registro-exitoso").style.display = 'none';
-            }, 3000); // 3000 milisegundos (3 segundos)
-        } else {
-            // Mostrar mensaje de error
-            alert('Error al guardar los datos del registro de usuario.');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error al comunicarse con el servidor.');
-    });
-}
-
-// Agregar evento submit al formulario de registro de usuario
-document.getElementById("modal1Form").addEventListener("submit", guardarRegistro);
-
-        
-      
-    
 
 document.addEventListener('keydown', function(event) {
     if (event.key === "Escape") {

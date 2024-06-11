@@ -199,7 +199,10 @@ def usuarios():
         actividad_dict['subactividad_nombres'] = actividad.get_all_subactividad_nombres()
         actividades_with_subregistros.append(actividad_dict)
 
-    return render_template('modules/usuarios.html', actividades=actividades_with_subregistros, registros=registros)
+    # Obtener las actividades seleccionadas para pasarlas a la plantilla
+    actividades_seleccionadas = [actividad.id for actividad in actividades]
+
+    return render_template('modules/usuarios.html', actividades=actividades_with_subregistros, registros=registros, actividades_seleccionadas=actividades_seleccionadas)
 
 
 
@@ -530,7 +533,10 @@ def editar_proyecto(proyecto_id):
     # Definir estado_proyecto basado en el estado actual del proyecto
     estado_proyecto = proyecto.estado.lower()
 
-    return render_template('editar_proyecto.html', proyecto=proyecto, actividades=actividades, registros=registros, estado_proyecto=estado_proyecto)
+    # Obtener las actividades seleccionadas para pasarlas a la plantilla
+    actividades_seleccionadas = [actividad.id for actividad in proyecto.actividades]
+
+    return render_template('editar_proyecto.html', proyecto=proyecto, actividades=actividades, registros=registros, estado_proyecto=estado_proyecto, actividades_seleccionadas=actividades_seleccionadas)
 
 
 
@@ -550,7 +556,6 @@ def get_proyecto(proyecto_id):
         'estado': proyecto.estado
     }
     return jsonify(proyecto_data)
-
 
 
 
