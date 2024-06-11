@@ -20,6 +20,10 @@ from io import BytesIO
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, PageBreak
+import pdfkit
+from weasyprint import HTML
+
+
 
 
 
@@ -590,84 +594,24 @@ def generate_pdf(proyecto_id):
     # Obtener los registros asociados a estas actividades
     registros = Registro.query.filter(Registro.actividad_id.in_([actividad.id for actividad in actividades])).all()
 
-    buffer = BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=landscape(letter))  # Tamaño de página horizontal
-    elements = []
+    # Ruta completa de la imagen
+    image_path = os.path.join(app.root_path, 'static', 'img', 'logo.png')
 
-    # Logo de la empresa
-    logo_path = os.path.join('static', 'img', 'logo.png')
-    if os.path.exists(logo_path):
-        elements.append(Image(logo_path, width=75, height=50))
+    # Renderizar la plantilla HTML
+    rendered_html = render_template('pdf_template.html', proyecto=proyecto, registros=registros, image_path=image_path)
 
-    # Título del informe
-    styles = getSampleStyleSheet()
-    elements.append(Spacer(1, 12))
-    elements.append(Paragraph("FUNDACION TIERRA DE PAZ", styles['Title']))
-    elements.append(Spacer(1, 12))
+    # Generar PDF con WeasyPrint
+    pdf = HTML(string=rendered_html, base_url=request.host_url).write_pdf()
 
-    # Detalles del proyecto
-    project_details = [
-        f"Proyecto: {proyecto.nombre}",
-        f"Descripción: {proyecto.descripcion}",
-        f"Responsable: {proyecto.responsable}",
-        f"Fecha de Inicio: {proyecto.fecha_inicio}",
-        f"Fecha de Finalización: {proyecto.fecha_finalizacion}",
-        f"Estado: {proyecto.estado}"
-    ]
-    for detail in project_details:
-        elements.append(Paragraph(detail, styles['Normal']))
-        elements.append(Spacer(1, 6))
+    # Crear una respuesta Flask con el PDF
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = f'attachment; filename=proyecto_{proyecto_id}.pdf'
+    return response
 
-    # Crear la tabla de registros de usuarios
-    data = [
-        ["Nombres", "Apellidos", "Tipo de Documento", "Número de Documento", "País", "Departamento", "Municipio", "Género", "Edad", "Grupo de Edad", "Grupo Étnico", "Discapacidad", "Comunidad", "Actividad"]
-    ]
-    for registro in registros:
-        # Truncar campos si son cadenas de texto y superan los 6 caracteres
-        truncated_row = []
-        for i, field in enumerate([registro.nombres, registro.apellidos, registro.tipo_documento, registro.numero_documento, registro.pais,
-                      registro.departamento, registro.municipio, registro.genero, registro.edad, registro.grupo_edad,
-                      registro.grupo_etnico, registro.discapacidad, registro.comunidad, registro.actividad.nombre]):
-            if isinstance(field, str):
-                if i == 3:  # Índice 3 corresponde al campo "Número de Documento"
-                    truncated_field = field  # No truncar este campo
-                else:
-                    truncated_field = field[:6] + '...' if len(field) > 6 else field
-            else:
-                truncated_field = field
-            truncated_row.append(truncated_field)
-        data.append(truncated_row)
 
-    # Ajustar el tamaño de la fuente y los márgenes de la tabla
-    table_style = [
-        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 8),  # Reducir el tamaño de la fuente
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 4),  # Reducir el espacio entre filas
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-        ('LEFTPADDING', (0, 0), (-1, -1), 2),  # Margen izquierdo
-        ('RIGHTPADDING', (0, 0), (-1, -1), 2),  # Margen derecho
-        ('TOPPADDING', (0, 0), (-1, -1), 2),  # Margen superior
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),  # Margen inferior
-    ]
 
-    table = Table(data)
-    table.setStyle(TableStyle(table_style))
 
-    # Rotar la tabla 90 grados en sentido contrario a las agujas del reloj
-    elements.append(table)
-
-    # Pie de página
-    elements.append(Spacer(1, 24))
-    elements.append(Paragraph("Este es un informe generado automáticamente por el sistema.", styles['Italic']))
-
-    doc.build(elements)
-
-    buffer.seek(0)
-    return send_file(buffer, as_attachment=True, download_name=f'proyecto_{proyecto_id}.pdf', mimetype='application/pdf')
 
 
 

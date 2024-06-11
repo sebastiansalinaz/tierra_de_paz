@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Informe de Proyecto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0; /* Eliminar el margen predeterminado del cuerpo */
+            padding: 0; /* Eliminar el relleno predeterminado del cuerpo */
+            font-size: 10px; /* Reducir el tamaño de la fuente */
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px; /* Reducir el espacio superior e inferior del encabezado */
+        }
+        .logo {
+            width: 100px;
+            height: auto;
+        }
+        .page-count {
+            font-size: 10px;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px; /* Establecer un ancho máximo para el contenido */
+            margin: 0 auto; /* Centrar el contenido en la página */
+            font-size: 12px; /* Tamaño de fuente común para el título y la información */
+            color: #0a0a0a;
+            padding: 20px;
+            margin-left: -30px; /* Añadir un margen izquierdo */
+            margin-right: 0; /* Eliminar el margen derecho */
+        }
+
+       
+        .container2 {
+            text-align: center; /* Centra el contenido */
+        }
+        .titulo_2 {
+            border: 2px solid #34AACA;
+            padding: 5px;
+            text-align: center;
+            display: inline-block; /* Ajusta el ancho al tamaño del contenido */
+        }
+
+        .titulo_3 h1 {
+            border: 2px solid #34AACA ;
+            padding: 2px;
+            text-align: center;
+            background-color: #34AACA;
+            color: #442764;
+        }
+        h1, .fundacion-info p {
+            text-align: center;
+            color: #0a0a0a;
+            margin: 0;
+            font-size: 12px; /* Tamaño de fuente común para el título y la información */
+            font-weight: bold; /* Poner en negrita */
+        }
+        .fundacion-info {
+            margin-bottom: 20px; /* Espacio adicional debajo de la información de la fundación */
+        }
+        .project-details, .table {
+            width: 100%;
+        }
+
+        .project-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px; /* Espacio adicional debajo de los detalles del proyecto */
+        }
+        .project-details p {
+            font-size: 9px; /* Aumentar el tamaño de la fuente */
+            margin: 0;
+        }
+        .project-details p strong {
+            font-weight: bold; /* Negrita para los títulos */
+        }
+
+        .project-details p, .table th, .table td {
+            font-size: 7px; /* Reducir el tamaño de la fuente de la tabla */
+            padding: 4px; /* Reducir el espacio interno de las celdas */
+            text-align: left;
+            white-space: nowrap; /* Evitar saltos de línea en los textos */
+        }
+        .table {
+            border-collapse: collapse;
+            width: 100%; /* Ajustar el ancho de la tabla */
+        }
+        .table th, .table td {
+            border: 1px solid #ccc;
+            word-wrap: break-word; /* Permitir saltos de línea en las celdas */
+            white-space: normal; /* Permitir saltos de línea automáticos */
+            vertical-align: top; /* Alinear el contenido en la parte superior de las celdas */
+        }
+        .table th {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+            font-size: 8px; /* Reducir el tamaño de la fuente del pie de página */
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='img/logoFooter.png') }}" alt="Logo" class="logo">
+        </div>
+        <div class="page-count">
+            Página {{ current_page }} de {{ total_pages }}
+        </div>
+    </header>
+    <div class="container">
+        <h1>FUNDACION TIERRA DE PAZ</h1>
+        <div class="fundacion-info">
+            <p>NIT: 9000580130</p>
+            <p>POPAYÁN CAUCA CALLE 19 N 6 A 14 Ciudad Jardin</p>
+            <p>TELEFONOS: 3164958823</p>
+        </div>
+
+        <div class="container2">
+            <div class="titulo_2">
+                <h1>CLUSTER DE AGUA, SANEAMIENTO E HIGIENE</h1>
+            </div>
+        </div>
+
+        
+
+       
+       
+        <br>
+        <div class="project-details" style="display: flex; flex-wrap: wrap; gap: 40px; margin-bottom: 20px; text-transform: uppercase;">
+            <p style="flex-basis: 33.333%; font-size: 11px; margin: 10px 20px 0 20px;"><strong>Proyecto:</strong> {{ proyecto.nombre }}</p>
+            <p style="flex-basis: 33.333%; font-size: 11px; margin: 10px 20px 0 20px;"><strong>Descripción:</strong> {{ proyecto.descripcion }}</p>
+            <p style="flex-basis: 33.333%; font-size: 11px; margin: 10px 20px 0 20px; margin-right: 100px;"><strong>Responsable:</strong> {{ proyecto.responsable }}</p>
+            <p style="flex-basis: 33.333%; font-size: 11px; margin: 10px 20px 0 20px;"><strong>Fecha de Inicio:</strong> {{ proyecto.fecha_inicio }}</p>
+            <p style="flex-basis: 33.333%; font-size: 11px; margin: 10px 20px 0 20px;"><strong>Fecha de Finalización:</strong> {{ proyecto.fecha_finalizacion }}</p>
+            <p style="flex-basis: 33.333%; font-size: 11px; margin: 10px 20px 0 20px; margin-right: 100px;"><strong>Estado:</strong> {{ proyecto.estado }}</p>
+        </div>
+        <br><br>
+        
+       
+            <div class="titulo_3">
+                <h1>TABLA DE BENEFICIARIOS</h1>
+            </div>
+        <br> <br>
+        
+        <table class="table">
+            <tr>
+                <th>Nombres</th>
+                <th>Apellidos</th>
+                <th>Tipo de Documento</th>
+                <th>Número de Documento</th>
+                <th>País</th>
+                <th>Departamento</th>
+                <th>Municipio</th>
+                <th>Género</th>
+                <th>Edad</th>
+                <th>Grupo de Edad</th>
+                <th>Grupo Étnico</th>
+                <th>Discapacidad</th>
+                <th>Comunidad</th>
+                <th>Actividad</th>
+            </tr>
+            {% for registro in registros %}
+            <tr>
+                <td>{{ registro.nombres }}</td>
+                <td>{{ registro.apellidos }}</td>
+                <td>{{ registro.tipo_documento }}</td>
+                <td>{{ registro.numero_documento }}</td>
+                <td>{{ registro.pais }}</td>
+                <td>{{ registro.departamento }}</td>
+                <td>{{ registro.municipio }}</td>
+                <td>{{ registro.genero }}</td>
+                <td>{{ registro.edad }}</td>
+                <td>{{ registro.grupo_edad }}</td>
+                <td>{{ registro.grupo_etnico }}</td>
+                <td>{{ registro.discapacidad }}</td>
+                <td>{{ registro.comunidad }}</td>
+                <td>{{ registro.actividad.nombre }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <div class="footer">
+            Este es un informe generado automáticamente por el sistema.
+        </div>
+    </div>
+</body>
+</html>
