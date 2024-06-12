@@ -506,7 +506,6 @@ def get_datos_tabla_proyectos():
 
 
 
-
 @app.route('/editar_proyecto/<int:proyecto_id>', methods=['GET', 'POST'])
 @login_required
 def editar_proyecto(proyecto_id):
@@ -533,13 +532,13 @@ def editar_proyecto(proyecto_id):
         flash('¡Proyecto actualizado exitosamente!', 'success')
         return redirect(url_for('proyectos'))
 
-    # Recuperar registros de las actividades relacionadas con el proyecto
+    # Recuperar registros de las actividades relacionadas con el proyecto, excluyendo los deshabilitados
     actividades_del_proyecto = proyecto.actividades
     registros = []
     unique_ids = set()
     for actividad in actividades_del_proyecto:
         for registro in actividad.get_all_registros():
-            if registro.id not in unique_ids:
+            if registro.id not in unique_ids and not registro.inhabilitado:
                 unique_ids.add(registro.id)
                 registros.append(registro)
     
