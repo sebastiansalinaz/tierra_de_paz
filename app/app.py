@@ -439,6 +439,22 @@ def eliminar_registro(registro_id):
 
 
 
+@app.route('/get_estadisticas_usuarios')
+@login_required
+def get_estadisticas_usuarios():
+    total_registros = Registro.query.count()
+    registros_habilitados = Registro.query.filter_by(estado='habilitado').count()
+    registros_inhabilitados = Registro.query.filter_by(inhabilitado=True).count()  # Modificación aquí
+    
+    estadisticas = {
+        'registrados': total_registros,
+        'habilitados': registros_habilitados,
+        'inhabilitados': registros_inhabilitados
+    }
+    
+    return jsonify(estadisticas)
+
+
 
 
 @app.route('/proyectos')

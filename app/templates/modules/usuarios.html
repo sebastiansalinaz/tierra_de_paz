@@ -41,7 +41,7 @@
             <li>
                 <i class='bx bxs-user-check'></i>
                 <span class="text">
-                    <h3>1,020 </h3>
+                    <h3 id="usuarios-registrados">0</h3>
                     <h3>USUARIOS</h3>
                     <p>Registrados</p>
                 </span>
@@ -57,7 +57,7 @@
             <li>
                 <i class='bx bxs-user-x'></i>
                 <span class="text">
-                    <h3>76 </h3>
+                    <h3 id="usuarios-inhabilitados">0</h3>
                     <h3>USUARIOS</h3>
                     <p>Inhabilitados</p>
                 </span>
@@ -1029,6 +1029,25 @@ function openModal(modalId) {
     }
     
     
+    
+    // Función para actualizar las estadísticas de usuarios
+        function actualizarEstadisticasUsuarios() {
+            fetch('/get_estadisticas_usuarios')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('usuarios-registrados').textContent = data.registrados;
+                    document.getElementById('usuarios-inhabilitados').textContent = data.inhabilitados;
+                })
+                .catch(error => console.error('Error al obtener las estadísticas:', error));
+        }
+    
+        // Llamar a la función para actualizar las estadísticas de usuarios al cargar la página
+        window.addEventListener('load', function() {
+            actualizarEstadisticasUsuarios();
+        });
+
+    
+
 </script>
 
 {% endblock %}
