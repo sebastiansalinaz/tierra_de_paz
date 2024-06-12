@@ -623,6 +623,42 @@ input[type="text"]:focus {
 
 
 
+/* Estilos para el botón de confirmación */
+.btn-action {
+    background-color: #4CAF50; /* Color de fondo verde */
+    color: #fff; /* Color del texto blanco */
+    padding: 10px 20px; /* Espaciado interno del botón */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cursor de tipo puntero al pasar */
+    text-decoration: none; /* Sin subrayado de texto */
+    transition: background-color 0.3s, color 0.3s; /* Transición suave */
+}
+
+
+
+/* Estilo específico para el botón de habilitar */
+.btn-habilitar {
+    background-color: #4CAF50; /* Verde */
+    color: white;
+}
+
+.btn-habilitar:hover {
+    background-color: #3b883d; /* verde */
+    color: white;
+}
+
+/* Estilo específico para el botón de inhabilitar */
+.btn-inhabilitar {
+    background-color: #f44336; /* Rojo */
+    color: white;
+}
+
+.btn-inhabilitar:hover {
+    background-color: #c4372d; /* Rojo */
+    color: white;
+}
+
 
 
 

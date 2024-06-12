@@ -149,8 +149,8 @@
                         <td>{{ registro.actividad.nombre }}</td>
                         <td class="option">
                             <a href="#" class="custom-btn editar" onclick="abrirModalEdicion({{ registro.id }})">Editar</a>
-                            <a href="#" class="custom-btn-eliminar eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a>
-                            <a href="#" class="custom-btn" data-registro-id="{{ registro.id }}" onclick="toggleHabilitarRegistro(this)">
+                            <a href="#" class="custom-btn-eliminar eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a><!-- Botón para Inhabilitar/Habilitar -->
+                            <a href="#" class="custom-btn" data-registro-id="{{ registro.id }}" data-registro-inhabilitado="{{ 'true' if registro.inhabilitado else 'false' }}" onclick="mostrarConfirmarHabilitarRegistroModal(this)">
                                 {{ 'Habilitar' if registro.inhabilitado else 'Inhabilitar' }}
                             </a>
                         </td>
@@ -219,8 +219,8 @@
                             <td>{{ registro.actividad.nombre }}</td>
                             <td class="options">
                                 <a href="#" class="custom-btn" onclick="abrirModalEdicion({{ registro.id }})">Editar</a>
-                                <a href="#" class="custom-btn-eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a>
-                                <a href="#" class="custom-btn" data-registro-id="{{ registro.id }}" onclick="toggleHabilitarRegistro(this)">
+                                <a href="#" class="custom-btn-eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a><!-- Botón para Inhabilitar/Habilitar -->
+                                <a href="#" class="custom-btn" data-registro-id="{{ registro.id }}" data-registro-inhabilitado="{{ 'true' if registro.inhabilitado else 'false' }}" onclick="mostrarConfirmarHabilitarRegistroModal(this)">
                                     {{ 'Habilitar' if registro.inhabilitado else 'Inhabilitar' }}
                                 </a>
                             </td>
@@ -260,6 +260,29 @@
         <div class="modal-footer">
             <button class="btn-cancel" onclick="cerrarModal('confirmarEliminarRegistroModal')">Cancelar</button>
             <a href="#" id="confirmarEliminarRegistroBtn" class="btn-delete">Eliminar registro</a>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<!-- Diálogo emergente para confirmar habilitación/inhabilitación de registro -->
+<div id="confirmarHabilitarRegistroModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" onclick="cerrarModal('confirmarHabilitarRegistroModal')">&times;</span>
+            <h2 id="modalHabilitarHeader">Confirmar acción</h2>
+        </div>
+        <div class="modal-body">
+            <p id="modalHabilitarBody">¿Estás seguro de que deseas realizar esta acción?</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="cerrarModal('confirmarHabilitarRegistroModal')">Cancelar</button>
+            <a href="#" id="confirmarHabilitarRegistroBtn" class="btn-action">Confirmar</a>
         </div>
     </div>
 </div>
@@ -1000,8 +1023,61 @@ function openModal(modalId) {
     }
 
 
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mostrar el modal de confirmación para habilitar/inhabilitar el registro
+        window.mostrarConfirmarHabilitarRegistroModal = function(element) {
+            var registroId = element.dataset.registroId;
+            var inhabilitado = element.dataset.registroInhabilitado === 'true';
+            var modal = document.getElementById('confirmarHabilitarRegistroModal');
+            
+            if (modal) {
+                var header = document.getElementById('modalHabilitarHeader');
+                var body = document.getElementById('modalHabilitarBody');
+                var confirmarHabilitarRegistroBtn = document.getElementById('confirmarHabilitarRegistroBtn');
+    
+                if (inhabilitado) {
+                    header.textContent = 'Confirmar habilitación de registro';
+                    body.textContent = '¿Estás seguro de que deseas habilitar este registro?';
+                    confirmarHabilitarRegistroBtn.textContent = 'Habilitar registro';
+                    confirmarHabilitarRegistroBtn.classList.remove('btn-inhabilitar');
+                    confirmarHabilitarRegistroBtn.classList.add('btn-habilitar');
+                } else {
+                    header.textContent = 'Confirmar inhabilitación de registro';
+                    body.textContent = '¿Estás seguro de que deseas inhabilitar este registro?';
+                    confirmarHabilitarRegistroBtn.textContent = 'Inhabilitar registro';
+                    confirmarHabilitarRegistroBtn.classList.remove('btn-habilitar');
+                    confirmarHabilitarRegistroBtn.classList.add('btn-inhabilitar');
+                }
+    
+                confirmarHabilitarRegistroBtn.onclick = function() {
+                    toggleHabilitarRegistro(element);
+                    cerrarModal('confirmarHabilitarRegistroModal');
+                };
+                openModal('confirmarHabilitarRegistroModal');
+            }
+        };
+    
+        // Cerrar modal
+        window.cerrarModal = function(modalId) {
+            var modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        };
+    
+        // Abrir modal
+        window.openModal = function(modalId) {
+            var modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'block';
+            }
+        };
+    });
+    
+    // Función para habilitar/inhabilitar el registro
     function toggleHabilitarRegistro(element) {
         var registroId = element.getAttribute('data-registro-id');
+        var inhabilitado = element.getAttribute('data-registro-inhabilitado') === 'true';
         fetch('/toggle_habilitar/' + registroId, {
             method: 'POST',
             headers: {
@@ -1017,9 +1093,11 @@ function openModal(modalId) {
                 if (data.inhabilitado) {
                     row.classList.add('inhabilitado');
                     element.textContent = 'Habilitar';
+                    element.setAttribute('data-registro-inhabilitado', 'true');
                 } else {
                     row.classList.remove('inhabilitado');
                     element.textContent = 'Inhabilitar';
+                    element.setAttribute('data-registro-inhabilitado', 'false');
                 }
             } else {
                 alert('Error al cambiar el estado del registro');
@@ -1028,25 +1106,25 @@ function openModal(modalId) {
         .catch(error => console.error('Error:', error));
     }
     
-    
-    
     // Función para actualizar las estadísticas de usuarios
-        function actualizarEstadisticasUsuarios() {
-            fetch('/get_estadisticas_usuarios')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('usuarios-registrados').textContent = data.registrados;
-                    document.getElementById('usuarios-inhabilitados').textContent = data.inhabilitados;
-                })
-                .catch(error => console.error('Error al obtener las estadísticas:', error));
-        }
+    function actualizarEstadisticasUsuarios() {
+        fetch('/get_estadisticas_usuarios')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('usuarios-registrados').textContent = data.registrados;
+                document.getElementById('usuarios-inhabilitados').textContent = data.inhabilitados;
+            })
+            .catch(error => console.error('Error al obtener las estadísticas:', error));
+    }
     
-        // Llamar a la función para actualizar las estadísticas de usuarios al cargar la página
-        window.addEventListener('load', function() {
-            actualizarEstadisticasUsuarios();
-        });
-
+    // Llamar a la función para actualizar las estadísticas de usuarios al cargar la página
+    window.addEventListener('load', function() {
+        actualizarEstadisticasUsuarios();
+    });    
     
+        
+   
+        
 
 </script>
 
