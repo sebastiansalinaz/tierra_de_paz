@@ -5,6 +5,17 @@
 {% block content %}
 <section id="content">
     <!-- CONTENIDO PRINCIPAL -->
+<style>
+    .deshabilitado {
+        opacity: 0.5;
+    }
+    
+    .inhabilitado {
+        opacity: 0.5;
+        background-color: #f0f0f0;
+    }
+</style>
+
     <main>
         <div class="head-title">
             <div class="left">
@@ -113,7 +124,7 @@
                 </thead>
                 <tbody>
                     {% for registro in actividad.registros %}
-                    <tr>
+                    <tr class="{% if registro.estado == 'deshabilitado' %}deshabilitado{% endif %} {% if registro.inhabilitado %}inhabilitado{% endif %}">
                         <td>{{ registro.nombres }}</td>
                         <td>{{ registro.apellidos }}</td>
                         <td>{{ registro.tipo_documento }}</td>
@@ -139,6 +150,9 @@
                         <td class="option">
                             <a href="#" class="custom-btn editar" onclick="abrirModalEdicion({{ registro.id }})">Editar</a>
                             <a href="#" class="custom-btn-eliminar eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a>
+                            <a href="#" class="custom-btn" data-registro-id="{{ registro.id }}" onclick="toggleHabilitarRegistro(this)">
+                                {{ 'Habilitar' if registro.inhabilitado else 'Inhabilitar' }}
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -180,7 +194,7 @@
                     </thead>
                     <tbody>
                         {% for registro in registros %}
-                        <tr>
+                        <tr class="{% if registro.estado == 'deshabilitado' %}deshabilitado{% endif %} {% if registro.inhabilitado %}inhabilitado{% endif %}">
                             <td>{{ registro.nombres }}</td>
                             <td>{{ registro.apellidos }}</td>
                             <td>{{ registro.tipo_documento }}</td>
@@ -206,6 +220,9 @@
                             <td class="options">
                                 <a href="#" class="custom-btn" onclick="abrirModalEdicion({{ registro.id }})">Editar</a>
                                 <a href="#" class="custom-btn-eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a>
+                                <a href="#" class="custom-btn" data-registro-id="{{ registro.id }}" onclick="toggleHabilitarRegistro(this)">
+                                    {{ 'Habilitar' if registro.inhabilitado else 'Inhabilitar' }}
+                                </a>
                             </td>
                             
                             
@@ -981,6 +998,36 @@ function openModal(modalId) {
             }
         });
     }
+
+
+    function toggleHabilitarRegistro(element) {
+        var registroId = element.getAttribute('data-registro-id');
+        fetch('/toggle_habilitar/' + registroId, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'  // Si usas CSRF token
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Actualizar la fila del registro en la tabla
+                var row = element.closest('tr');
+                if (data.inhabilitado) {
+                    row.classList.add('inhabilitado');
+                    element.textContent = 'Habilitar';
+                } else {
+                    row.classList.remove('inhabilitado');
+                    element.textContent = 'Inhabilitar';
+                }
+            } else {
+                alert('Error al cambiar el estado del registro');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    
     
 </script>
 

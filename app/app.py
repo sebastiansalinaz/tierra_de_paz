@@ -81,7 +81,7 @@ class Actividad(db.Model):
 
 
 class Registro(db.Model):
-    __tablename__ = 'registro'  # Agregando el nombre de la tabla explícitamente
+    __tablename__ = 'registro'
     id = db.Column(db.Integer, primary_key=True)
     nombres = db.Column(db.String(100), nullable=False)
     apellidos = db.Column(db.String(100), nullable=False)
@@ -97,6 +97,8 @@ class Registro(db.Model):
     discapacidad = db.Column(db.String(2), nullable=False)
     comunidad = db.Column(db.String(100), nullable=False)
     actividad_id = db.Column(db.Integer, db.ForeignKey('actividad.id'), nullable=False)
+    estado = db.Column(db.String(20), nullable=False, default='habilitado')
+    inhabilitado = db.Column(db.Boolean, default=False)
 
 class Proyecto(db.Model):
     __tablename__ = 'proyecto'
@@ -370,6 +372,17 @@ def editar_registro():
     # Redireccionar a alguna página después de editar el registro
     # Puedes redirigir a la página de detalles del registro o a cualquier otra página que desees
     return redirect(url_for('usuarios', registro_id=registro.id))
+
+
+
+@app.route('/toggle_habilitar/<int:registro_id>', methods=['POST'])
+@login_required
+def toggle_habilitar(registro_id):
+    registro = Registro.query.get_or_404(registro_id)
+    registro.inhabilitado = not registro.inhabilitado
+    db.session.commit()
+    return jsonify({'status': 'success', 'inhabilitado': registro.inhabilitado})
+
 
 
 
