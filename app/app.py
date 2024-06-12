@@ -624,8 +624,8 @@ def generate_pdf(proyecto_id):
     # Obtener todas las actividades asociadas al proyecto
     actividades = Actividad.query.filter_by(proyecto_id=proyecto_id).all()
     
-    # Obtener los registros asociados a estas actividades
-    registros = Registro.query.filter(Registro.actividad_id.in_([actividad.id for actividad in actividades])).all()
+    # Obtener los registros asociados a estas actividades, excluyendo los inhabilitados
+    registros = Registro.query.filter(Registro.actividad_id.in_([actividad.id for actividad in actividades]), Registro.inhabilitado == False).all()
 
     # Ruta completa de la imagen
     image_path = os.path.join(app.root_path, 'static', 'img', 'logo.png')
@@ -641,6 +641,7 @@ def generate_pdf(proyecto_id):
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = f'attachment; filename=proyecto_{proyecto_id}.pdf'
     return response
+
 
 
 
