@@ -168,8 +168,8 @@
                 <div class="head-container">
                     <div class="head">
                         <h3>Registros Recientes</h3>
-                        <i class='bx bx-search' id="search-icon"></i> <!-- Icono de búsqueda -->
-                        <input type="text" id="search-input" placeholder="Buscar por nombre o documento"> <!-- Input de búsqueda -->
+                        <i class='bx bx-search' id="search-icon"></i>
+                        <input type="text" id="search-input" placeholder="Buscar por nombre o documento">
                         <i class='bx bx-filter'></i>
                     </div>
                 </div>
@@ -232,7 +232,7 @@
                     </table>
                 </div>
             </div>
-        </div>       
+        </div>           
     </main>
 </section>
 
@@ -743,11 +743,13 @@ function openModal(modalId) {
         fetch('/get_datos_tabla')
             .then(response => response.json())
             .then(data => {
-                // Limpiar la tabla antes de cargar nuevos datos
+                // Obtener la tabla y su cuerpo
                 var tableBody = document.querySelector('.table-data table tbody');
-                tableBody.innerHTML = "";
-
-                // Insertar filas con los datos recibidos en la tabla
+                
+                // Crear un fragmento para construir las nuevas filas
+                var fragment = document.createDocumentFragment();
+                
+                // Insertar filas con los datos recibidos en el fragmento
                 data.forEach(rowData => {
                     var newRow = document.createElement('tr');
                     newRow.innerHTML = `
@@ -766,18 +768,30 @@ function openModal(modalId) {
                         <td>${rowData.comunidad}</td>
                         <td>${rowData.actividad}</td>
                         <td class="options">
-                            <a href="" class="custom-btn">Editar</a>
-                            <a href="" class="custom-btn-eliminar">Eliminar</a>
+                            <a href="#" class="custom-btn" onclick="abrirModalEdicion(${rowData.id})">Editar</a>
+                            <a href="#" class="custom-btn-eliminar" data-registro-id="${rowData.id}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a>
+                            <a href="#" class="custom-btn" data-registro-id="${rowData.id}" data-registro-inhabilitado="${rowData.inhabilitado}" onclick="mostrarConfirmarHabilitarRegistroModal(this)">
+                                ${rowData.inhabilitado ? 'Habilitar' : 'Inhabilitar'}
+                            </a>
                         </td>
                     `;
-                    tableBody.appendChild(newRow);
+                    fragment.appendChild(newRow); // Agregar la nueva fila al fragmento
                 });
+                
+                // Limpiar la tabla antes de insertar las nuevas filas
+                tableBody.innerHTML = '';
+                
+                // Insertar el fragmento al principio del cuerpo de la tabla
+                tableBody.appendChild(fragment);
             })
             .catch(error => {
                 console.error('Error:', error);
                 alert('Error al cargar los datos de la tabla.');
             });
     }
+    
+    
+    
 
     function asignarPersona(event) {
         event.preventDefault(); // Evitar que el formulario se envíe automáticamente

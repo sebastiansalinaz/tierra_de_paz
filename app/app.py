@@ -99,6 +99,8 @@ class Registro(db.Model):
     actividad_id = db.Column(db.Integer, db.ForeignKey('actividad.id'), nullable=False)
     estado = db.Column(db.String(20), nullable=False, default='habilitado')
     inhabilitado = db.Column(db.Boolean, default=False)
+    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)  # Campo de fecha de creación
+
 
 class Proyecto(db.Model):
     __tablename__ = 'proyecto'
@@ -192,7 +194,7 @@ def dashboard():
 @login_required
 def usuarios():
     actividades = Actividad.query.options(joinedload(Actividad.actividad_padre)).all()
-    registros = Registro.query.all()
+    registros = Registro.query.order_by(Registro.fecha_creacion.desc()).all()  # Ordenar por fecha de creación descendente
 
     actividades_with_subregistros = []
     for actividad in actividades:
@@ -201,11 +203,9 @@ def usuarios():
         actividad_dict['subactividad_nombres'] = actividad.get_all_subactividad_nombres()
         actividades_with_subregistros.append(actividad_dict)
 
-    # Obtener las actividades seleccionadas para pasarlas a la plantilla
     actividades_seleccionadas = [actividad.id for actividad in actividades]
 
     return render_template('modules/usuarios.html', actividades=actividades_with_subregistros, registros=registros, actividades_seleccionadas=actividades_seleccionadas)
-
 
 
 
@@ -396,16 +396,18 @@ def get_activities():
     return jsonify(actividades_list)
 
 
+
 @app.route('/get_datos_tabla', methods=['GET'])
 @login_required
 def get_datos_tabla():
-    # Obtener todos los registros de la tabla 'Registro'
-    registros = Registro.query.all()
+    # Obtener todos los registros de la tabla 'Registro' en orden descendente por 'id'
+    registros = Registro.query.order_by(Registro.id.desc()).all()
     
     # Crear una lista de diccionarios con los datos de los registros
     datos_tabla = []
     for registro in registros:
         datos_tabla.append({
+            'id': registro.id,  # Asegurarse de incluir el 'id' para las operaciones de editar/eliminar
             'nombres': registro.nombres,
             'apellidos': registro.apellidos,
             'tipo_documento': registro.tipo_documento,
@@ -424,7 +426,6 @@ def get_datos_tabla():
     
     # Devolver los datos de la tabla en formato JSON
     return jsonify(datos_tabla)
-
 
 
 
