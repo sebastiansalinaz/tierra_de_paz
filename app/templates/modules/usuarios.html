@@ -165,73 +165,74 @@
 
         <div class="table-data">
             <div class="order">
-                <div class="head">
-                    <h3>Registros Recientes</h3>
-                    <i class='bx bx-search' id="search-icon"></i> <!-- Icono de búsqueda -->
-                    <input type="text" id="search-input" placeholder="Buscar por nombre o documento"> <!-- Input de búsqueda -->
-                    <i class='bx bx-filter'></i>
+                <div class="head-container">
+                    <div class="head">
+                        <h3>Registros Recientes</h3>
+                        <i class='bx bx-search' id="search-icon"></i> <!-- Icono de búsqueda -->
+                        <input type="text" id="search-input" placeholder="Buscar por nombre o documento"> <!-- Input de búsqueda -->
+                        <i class='bx bx-filter'></i>
+                    </div>
                 </div>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nombres</th>
-                            <th>Apellidos</th>
-                            <th>Tipo de Documento</th>
-                            <th>Número de Documento</th>
-                            <th>País</th>
-                            <th>Departamento</th>
-                            <th>Municipio</th>
-                            <th>Género</th>
-                            <th>Edad</th>
-                            <th>Grupo de Edad</th>
-                            <th>Grupo Étnico</th>
-                            <th>Discapacidad</th>
-                            <th>Comunidad</th>
-                            <th>Actividad</th>
-                            <th>Opciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for registro in registros %}
-                        <tr class="{% if registro.estado == 'deshabilitado' %}deshabilitado{% endif %} {% if registro.inhabilitado %}inhabilitado{% endif %}">
-                            <td>{{ registro.nombres }}</td>
-                            <td>{{ registro.apellidos }}</td>
-                            <td>{{ registro.tipo_documento }}</td>
-                            <td>{{ registro.numero_documento }}</td>
-                            <td>{{ registro.pais }}</td>
-                            <td>{{ registro.departamento }}</td>
-                            <td>{{ registro.municipio }}</td>
-                            <td>{{ registro.genero }}</td>
-                            <td>{{ registro.edad }}</td>
-                            <td>
-                                {% if registro.grupo_edad == "menor_18" %}
-                                    Menor de 18
-                                {% elif registro.grupo_edad == "18_49" %}
-                                    18 a 49
-                                {% elif registro.grupo_edad == "50_mas" %}
-                                    50 o mas
-                                {% endif %}
-                            </td>
-                            <td>{{ registro.grupo_etnico }}</td>
-                            <td>{{ registro.discapacidad }}</td>
-                            <td>{{ registro.comunidad }}</td>
-                            <td>{{ registro.actividad.nombre }}</td>
-                            <td class="options">
-                                <a href="#" class="custom-btn" onclick="abrirModalEdicion({{ registro.id }})">Editar</a>
-                                <a href="#" class="custom-btn-eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a><!-- Botón para Inhabilitar/Habilitar -->
-                                <a href="#" class="custom-btn" data-registro-id="{{ registro.id }}" data-registro-inhabilitado="{{ 'true' if registro.inhabilitado else 'false' }}" onclick="mostrarConfirmarHabilitarRegistroModal(this)">
-                                    {{ 'Habilitar' if registro.inhabilitado else 'Inhabilitar' }}
-                                </a>
-                            </td>
-                            
-                            
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombres</th>
+                                <th>Apellidos</th>
+                                <th>Tipo de Documento</th>
+                                <th>Número de Documento</th>
+                                <th>País</th>
+                                <th>Departamento</th>
+                                <th>Municipio</th>
+                                <th>Género</th>
+                                <th>Edad</th>
+                                <th>Grupo de Edad</th>
+                                <th>Grupo Étnico</th>
+                                <th>Discapacidad</th>
+                                <th>Comunidad</th>
+                                <th>Actividad</th>
+                                <th>Opciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for registro in registros %}
+                            <tr class="{% if registro.estado == 'deshabilitado' %}deshabilitado{% endif %} {% if registro.inhabilitado %}inhabilitado{% endif %}">
+                                <td>{{ registro.nombres }}</td>
+                                <td>{{ registro.apellidos }}</td>
+                                <td>{{ registro.tipo_documento }}</td>
+                                <td>{{ registro.numero_documento }}</td>
+                                <td>{{ registro.pais }}</td>
+                                <td>{{ registro.departamento }}</td>
+                                <td>{{ registro.municipio }}</td>
+                                <td>{{ registro.genero }}</td>
+                                <td>{{ registro.edad }}</td>
+                                <td>
+                                    {% if registro.grupo_edad == "menor_18" %}
+                                        Menor de 18
+                                    {% elif registro.grupo_edad == "18_49" %}
+                                        18 a 49
+                                    {% elif registro.grupo_edad == "50_mas" %}
+                                        50 o mas
+                                    {% endif %}
+                                </td>
+                                <td>{{ registro.grupo_etnico }}</td>
+                                <td>{{ registro.discapacidad }}</td>
+                                <td>{{ registro.comunidad }}</td>
+                                <td>{{ registro.actividad.nombre }}</td>
+                                <td class="options">
+                                    <a href="#" class="custom-btn" onclick="abrirModalEdicion({{ registro.id }})">Editar</a>
+                                    <a href="#" class="custom-btn-eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a>
+                                    <a href="#" class="custom-btn" data-registro-id="{{ registro.id }}" data-registro-inhabilitado="{{ 'true' if registro.inhabilitado else 'false' }}" onclick="mostrarConfirmarHabilitarRegistroModal(this)">
+                                        {{ 'Habilitar' if registro.inhabilitado else 'Inhabilitar' }}
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+        </div>       
     </main>
 </section>
 
