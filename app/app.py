@@ -28,6 +28,7 @@ from weasyprint import HTML
 
 
 
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/tierra-de-paz'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -193,9 +194,21 @@ def dashboard():
 @app.route('/usuarios')
 @login_required
 def usuarios():
-    actividades = Actividad.query.options(joinedload(Actividad.actividad_padre)).all()
-    registros = Registro.query.order_by(Registro.fecha_creacion.desc()).all()  # Ordenar por fecha de creación descendente
+    # Parámetros para paginación
+    page = request.args.get('page', 1, type=int)  # Página actual (por defecto página 1)
+    per_page = 15  # Registros por página
 
+    # Consulta para obtener todas las actividades con sus subregistros
+    actividades = Actividad.query.options(joinedload(Actividad.actividad_padre)).all()
+
+    # Consulta paginada para los registros
+    registros_paginados = Registro.query.order_by(Registro.fecha_creacion.desc())\
+                                       .paginate(page=page, per_page=per_page, error_out=False)
+
+    # Extraer los registros de la página actual
+    registros = registros_paginados.items
+
+    # Lista de actividades con subregistros
     actividades_with_subregistros = []
     for actividad in actividades:
         actividad_dict = actividad.__dict__
@@ -203,10 +216,11 @@ def usuarios():
         actividad_dict['subactividad_nombres'] = actividad.get_all_subactividad_nombres()
         actividades_with_subregistros.append(actividad_dict)
 
-    actividades_seleccionadas = [actividad.id for actividad in actividades]
+    # Calcular el número total de páginas
+    total_pages = registros_paginados.pages
 
-    return render_template('modules/usuarios.html', actividades=actividades_with_subregistros, registros=registros, actividades_seleccionadas=actividades_seleccionadas)
-
+    return render_template('modules/usuarios.html', actividades=actividades_with_subregistros, registros_paginados=registros_paginados,
+                           total_pages=total_pages, current_page=page)
 
 
 

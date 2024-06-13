@@ -877,6 +877,84 @@ input[type="number"]:focus {
 
 
 
+/* Estilos para la paginación */
+.pagination {
+    display: flex;
+    justify-content: flex-end; /* Alineación a la derecha */
+    margin: 20px 0; /* Espacio desde la parte superior e inferior */
+    flex-wrap: wrap; /* Permitir que los elementos se ajusten en varias líneas si es necesario */
+}
+
+.pagination a, .pagination strong {
+    display: inline-block;
+    margin: 0 5px; /* Espacio entre botones */
+    padding: 8px 12px; /* Padding interno */
+    border: 1px solid #ddd; /* Borde del botón */
+    background-color: #f9f9f9; /* Color de fondo */
+    color: #555; /* Color de texto */
+    text-decoration: none; /* Sin subrayado */
+    border-radius: 4px; /* Bordes redondeados */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra para un efecto más moderno */
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s; /* Transición suave */
+}
+
+.pagination a:hover {
+    background-color: #ececec; /* Color de fondo al pasar el ratón */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada al pasar el ratón */
+}
+
+.pagination strong {
+    background-color: #007bff; /* Color de fondo para la página actual */
+    color: white; /* Color de texto para la página actual */
+    border-color: #007bff; /* Borde para la página actual */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* Sombra para la página actual */
+}
+
+.pagination .arrow {
+    font-size: 16px; /* Tamaño del icono de flecha */
+    font-weight: normal; /* Peso normal para las flechas */
+}
+
+.pagination .prev,
+.pagination .next {
+    display: inline-block;
+    margin-top: 5px; /* Espacio desde la parte superior de las flechas */
+    padding: 8px 10px; /* Padding interno */
+}
+
+.pagination .prev.disabled,
+.pagination .next.disabled {
+    color: #ccc; /* Color de texto deshabilitado */
+    cursor: not-allowed; /* Cursor no permitido */
+}
+
+/* Responsividad para pantallas pequeñas */
+@media (max-width: 600px) {
+    .pagination {
+        justify-content: center; /* Alineación al centro en pantallas pequeñas */
+        flex-wrap: wrap; /* Permitir que los elementos se ajusten en varias líneas */
+    }
+
+    .pagination a, .pagination strong {
+        margin: 5px; /* Ajustar el espacio entre botones */
+        padding: 6px 8px; /* Ajustar el padding interno */
+    }
+
+    .pagination .arrow {
+        font-size: 14px; /* Reducir el tamaño del icono de flecha */
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
