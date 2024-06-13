@@ -126,12 +126,80 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Aquí se cargarán dinámicamente los proyectos -->
+                    {% for proyecto in proyectos_paginados.items %}
+                    <tr>
+                        <td>{{ proyecto.nombre }}</td>
+                        <td>{{ proyecto.descripcion }}</td>
+                        <td>{{ proyecto.cluster }}</td>
+                        <td>{{ proyecto.responsable }}</td>
+                        <td>{{ proyecto.fecha_inicio.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ proyecto.fecha_finalizacion.strftime('%Y-%m-%d') }}</td>
+                        <td class="status {{ proyecto.estado|lower }}">{{ proyecto.estado }}</td>
+                        <td>
+                            <a href="#" class="custom-btn" onclick="editarProyecto({{ proyecto.id }})">Gestionar Proyecto</a>
+                            <a href="#" class="custom-btn-eliminar" data-proyecto-id="{{ proyecto.id }}">Eliminar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
-            </div>
-        </div>
+    </div>
+</div>
+
+<!-- Paginación -->
+<div class="pagination">
+    {% if proyectos_paginados.has_prev %}
+    <a href="?page={{ proyectos_paginados.prev_num }}" class="prev"><span class="arrow">&lt;</span> Anterior</a>
+    {% else %}
+    <span class="prev disabled"><span class="arrow">&lt;</span> Anterior</span>
+    {% endif %}
+
+    {% set visible_pages = 5 %}
+    {% set start_page = proyectos_paginados.page - (visible_pages // 2) %}
+    {% set end_page = proyectos_paginados.page + (visible_pages // 2) %}
+
+    {% if start_page < 1 %}
+    {% set end_page = end_page + (1 - start_page) %}
+    {% set start_page = 1 %}
+    {% endif %}
+
+    {% if end_page > proyectos_paginados.pages %}
+    {% set start_page = start_page - (end_page - proyectos_paginados.pages) %}
+    {% set end_page = proyectos_paginados.pages %}
+    {% if start_page < 1 %}
+    {% set start_page = 1 %}
+    {% endif %}
+    {% endif %}
+
+    {% if start_page > 1 %}
+    <a href="?page=1">1</a>
+    {% if start_page > 2 %}
+    <span>...</span>
+    {% endif %}
+    {% endif %}
+
+    {% for page_num in range(start_page, end_page + 1) %}
+        {% if proyectos_paginados.page == page_num %}
+            <strong>{{ page_num }}</strong>
+        {% else %}
+            <a href="?page={{ page_num }}">{{ page_num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if end_page < proyectos_paginados.pages %}
+    {% if end_page < proyectos_paginados.pages - 1 %}
+    <span>...</span>
+    {% endif %}
+    <a href="?page={{ proyectos_paginados.pages }}">{{ proyectos_paginados.pages }}</a>
+    {% endif %}
+
+    {% if proyectos_paginados.has_next %}
+    <a href="?page={{ proyectos_paginados.next_num }}" class="next">Siguiente <span class="arrow">&gt;</span></a>
+    {% else %}
+    <span class="next disabled">Siguiente <span class="arrow">&gt;</span></span>
+    {% endif %}
+</div>
     </main>
     <!-- CONTENIDO PRINCIPAL -->
 </section>

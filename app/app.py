@@ -475,11 +475,12 @@ def get_estadisticas_usuarios():
 @app.route('/proyectos')
 @login_required
 def proyectos():
-    # Obtener todos los proyectos de la base de datos
-    proyectos = Proyecto.query.all()
+    page = request.args.get('page', 1, type=int)
+    per_page = 10  # Número de proyectos por página
+    proyectos_paginados = Proyecto.query.paginate(page=page, per_page=per_page)
     
-    # Renderizar la plantilla de proyectos y pasar los proyectos como contexto
-    return render_template('modules/proyectos.html', proyectos=proyectos)
+    return render_template('modules/proyectos.html', proyectos_paginados=proyectos_paginados)
+
 
 
 
