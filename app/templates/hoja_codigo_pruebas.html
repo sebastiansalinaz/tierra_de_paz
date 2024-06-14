@@ -1,167 +1,100 @@
-<!-- En usuarios.html -->
-<div class="table-data">
-    <div class="order">
-        <div class="head-container">
-            <div class="head">
-                <h3>Registros Recientes</h3>
-                <i class='bx bx-search' id="search-icon"></i>
-                <input type="text" id="search-input" placeholder="Buscar por nombre, apellido etc." value="{{ search_query }}">
-                <i class='bx bx-filter'></i>
-            </div>
-            <div class="table-container">
-                <table id="registros-table">
-                    <thead>
-                        <tr>
-                            <th>Nombres</th>
-                            <th>Apellidos</th>
-                            <th>Tipo Documento</th>
-                            <th>Número Documento</th>
-                            <th>País</th>
-                            <th>Departamento</th>
-                            <th>Municipio</th>
-                            <th>Género</th>
-                            <th>Edad</th>
-                            <th>Grupo Edad</th>
-                            <th>Grupo Étnico</th>
-                            <th>Discapacidad</th>
-                            <th>Comunidad</th>
-                            <th>Actividad</th>
-                            <th class="options">Opciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="registros-tbody">
-                        {% for registro in registros_paginados.items %}
-                        <tr class="{% if registro.estado == 'deshabilitado' %}deshabilitado{% endif %} {% if registro.inhabilitado %}inhabilitado{% endif %}">
-                            <td>{{ registro.nombres }}</td>
-                            <td>{{ registro.apellidos }}</td>
-                            <td>{{ registro.tipo_documento }}</td>
-                            <td>{{ registro.numero_documento }}</td>
-                            <td>{{ registro.pais }}</td>
-                            <td>{{ registro.departamento }}</td>
-                            <td>{{ registro.municipio }}</td>
-                            <td>{{ registro.genero }}</td>
-                            <td>{{ registro.edad }}</td>
-                            <td>{{ registro.grupo_edad }}</td>
-                            <td>{{ registro.grupo_etnico }}</td>
-                            <td>{{ registro.discapacidad }}</td>
-                            <td>{{ registro.comunidad }}</td>
-                            <td>{{ registro.actividad.nombre }}</td>
-                            <td class="options">
-                                <a href="#" class="custom-btn" onclick="abrirModalEdicion({{ registro.id }})">Editar</a>
-                                <a href="#" class="custom-btn-eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a>
-                                <a href="#" class="custom-btn" data-registro-id="{{ registro.id }}" data-registro-inhabilitado="{{ 'true' if registro.inhabilitado else 'false' }}" onclick="mostrarConfirmarHabilitarRegistroModal(this)">
-                                    {{ 'Habilitar' if registro.inhabilitado else 'Inhabilitar' }}
-                                </a>                       
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Paginación -->
-            <div class="pagination">
-                {% if registros_paginados.has_prev %}
-                <a href="?page={{ registros_paginados.prev_num }}&search={{ search_query }}" class="prev"><span class="arrow">&lt;</span> Anterior</a>
-                {% else %}
-                <span class="prev disabled"><span class="arrow">&lt;</span> Anterior</span>
-                {% endif %}
-
-                {% set visible_pages = 5 %}
-                {% set start_page = registros_paginados.page - (visible_pages // 2) %}
-                {% set end_page = registros_paginados.page + (visible_pages // 2) %}
-
-                {% if start_page < 1 %}
-                {% set end_page = end_page + (1 - start_page) %}
-                {% set start_page = 1 %}
-                {% endif %}
-
-                {% if end_page > registros_paginados.pages %}
-                {% set start_page = start_page - (end_page - registros_paginados.pages) %}
-                {% set end_page = registros_paginados.pages %}
-                {% if start_page < 1 %}
-                {% set start_page = 1 %}
-                {% endif %}
-                {% endif %}
-
-                {% if start_page > 1 %}
-                <a href="?page=1&search={{ search_query }}">1</a>
-                {% if start_page > 2 %}
-                <span>...</span>
-                {% endif %}
-                {% endif %}
-
-                {% for page_num in range(start_page, end_page + 1) %}
-                    {% if registros_paginados.page == page_num %}
-                        <strong>{{ page_num }}</strong>
-                    {% else %}
-                        <a href="?page={{ page_num }}&search={{ search_query }}">{{ page_num }}</a>
-                    {% endif %}
-                {% endfor %}
-
-                {% if end_page < registros_paginados.pages %}
-                {% if end_page < registros_paginados.pages - 1 %}
-                <span>...</span>
-                {% endif %}
-                <a href="?page={{ registros_paginados.pages }}&search={{ search_query }}">{{ registros_paginados.pages }}</a>
-                {% endif %}
-
-                {% if registros_paginados.has_next %}
-                <a href="?page={{ registros_paginados.next_num }}&search={{ search_query }}" class="next">Siguiente <span class="arrow">&gt;</span></a>
-                {% else %}
-                <span class="next disabled">Siguiente <span class="arrow">&gt;</span></span>
-                {% endif %}
-            </div>
-
-        </div>
-    </div>
-</div>
-
 <script>
-document.getElementById('search-input').addEventListener('keyup', function() {
-    var input = document.getElementById('search-input').value.toLowerCase();
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/search_usuarios?search=' + encodeURIComponent(input), true);
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            var registros = JSON.parse(xhr.responseText);
-            var tbody = document.getElementById('registros-tbody');
-            tbody.innerHTML = '';
-            registros.forEach(function(registro) {
-                var tr = document.createElement('tr');
-                if (registro.estado == 'deshabilitado') {
-                    tr.classList.add('deshabilitado');
-                }
-                if (registro.inhabilitado) {
-                    tr.classList.add('inhabilitado');
-                }
-                tr.innerHTML = `
-                    <td>${registro.nombres}</td>
-                    <td>${registro.apellidos}</td>
-                    <td>${registro.tipo_documento}</td>
-                    <td>${registro.numero_documento}</td>
-                    <td>${registro.pais}</td>
-                    <td>${registro.departamento}</td>
-                    <td>${registro.municipio}</td>
-                    <td>${registro.genero}</td>
-                    <td>${registro.edad}</td>
-                    <td>${registro.grupo_edad}</td>
-                    <td>${registro.grupo_etnico}</td>
-                    <td>${registro.discapacidad}</td>
-                    <td>${registro.comunidad}</td>
-                    <td>${registro.actividad}</td>
-                    <td class="options">
-                        <a href="#" class="custom-btn" onclick="abrirModalEdicion(${registro.id})">Editar</a>
-                        <a href="#" class="custom-btn-eliminar" data-registro-id="${registro.id}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a>
-                        <a href="#" class="custom-btn" data-registro-id="${registro.id}" data-registro-inhabilitado="${registro.inhabilitado}" onclick="mostrarConfirmarHabilitarRegistroModal(this)">
-                            ${registro.inhabilitado ? 'Habilitar' : 'Inhabilitar'}
-                        </a>                       
-                    </td>
-                `;
-                tbody.appendChild(tr);
+    // Función para abrir el modal
+    function openModal(modalId) {
+        var modal = document.getElementById(modalId);
+        modal.style.display = "block";
+    }
+
+    // Función para cerrar el modal
+    function closeModal(modalId) {
+        var modal = document.getElementById(modalId);
+        modal.style.display = "none";
+    }
+
+    // Función para actualizar la tabla de proyectos desde el servidor
+    function actualizarTablaProyectos() {
+        fetch('/get_datos_tabla_proyectos')
+            .then(response => response.json())
+            .then(data => {
+                renderTablaProyectos(data);
             });
+    }
+
+    // Función para renderizar la tabla de proyectos
+    function renderTablaProyectos(data) {
+        var tableBody = document.querySelector('.table-data table tbody');
+        tableBody.innerHTML = "";
+
+        data.forEach(rowData => {
+            var newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${rowData.nombre}</td>
+                <td>${rowData.descripcion}</td>
+                <td>${rowData.cluster}</td>
+                <td>${rowData.responsable}</td>
+                <td>${rowData.fecha_inicio}</td>
+                <td>${rowData.fecha_finalizacion}</td>
+                <td class="status ${rowData.estado.toLowerCase()}">${rowData.estado}</td>
+                <td>
+                    <a href="#" class="custom-btn" onclick="editarProyecto(${rowData.id})">Gestionar Proyecto</a>
+                    <a href="#" class="custom-btn-eliminar" data-proyecto-id="${rowData.id}">Eliminar</a>
+                </td>
+            `;
+            tableBody.appendChild(newRow);
+        });
+    }
+
+    // Llamar a la función para actualizar la tabla de proyectos al cargar la página
+    window.addEventListener('load', function() {
+        actualizarTablaProyectos();
+    });
+
+    document.getElementById("cluster_select_option").addEventListener("change", function() {
+        var clusterSelectOption = document.getElementById("cluster_select_option");
+        var clusterText = document.getElementById("cluster_text");
+        if (clusterSelectOption.value === "nuevo") {
+            clusterText.style.display = "block";
+        } else {
+            clusterText.style.display = "none";
         }
-    };
-    xhr.send();
-});
+    });
+
+    // Función para editar un proyecto
+    function editarProyecto(proyectoId) {
+        // Redirigir al usuario a la página de edición del proyecto con el ID del proyecto
+        window.location.href = `/editar_proyecto/${proyectoId}`;
+    }
+
+    // Función para actualizar las estadísticas de proyectos
+    function actualizarEstadisticasProyectos() {
+        fetch('/get_estadisticas_proyectos')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('proyectos-registrados').textContent = data.registrados;
+                document.getElementById('proyectos-activos').textContent = data.activos;
+                document.getElementById('proyectos-terminados').textContent = data.terminados;
+            });
+    }
+
+    // Llamar a la función para actualizar las estadísticas de proyectos al cargar la página
+    window.addEventListener('load', function() {
+        actualizarEstadisticasProyectos();
+    });
+
+    // Funcionalidad de búsqueda
+    document.getElementById('search-input').addEventListener('input', function() {
+        var searchTerm = this.value.toLowerCase();
+        var rows = document.querySelectorAll('.table-data table tbody tr');
+
+        rows.forEach(row => {
+            var nombre = row.children[0].textContent.toLowerCase();
+            var descripcion = row.children[1].textContent.toLowerCase();
+
+            if (nombre.includes(searchTerm) || descripcion.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
 </script>

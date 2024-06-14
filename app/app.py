@@ -623,10 +623,8 @@ def crear_proyecto():
 @app.route('/get_datos_tabla_proyectos', methods=['GET'])
 @login_required
 def get_datos_tabla_proyectos():
-    # Obtener todos los registros de la tabla 'Proyecto'
     proyectos = Proyecto.query.all()
     
-    # Crear una lista de diccionarios con los datos de los proyectos
     datos_tabla_proyectos = []
     for proyecto in proyectos:
         datos_tabla_proyectos.append({
@@ -635,12 +633,11 @@ def get_datos_tabla_proyectos():
             'descripcion': proyecto.descripcion,
             'cluster': proyecto.cluster,
             'responsable': proyecto.responsable,
-            'fecha_inicio': proyecto.fecha_inicio.strftime('%Y-%m-%d'),  # Formato de fecha YYYY-MM-DD
-            'fecha_finalizacion': proyecto.fecha_finalizacion.strftime('%Y-%m-%d'),  # Formato de fecha YYYY-MM-DD
+            'fecha_inicio': proyecto.fecha_inicio.strftime('%Y-%m-%d'),
+            'fecha_finalizacion': proyecto.fecha_finalizacion.strftime('%Y-%m-%d'),
             'estado': proyecto.estado
         })
     
-    # Devolver los datos de la tabla en formato JSON
     return jsonify(datos_tabla_proyectos)
 
 

@@ -286,6 +286,25 @@ function editarProyecto(proyectoId) {
 window.addEventListener('load', function() {
     actualizarEstadisticasProyectos();
 });
+
+// Funcionalidad de búsqueda
+document.getElementById('search-input').addEventListener('input', function() {
+    var searchTerm = this.value.toLowerCase();
+    var rows = document.querySelectorAll('.table-data table tbody tr');
+
+    rows.forEach(row => {
+        var nombre = row.children[0].textContent.toLowerCase();
+        var descripcion = row.children[1].textContent.toLowerCase();
+
+        if (nombre.includes(searchTerm) || descripcion.includes(searchTerm)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+
+
 </script>
 
 {% endblock %}
