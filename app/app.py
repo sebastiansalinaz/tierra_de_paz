@@ -194,21 +194,35 @@ def dashboard():
 @app.route('/usuarios')
 @login_required
 def usuarios():
-    # Parámetros para paginación
-    page = request.args.get('page', 1, type=int)  # Página actual (por defecto página 1)
-    per_page = 15  # Registros por página
+    page = request.args.get('page', 1, type=int)
+    per_page = 15
 
-    # Consulta para obtener todas las actividades con sus subregistros
+    search_query = request.args.get('search', '')
+
+    registros_filtrados = Registro.query
+    if search_query:
+        registros_filtrados = registros_filtrados.filter(
+            or_(
+                Registro.nombres.like(f"%{search_query}%"),
+                Registro.apellidos.like(f"%{search_query}%"),
+                Registro.tipo_documento.like(f"%{search_query}%"),
+                Registro.numero_documento.like(f"%{search_query}%"),
+                Registro.pais.like(f"%{search_query}%"),
+                Registro.departamento.like(f"%{search_query}%"),
+                Registro.municipio.like(f"%{search_query}%"),
+                Registro.genero.like(f"%{search_query}%"),
+                Registro.grupo_edad.like(f"%{search_query}%"),
+                Registro.grupo_etnico.like(f"%{search_query}%"),
+                Registro.discapacidad.like(f"%{search_query}%"),
+                Registro.comunidad.like(f"%{search_query}%"),
+                Registro.actividad.has(Actividad.nombre.like(f"%{search_query}%"))
+            )
+        )
+
+    registros_paginados = registros_filtrados.order_by(Registro.fecha_creacion.desc()).paginate(page=page, per_page=per_page, error_out=False)
+
     actividades = Actividad.query.options(joinedload(Actividad.actividad_padre)).all()
 
-    # Consulta paginada para los registros
-    registros_paginados = Registro.query.order_by(Registro.fecha_creacion.desc())\
-                                       .paginate(page=page, per_page=per_page, error_out=False)
-
-    # Extraer los registros de la página actual
-    registros = registros_paginados.items
-
-    # Lista de actividades con subregistros
     actividades_with_subregistros = []
     for actividad in actividades:
         actividad_dict = actividad.__dict__
@@ -216,11 +230,69 @@ def usuarios():
         actividad_dict['subactividad_nombres'] = actividad.get_all_subactividad_nombres()
         actividades_with_subregistros.append(actividad_dict)
 
-    # Calcular el número total de páginas
     total_pages = registros_paginados.pages
 
     return render_template('modules/usuarios.html', actividades=actividades_with_subregistros, registros_paginados=registros_paginados,
-                           total_pages=total_pages, current_page=page)
+                           total_pages=total_pages, current_page=page, search_query=search_query)
+
+
+
+
+@app.route('/search_usuarios')
+@login_required
+def search_usuarios():
+    search_query = request.args.get('search', '')
+
+    # Obtener todos los registros paginados que coincidan con la búsqueda si hay un término de búsqueda
+    if search_query:
+        registros_filtrados = Registro.query.filter(
+            or_(
+                Registro.nombres.like(f"%{search_query}%"),
+                Registro.apellidos.like(f"%{search_query}%"),
+                Registro.tipo_documento.like(f"%{search_query}%"),
+                Registro.numero_documento.like(f"%{search_query}%"),
+                Registro.pais.like(f"%{search_query}%"),
+                Registro.departamento.like(f"%{search_query}%"),
+                Registro.municipio.like(f"%{search_query}%"),
+                Registro.genero.like(f"%{search_query}%"),
+                Registro.grupo_edad.like(f"%{search_query}%"),
+                Registro.grupo_etnico.like(f"%{search_query}%"),
+                Registro.discapacidad.like(f"%{search_query}%"),
+                Registro.comunidad.like(f"%{search_query}%"),
+                Registro.actividad.has(Actividad.nombre.like(f"%{search_query}%"))
+            )
+        ).order_by(Registro.fecha_creacion.desc()).all()
+    else:
+        # Obtener todos los registros paginados si no hay término de búsqueda
+        page = request.args.get('page', 1, type=int)
+        per_page = 15
+        registros_filtrados = Registro.query.order_by(Registro.fecha_creacion.desc()).paginate(page=page, per_page=per_page, error_out=False).items
+
+    registros = []
+    for registro in registros_filtrados:
+        registros.append({
+            'id': registro.id,
+            'nombres': registro.nombres,
+            'apellidos': registro.apellidos,
+            'tipo_documento': registro.tipo_documento,
+            'numero_documento': registro.numero_documento,
+            'pais': registro.pais,
+            'departamento': registro.departamento,
+            'municipio': registro.municipio,
+            'genero': registro.genero,
+            'edad': registro.edad,
+            'grupo_edad': registro.grupo_edad,
+            'grupo_etnico': registro.grupo_etnico,
+            'discapacidad': registro.discapacidad,
+            'comunidad': registro.comunidad,
+            'actividad': registro.actividad.nombre,
+            'estado': registro.estado,
+            'inhabilitado': registro.inhabilitado
+        })
+
+    return jsonify(registros)
+
+
 
 
 
@@ -441,6 +513,42 @@ def get_datos_tabla():
     # Devolver los datos de la tabla en formato JSON
     return jsonify(datos_tabla)
 
+
+
+@app.route('/buscar_registros', methods=['GET'])
+@login_required
+def buscar_registros():
+    query = request.args.get('q', '')
+    # Filtra los registros por nombres, apellidos, o número de documento
+    registros = Registro.query.filter(
+        or_(
+            Registro.nombres.ilike(f'%{query}%'),
+            Registro.apellidos.ilike(f'%{query}%'),
+            Registro.numero_documento.ilike(f'%{query}%')
+        )
+    ).all()
+    
+    resultados = []
+    for registro in registros:
+        resultados.append({
+            'id': registro.id,
+            'nombres': registro.nombres,
+            'apellidos': registro.apellidos,
+            'tipo_documento': registro.tipo_documento,
+            'numero_documento': registro.numero_documento,
+            'pais': registro.pais,
+            'departamento': registro.departamento,
+            'municipio': registro.municipio,
+            'genero': registro.genero,
+            'edad': registro.edad,
+            'grupo_edad': registro.grupo_edad,
+            'grupo_etnico': registro.grupo_etnico,
+            'discapacidad': registro.discapacidad,
+            'comunidad': registro.comunidad,
+            'actividad': registro.actividad.nombre,
+            'inhabilitado': registro.inhabilitado
+        })
+    return jsonify(resultados)
 
 
 @app.route('/eliminar_registro/<int:registro_id>', methods=['POST'])
