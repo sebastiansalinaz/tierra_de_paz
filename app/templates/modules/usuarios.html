@@ -1121,22 +1121,6 @@ function openModal(modalId) {
                 openModal('confirmarHabilitarRegistroModal');
             }
         };
-    
-        // Cerrar modal
-        window.cerrarModal = function(modalId) {
-            var modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = 'none';
-            }
-        };
-    
-        // Abrir modal
-        window.openModal = function(modalId) {
-            var modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = 'block';
-            }
-        };
     });
     
     // Función para habilitar/inhabilitar el registro
