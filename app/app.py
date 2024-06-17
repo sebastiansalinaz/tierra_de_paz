@@ -648,7 +648,7 @@ def get_datos_tabla_proyectos():
 def editar_proyecto(proyecto_id):
     proyecto = Proyecto.query.get_or_404(proyecto_id)
     actividades = Actividad.query.all()
-    
+
     if request.method == 'POST':
         proyecto.nombre = request.form['nombre']
         proyecto.descripcion = request.form['descripcion']

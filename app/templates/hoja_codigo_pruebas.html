@@ -1,100 +1,64 @@
-<script>
-    // Función para abrir el modal
-    function openModal(modalId) {
-        var modal = document.getElementById(modalId);
-        modal.style.display = "block";
-    }
+function agregarActividadesSeleccionadas() {
+    const checkboxes = document.querySelectorAll('#actividadForm input[type="checkbox"]:checked');
+    const form = document.querySelector('form[action="{{ url_for('editar_proyecto', proyecto_id=proyecto.id) }}"]');
+    const actividadesIncluidasDiv = document.getElementById('actividades-incluidas');
+    actividadesIncluidasDiv.innerHTML = ''; // Limpiar actividades actuales
 
-    // Función para cerrar el modal
-    function closeModal(modalId) {
-        var modal = document.getElementById(modalId);
-        modal.style.display = "none";
-    }
+    checkboxes.forEach(checkbox => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'actividades[]';
+        input.value = checkbox.value;
+        form.appendChild(input);
 
-    // Función para actualizar la tabla de proyectos desde el servidor
-    function actualizarTablaProyectos() {
-        fetch('/get_datos_tabla_proyectos')
-            .then(response => response.json())
-            .then(data => {
-                renderTablaProyectos(data);
-            });
-    }
-
-    // Función para renderizar la tabla de proyectos
-    function renderTablaProyectos(data) {
-        var tableBody = document.querySelector('.table-data table tbody');
-        tableBody.innerHTML = "";
-
-        data.forEach(rowData => {
-            var newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                <td>${rowData.nombre}</td>
-                <td>${rowData.descripcion}</td>
-                <td>${rowData.cluster}</td>
-                <td>${rowData.responsable}</td>
-                <td>${rowData.fecha_inicio}</td>
-                <td>${rowData.fecha_finalizacion}</td>
-                <td class="status ${rowData.estado.toLowerCase()}">${rowData.estado}</td>
-                <td>
-                    <a href="#" class="custom-btn" onclick="editarProyecto(${rowData.id})">Gestionar Proyecto</a>
-                    <a href="#" class="custom-btn-eliminar" data-proyecto-id="${rowData.id}">Eliminar</a>
-                </td>
-            `;
-            tableBody.appendChild(newRow);
-        });
-    }
-
-    // Llamar a la función para actualizar la tabla de proyectos al cargar la página
-    window.addEventListener('load', function() {
-        actualizarTablaProyectos();
+        // Añadir la actividad seleccionada al contenedor
+        const btn = document.createElement('button');
+        btn.className = 'btn-actividad';
+        btn.id = `btn-actividad-${checkbox.value}`;
+        btn.setAttribute('data-target', `myModalActivity${checkbox.value}`);
+        btn.setAttribute('onclick', `openModal('myModalActivity${checkbox.value}')`);
+        btn.innerHTML = `<span class="text">${checkbox.nextElementSibling.innerText}</span>`;
+        actividadesIncluidasDiv.appendChild(btn);
     });
 
-    document.getElementById("cluster_select_option").addEventListener("change", function() {
-        var clusterSelectOption = document.getElementById("cluster_select_option");
-        var clusterText = document.getElementById("cluster_text");
-        if (clusterSelectOption.value === "nuevo") {
-            clusterText.style.display = "block";
-        } else {
-            clusterText.style.display = "none";
+    $('#modalSeleccionActividad').modal('hide');
+}
+
+function openModal(modalId) {
+    var modal = document.getElementById(modalId);
+    modal.style.display = "block";
+}
+
+function closeModal(modalId) {
+    var modal = document.getElementById(modalId);
+    modal.style.display = "none";
+}
+
+function crearActividad(event) {
+    event.preventDefault(); // Evitar que el formulario se envíe automáticamente
+    
+    // Obtener los datos del formulario de creación de actividad
+    var formData = new FormData(document.getElementById("crearActividadForm"));
+    
+    // Enviar los datos del formulario mediante AJAX
+    fetch('/guardar_actividad', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-Token': '{{ csrf_token() }}' // Agregar el token CSRF si es necesario
         }
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("Actividad creada correctamente.");
+            window.location.reload();
+        } else {
+            console.error("Error al crear la actividad.");
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
     });
+}
 
-    // Función para editar un proyecto
-    function editarProyecto(proyectoId) {
-        // Redirigir al usuario a la página de edición del proyecto con el ID del proyecto
-        window.location.href = `/editar_proyecto/${proyectoId}`;
-    }
-
-    // Función para actualizar las estadísticas de proyectos
-    function actualizarEstadisticasProyectos() {
-        fetch('/get_estadisticas_proyectos')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('proyectos-registrados').textContent = data.registrados;
-                document.getElementById('proyectos-activos').textContent = data.activos;
-                document.getElementById('proyectos-terminados').textContent = data.terminados;
-            });
-    }
-
-    // Llamar a la función para actualizar las estadísticas de proyectos al cargar la página
-    window.addEventListener('load', function() {
-        actualizarEstadisticasProyectos();
-    });
-
-    // Funcionalidad de búsqueda
-    document.getElementById('search-input').addEventListener('input', function() {
-        var searchTerm = this.value.toLowerCase();
-        var rows = document.querySelectorAll('.table-data table tbody tr');
-
-        rows.forEach(row => {
-            var nombre = row.children[0].textContent.toLowerCase();
-            var descripcion = row.children[1].textContent.toLowerCase();
-
-            if (nombre.includes(searchTerm) || descripcion.includes(searchTerm)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    });
-</script>
+document.getElementById("crearActividadForm").addEventListener("submit", crearActividad);

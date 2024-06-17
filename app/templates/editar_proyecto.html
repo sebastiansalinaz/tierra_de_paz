@@ -100,6 +100,120 @@
             <br>  <br>  
 
 
+
+
+            <div class="edit-form-row">
+                <div class="edit-form-group">
+                    <label>Actividades Incluidas:</label>
+                    <div id="actividades-incluidas">
+                        {% for actividad in proyecto.actividades %}
+                        <button class="btn-actividad" id="btn-actividad-{{ actividad.id }}" data-target="myModalActivity{{ actividad.id }}" onclick="openModal('myModalActivity{{ actividad.id }}')">
+                            <span class="text">{{ actividad.nombre }}</span>
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+
+            
+ 
+            <!-- Modales para cada actividad -->
+{% for actividad in proyecto.actividades %}
+<div id="myModalActivity{{ actividad.id }}" class="modaly" style="display: none;">
+    <div class="modal-contentenedor">
+        <div class="modal-header-actividad">
+            <h2>ACTIVIDAD PRINCIPAL: {{ actividad.nombre }}</h2>
+            <!-- Botón para la actividad padre si existe -->
+            {% if actividad.actividad_padre %}
+            <p>ACTIVIDAD PADRE:
+                <button class="btn-actividad-padre" onclick="openModal('myModalActivity{{ actividad.actividad_padre.id }}')">{{ actividad.actividad_padre.nombre }}</button>
+            </p>
+            {% endif %}
+            <!-- Botones para subactividades relacionadas si existen -->
+            {% if actividad.subactividad_nombres %}
+            <p>ACTIVIDADES RELACIONADAS:
+                {% for subactividad_nombre in actividad.subactividad_nombres %}
+                <button class="btn-subactividad" onclick="openSubactivityModal('{{ subactividad_nombre }}')">{{ subactividad_nombre }}</button>
+                {% endfor %}
+            </p>
+            {% endif %}
+        </div>
+
+        <!-- Información adicional de la actividad -->
+        <div class="modal-info">
+            <p><strong>Persona Encargada:</strong> {{ actividad.persona_encargada }}</p>
+            <p><strong>Fecha de Creación:</strong> {{ actividad.fecha_realizacion }}</p>
+            <button onclick="exportarExcel('{{ actividad.id }}')" class="custom-btn">Exportar a Excel</button>
+            <button class="modal-close-btn" onclick="closeModal('myModalActivity{{ actividad.id }}')">Cerrar</button>
+        </div>
+
+        <!-- Tabla de registros asociados a la actividad -->
+        <div id="contenedor-tabla-{{ actividad.id }}" class="modal-tabla-contenedor">
+            <table class="actividad-registros">
+                <thead>
+                    <tr>
+                        <th>Nombres</th>
+                        <th>Apellidos</th>
+                        <th>Tipo de Documento</th>
+                        <th>Número de Documento</th>
+                        <th>País</th>
+                        <th>Departamento</th>
+                        <th>Municipio</th>
+                        <th>Género</th>
+                        <th>Edad</th>
+                        <th>Grupo de Edad</th>
+                        <th>Grupo Étnico</th>
+                        <th>Discapacidad</th>
+                        <th>Comunidad</th>
+                        <th>Actividad</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for registro in actividad.registros %}
+                    <tr class="{% if registro.estado == 'deshabilitado' %}deshabilitado{% endif %} {% if registro.inhabilitado %}inhabilitado{% endif %}">
+                        <td>{{ registro.nombres }}</td>
+                        <td>{{ registro.apellidos }}</td>
+                        <td>{{ registro.tipo_documento }}</td>
+                        <td>{{ registro.numero_documento }}</td>
+                        <td>{{ registro.pais }}</td>
+                        <td>{{ registro.departamento }}</td>
+                        <td>{{ registro.municipio }}</td>
+                        <td>{{ registro.genero }}</td>
+                        <td>{{ registro.edad }}</td>
+                        <td>
+                            {% if registro.grupo_edad == "menor_18" %}
+                            Menor de 18
+                            {% elif registro.grupo_edad == "18_49" %}
+                            18 a 49
+                            {% elif registro.grupo_edad == "50_mas" %}
+                            50 o más
+                            {% endif %}
+                        </td>
+                        <td>{{ registro.grupo_etnico }}</td>
+                        <td>{{ registro.discapacidad }}</td>
+                        <td>{{ registro.comunidad }}</td>
+                        <td>{{ registro.actividad.nombre }}</td>
+                        <td class="option">
+                            <a href="#" class="custom-btn editar" onclick="abrirModalEdicion({{ registro.id }})">Editar</a>
+                            <a href="#" class="custom-btn-eliminar eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a>
+                            <!-- Botón para Inhabilitar/Habilitar -->
+                            <a href="#" class="custom-btn" data-registro-id="{{ registro.id }}" data-registro-inhabilitado="{{ 'true' if registro.inhabilitado else 'false' }}" onclick="mostrarConfirmarHabilitarRegistroModal(this)">
+                                {{ 'Habilitar' if registro.inhabilitado else 'Inhabilitar' }}
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div> <!-- Fin del contenedor de la tabla -->
+    </div> <!-- Fin de modal-contentenedor -->
+</div> <!-- Fin del modal -->
+{% endfor %}
+
+
+            
 <!-- Tabla para mostrar registros -->
 <div class="table-data">
     <table class="table">
@@ -621,6 +735,72 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
+
+
+function agregarActividadesSeleccionadas() {
+    const checkboxes = document.querySelectorAll('#actividadForm input[type="checkbox"]:checked');
+    const form = document.querySelector('form[action="{{ url_for('editar_proyecto', proyecto_id=proyecto.id) }}"]');
+    const actividadesIncluidasDiv = document.getElementById('actividades-incluidas');
+    actividadesIncluidasDiv.innerHTML = ''; // Limpiar actividades actuales
+
+    checkboxes.forEach(checkbox => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'actividades[]';
+        input.value = checkbox.value;
+        form.appendChild(input);
+
+        // Añadir la actividad seleccionada al contenedor
+        const btn = document.createElement('button');
+        btn.className = 'btn-actividad';
+        btn.id = `btn-actividad-${checkbox.value}`;
+        btn.setAttribute('data-target', `myModalActivity${checkbox.value}`);
+        btn.setAttribute('onclick', `openModal('myModalActivity${checkbox.value}')`);
+        btn.innerHTML = `<span class="text">${checkbox.nextElementSibling.innerText}</span>`;
+        actividadesIncluidasDiv.appendChild(btn);
+    });
+
+    $('#modalSeleccionActividad').modal('hide');
+}
+
+function openModal(modalId) {
+    var modal = document.getElementById(modalId);
+    modal.style.display = "block";
+}
+
+function closeModal(modalId) {
+    var modal = document.getElementById(modalId);
+    modal.style.display = "none";
+}
+
+function crearActividad(event) {
+    event.preventDefault(); // Evitar que el formulario se envíe automáticamente
+    
+    // Obtener los datos del formulario de creación de actividad
+    var formData = new FormData(document.getElementById("crearActividadForm"));
+    
+    // Enviar los datos del formulario mediante AJAX
+    fetch('/guardar_actividad', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-Token': '{{ csrf_token() }}' // Agregar el token CSRF si es necesario
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("Actividad creada correctamente.");
+            window.location.reload();
+        } else {
+            console.error("Error al crear la actividad.");
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+}
+
+document.getElementById("crearActividadForm").addEventListener("submit", crearActividad);
 
 
 </script>
