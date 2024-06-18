@@ -53,14 +53,17 @@
                 </div>
 
         
-                    <div class="edit-form-group">
-                        <label for="estado">Estado:</label>
+                    <div class="edit-form-group estado-group">
                         <select id="estado" name="estado" class="edit-select" required>
                             <option value="Activo" {% if estado_proyecto == 'activo' %} selected {% endif %}>Activo</option>
                             <option value="Inactivo" {% if estado_proyecto == 'inactivo' %} selected {% endif %}>Inactivo</option>
                         </select>
                     </div>
                
+
+
+
+                    <br>  <br>  
                 <div class="edit-form-row">
                     <div class="edit-form-group">
                         <button type="submit" class="edit-submit-btn">Actualizar Proyecto</button>
@@ -96,7 +99,7 @@
                 </button>
         
             </div>
-            <br>  <br>
+            <br>  <br> <br>
 
 
 

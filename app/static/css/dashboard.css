@@ -1610,23 +1610,29 @@ select:focus {
 }
 
 
-/* Ajuste del tamaño del select */
-.edit-select {
-    width: 20px; /* Ancho reducido del select */
-    padding: 6px; /* Ajuste del padding */
-    font-size: 12px; /* Tamaño de fuente reducido */
-    border-radius: 4px; /* Radio de borde */
-    box-sizing: border-box; /* Incluir padding en el ancho total */
+
+/* Estilos específicos para el grupo de estado */
+.estado-label {
+    margin-right: 10px; /* Espacio entre el label y el select */
+    white-space: nowrap; /* Evita que el texto del label se rompa en varias líneas */
 }
 
-/* Ajuste del tamaño del botón */
-.edit-submit-btn {
-    padding: 8px 16px; /* Ajuste del padding vertical y horizontal */
+.estado-select {
+    width: 150px; /* Ancho ajustado según necesidad */
+    padding: 6px; /* Padding interno */
+    border: 1px solid #ced4da; /* Borde sólido */
+    border-radius: 4px; /* Borde redondeado */
     font-size: 14px; /* Tamaño de fuente */
-    border-radius: 4px; /* Radio de borde */
-    display: block; /* Convertir el botón en bloque */
-    margin: 10px auto 0; /* Centrar el botón y ajustar el margen superior */
+    color: #333; /* Color de texto */
+    background-color: #f8f9fa; /* Fondo gris claro */
+    transition: border-color 0.3s ease; /* Transición suave para el color del borde */
+    font-family: var(--poppins); /* Fuente Poppins */
+    box-sizing: border-box; /* Incluir padding en el ancho total */
+    outline: none; /* Eliminar el borde de enfoque predeterminado */
+    margin-bottom: 0; /* Espacio entre los inputs */
 }
+
+
 
 
 
@@ -1643,20 +1649,32 @@ select:focus {
     font-size: 14px; /* Reducción del tamaño de fuente */
 }
 
+
+.edit-select {
+    width: 150px; /* Ancho ajustado según necesidad */
+    padding: 6px; /* Padding interno */
+    font-size: 14px; /* Tamaño de la fuente */
+    border-radius: 4px; /* Radio del borde */
+    box-sizing: border-box; /* Incluir padding en el ancho total */
+}
+
+
 .edit-input,
 .edit-select {
-    width: 100%; /* Ancho completo */
-    padding: 8px; /* Reducción del espaciado vertical */
+    width: auto; /* Ajusta el ancho automáticamente */
+    padding: 6px; /* Padding interno */
     border: 1px solid #ced4da; /* Borde sólido */
-    border-radius: 5px; /* Borde redondeado */
-    font-size: 14px; /* Reducción del tamaño de fuente */
-    color: #333; /* Color de texto más oscuro */
+    border-radius: 4px; /* Borde redondeado */
+    font-size: 14px; /* Tamaño de fuente */
+    color: #333; /* Color de texto */
     background-color: #f8f9fa; /* Fondo gris claro */
     transition: border-color 0.3s ease; /* Transición suave para el color del borde */
-    font-family: var(--poppins); /* Utiliza la fuente de letra Poppins */
-    margin-bottom: 5px; /* Reducción del espacio entre los inputs */
+    font-family: var(--poppins); /* Fuente Poppins */
+    margin-bottom: 5px; /* Espacio entre los inputs */
     outline: none; /* Eliminar el borde de enfoque predeterminado */
+    box-sizing: border-box; /* Incluir padding en el ancho total */
 }
+
 
 .edit-input:focus,
 .edit-select:focus {
@@ -1664,18 +1682,20 @@ select:focus {
 }
 
 .edit-submit-btn {
-    width: 100%;
-    padding: 10px 0; /* Reducción del padding */
+    width: auto; /* Ajustar el ancho según el contenido del botón */
+    padding: 8px 16px; /* Ajuste del padding vertical y horizontal */
     background-color: #007bff;
     border: none;
     border-radius: 5px;
     color: #fff;
-    font-size: 14px; /* Reducción del tamaño de fuente */
+    font-size: 14px; /* Tamaño de fuente */
     cursor: pointer;
     transition: background-color 0.3s ease;
     font-family: var(--poppins);
-    margin-top: 10px; /* Espacio entre el último campo y el botón */
+    display: block; /* Convertir el botón en bloque */
+    margin: 10px auto; /* Centrar el botón y ajustar el margen superior */
 }
+
 
 .edit-submit-btn:hover {
     background-color: #0056b3;
