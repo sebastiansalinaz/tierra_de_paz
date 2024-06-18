@@ -1,64 +1,123 @@
-function agregarActividadesSeleccionadas() {
-    const checkboxes = document.querySelectorAll('#actividadForm input[type="checkbox"]:checked');
-    const form = document.querySelector('form[action="{{ url_for('editar_proyecto', proyecto_id=proyecto.id) }}"]');
-    const actividadesIncluidasDiv = document.getElementById('actividades-incluidas');
-    actividadesIncluidasDiv.innerHTML = ''; // Limpiar actividades actuales
-
-    checkboxes.forEach(checkbox => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'actividades[]';
-        input.value = checkbox.value;
-        form.appendChild(input);
-
-        // Añadir la actividad seleccionada al contenedor
-        const btn = document.createElement('button');
-        btn.className = 'btn-actividad';
-        btn.id = `btn-actividad-${checkbox.value}`;
-        btn.setAttribute('data-target', `myModalActivity${checkbox.value}`);
-        btn.setAttribute('onclick', `openModal('myModalActivity${checkbox.value}')`);
-        btn.innerHTML = `<span class="text">${checkbox.nextElementSibling.innerText}</span>`;
-        actividadesIncluidasDiv.appendChild(btn);
+<script>
+    $(document).ready(function(){
+        $('#modalSeleccionActividad').on('shown.bs.modal', function () {
+            $('#actividad').focus();
+        });
     });
 
-    $('#modalSeleccionActividad').modal('hide');
-}
+    $(document).ready(function(){
+        $('#modalSeleccionActividad').on('shown.bs.modal', function () {
+            // Itera sobre las actividades seleccionadas y marca los checkboxes correspondientes
+            {% for actividad_id in actividades_seleccionadas %}
+                $('#actividad{{ actividad_id }}').prop('checked', true);
+            {% endfor %}
+        });
+    });
 
-function openModal(modalId) {
-    var modal = document.getElementById(modalId);
-    modal.style.display = "block";
-}
-
-function closeModal(modalId) {
-    var modal = document.getElementById(modalId);
-    modal.style.display = "none";
-}
-
-function crearActividad(event) {
-    event.preventDefault(); // Evitar que el formulario se envíe automáticamente
-    
-    // Obtener los datos del formulario de creación de actividad
-    var formData = new FormData(document.getElementById("crearActividadForm"));
-    
-    // Enviar los datos del formulario mediante AJAX
-    fetch('/guardar_actividad', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRF-Token': '{{ csrf_token() }}' // Agregar el token CSRF si es necesario
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            console.log("Actividad creada correctamente.");
-            window.location.reload();
+    document.getElementById("cluster_select_option").addEventListener("change", function() {
+        var clusterSelectOption = document.getElementById("cluster_select_option");
+        var clusterText = document.getElementById("cluster_text");
+        if (clusterSelectOption.value === "nuevo") {
+            clusterText.style.display = "block";
+            clusterText.setAttribute("required", "required"); // Hacer que el campo de texto sea requerido si se selecciona "Agregar Nuevo"
         } else {
-            console.error("Error al crear la actividad.");
+            clusterText.style.display = "none";
+            clusterText.removeAttribute("required"); // Quitar la propiedad requerida si no se selecciona "Agregar Nuevo"
         }
-    })
-    .catch(error => {
-        console.error("Error:", error);
     });
-}
 
-document.getElementById("crearActividadForm").addEventListener("submit", crearActividad);
+    function generatePDF(proyectoId) {
+        window.location.href = `/generate_pdf/${proyectoId}`;
+    }
+
+    function agregarActividadesSeleccionadas() {
+        const checkboxes = document.querySelectorAll('#actividadForm input[type="checkbox"]:checked');
+        const form = document.querySelector('form[action="{{ url_for('editar_proyecto', proyecto_id=proyecto.id) }}"]');
+        const actividadesIncluidasDiv = document.getElementById('actividades-incluidas');
+        actividadesIncluidasDiv.innerHTML = ''; // Limpiar actividades actuales
+    
+        checkboxes.forEach(checkbox => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'actividades[]';
+            input.value = checkbox.value;
+            form.appendChild(input);
+    
+            // Añadir la actividad seleccionada al contenedor
+            const btn = document.createElement('button');
+            btn.className = 'btn-actividad';
+            btn.id = `btn-actividad-${checkbox.value}`;
+            btn.setAttribute('data-target', `myModalActivity${checkbox.value}`);
+            btn.setAttribute('onclick', `openModal('myModalActivity${checkbox.value}')`);
+            btn.innerHTML = `<span class="text">${checkbox.nextElementSibling.innerText}</span>`;
+            actividadesIncluidasDiv.appendChild(btn);
+        });
+    
+        $('#modalSeleccionActividad').modal('hide');
+    }
+
+    function openModal(modalId) {
+        // Cerrar todos los modales abiertos
+        var openModals = document.querySelectorAll('.modaly');
+        openModals.forEach(function(modal) {
+            modal.style.display = "none";
+        });
+
+        // Abrir el modal especificado
+        var modal = document.getElementById(modalId);
+        modal.style.display = "block";
+    }
+
+    function closeModal(modalId) {
+        var modal = document.getElementById(modalId);
+        modal.style.display = "none";
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var btnActividades = document.querySelectorAll('.btn-actividad');
+        btnActividades.forEach(btn => {
+            btn.addEventListener('click', function() {
+                var modalId = this.getAttribute('data-target');
+                openModal(modalId);
+            });
+        });
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "Escape") {
+            var openModals = document.querySelectorAll('.modaly');
+            openModals.forEach(function(modal) {
+                closeModal(modal.id);
+            });
+        }
+    });
+
+    function crearActividad(event) {
+        event.preventDefault(); // Evitar que el formulario se envíe automáticamente
+    
+        // Obtener los datos del formulario de creación de actividad
+        var formData = new FormData(document.getElementById("crearActividadForm"));
+    
+        // Enviar los datos del formulario mediante AJAX
+        fetch('/guardar_actividad', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-Token': '{{ csrf_token() }}' // Agregar el token CSRF si es necesario
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log("Actividad creada correctamente.");
+                window.location.reload();
+            } else {
+                console.error("Error al crear la actividad.");
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    }
+
+    document.getElementById("crearActividadForm").addEventListener("submit", crearActividad);
+</script>

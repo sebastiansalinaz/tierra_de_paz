@@ -522,19 +522,6 @@
         });
     });
 
-     // Función para abrir el modal
-     function openModal(modalId) {
-        var modal = document.getElementById(modalId);
-        modal.style.display = "block";
-    }
-
-// Función para cerrar el modal y volver al anterior si existe
-function closeModal(modalId) {
-    var modal = document.getElementById(modalId);
-    modal.style.display = "none";
-}
-
-
 
     document.getElementById("cluster_select_option").addEventListener("change", function() {
         var clusterSelectOption = document.getElementById("cluster_select_option");
@@ -726,52 +713,86 @@ document.getElementById("crearActividadForm").addEventListener("submit", crearAc
     }
 
 
+
+   
+    
+    function agregarActividadesSeleccionadas() {
+        const checkboxes = document.querySelectorAll('#actividadForm input[type="checkbox"]:checked');
+        const form = document.querySelector('form[action="{{ url_for('editar_proyecto', proyecto_id=proyecto.id) }}"]');
+        const actividadesIncluidasDiv = document.getElementById('actividades-incluidas');
+        actividadesIncluidasDiv.innerHTML = ''; // Limpiar actividades actuales
+    
+        checkboxes.forEach(checkbox => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'actividades[]';
+            input.value = checkbox.value;
+            form.appendChild(input);
+    
+            // Añadir la actividad seleccionada al contenedor
+            const btn = document.createElement('button');
+            btn.className = 'btn-actividad';
+            btn.id = `btn-actividad-${checkbox.value}`;
+            btn.setAttribute('data-target', `myModalActivity${checkbox.value}`);
+            btn.setAttribute('onclick', `openModal('myModalActivity${checkbox.value}')`);
+            btn.innerHTML = `<span class="text">${checkbox.nextElementSibling.innerText}</span>`;
+            actividadesIncluidasDiv.appendChild(btn);
+        });
+    
+        $('#modalSeleccionActividad').modal('hide');
+    }
+
+
+    function openModal(modalId) {
+        var modal = document.getElementById(modalId);
+        modal.style.display = "block";
+    }
+    
+    function closeModal(modalId) {
+        var modal = document.getElementById(modalId);
+        modal.style.display = "none";
+    }
+    
+
+    function openModal(modalId) {
+        // Cerrar todos los modales abiertos
+        var openModals = document.querySelectorAll('.modaly');
+        openModals.forEach(function(modal) {
+            modal.style.display = "none";
+        });
+
+        // Abrir el modal especificado
+        var modal = document.getElementById(modalId);
+        modal.style.display = "block";
+    }
+
+    function closeModal(modalId) {
+        var modal = document.getElementById(modalId);
+        modal.style.display = "none";
+    }
+
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Asignar eventos de clic a los botones de actividad principal
+    var btnActividades = document.querySelectorAll('.btn-actividad');
+    btnActividades.forEach(btn => {
+        btn.addEventListener('click', function() {
+            var modalId = this.getAttribute('data-target');
+            openModal(modalId);
+        });
+    });
+});
+
 document.addEventListener('keydown', function(event) {
     if (event.key === "Escape") {
-        var openModals = document.querySelectorAll('.modal.show');
+        var openModals = document.querySelectorAll('.modaly');
         openModals.forEach(function(modal) {
             closeModal(modal.id);
         });
     }
 });
 
-
-
-function agregarActividadesSeleccionadas() {
-    const checkboxes = document.querySelectorAll('#actividadForm input[type="checkbox"]:checked');
-    const form = document.querySelector('form[action="{{ url_for('editar_proyecto', proyecto_id=proyecto.id) }}"]');
-    const actividadesIncluidasDiv = document.getElementById('actividades-incluidas');
-    actividadesIncluidasDiv.innerHTML = ''; // Limpiar actividades actuales
-
-    checkboxes.forEach(checkbox => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'actividades[]';
-        input.value = checkbox.value;
-        form.appendChild(input);
-
-        // Añadir la actividad seleccionada al contenedor
-        const btn = document.createElement('button');
-        btn.className = 'btn-actividad';
-        btn.id = `btn-actividad-${checkbox.value}`;
-        btn.setAttribute('data-target', `myModalActivity${checkbox.value}`);
-        btn.setAttribute('onclick', `openModal('myModalActivity${checkbox.value}')`);
-        btn.innerHTML = `<span class="text">${checkbox.nextElementSibling.innerText}</span>`;
-        actividadesIncluidasDiv.appendChild(btn);
-    });
-
-    $('#modalSeleccionActividad').modal('hide');
-}
-
-function openModal(modalId) {
-    var modal = document.getElementById(modalId);
-    modal.style.display = "block";
-}
-
-function closeModal(modalId) {
-    var modal = document.getElementById(modalId);
-    modal.style.display = "none";
-}
 
 function crearActividad(event) {
     event.preventDefault(); // Evitar que el formulario se envíe automáticamente
@@ -801,6 +822,7 @@ function crearActividad(event) {
 }
 
 document.getElementById("crearActividadForm").addEventListener("submit", crearActividad);
+
 
 
 </script>
