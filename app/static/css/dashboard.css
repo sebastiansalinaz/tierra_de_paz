@@ -461,164 +461,167 @@ input[type="text"]:focus {
     background-color: rgba(0, 0, 0, 0.4); /* Fondo oscuro semi-transparente */
 }
 
-/* Contenido del modal */
+
+
+
+/* Contenedor del modal */
 .modal-contentenedor {
-    font-family: 'Poppins', sans-serif; /* Agrega la fuente Poppins al contenido del modal */
-    background-color: #fefefe; /* Fondo blanco */
-    margin: 5% auto; /* Centra vertical y horizontalmente */
+    font-family: 'Poppins', sans-serif;
+    background-color: #fefefe;
+    margin: 5% auto;
     padding: 20px;
-    border-radius: 10px; /* Bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
-    width: 80%; /* Ancho del contenido del modal */
-    max-width: 800px; /* Ancho máximo del contenido del modal */
-    position: relative; /* Posición relativa para permitir centrado vertical */
-    overflow-x: hidden; /* Oculta el desplazamiento horizontal */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 800px;
+    position: relative;
+    overflow-x: hidden;
 }
 
-
-/* Evita saltos de línea en los encabezados de la tabla dentro del modal */
-.modal-contentenedor table th {
-    white-space: nowrap;
-}
-
-/* Estilos para los botones de editar y eliminar dentro de la tabla */
-.modal-info .option a {
-    display: inline-block; /* Cambia la visualización de los botones a en línea */
-    margin-right: 10px; /* Añade un margen derecho entre los botones */
-}
-
-/* Estilo específico para el botón de eliminar para separarlo visualmente */
-.modal-info .option .eliminar {
-    margin-right: 0; /* Elimina el margen derecho del botón de eliminar */
-}
-
-
+/* Estilos para el contenedor de la tabla */
 .modal-tabla-contenedor {
-    margin-top: 20px; /* Margen superior para separar de la información adicional */
-    overflow-x: auto; /* Habilita el desplazamiento horizontal si es necesario */
+    margin-top: 20px;
+    overflow-x: auto;
 }
 
-
-/* Estilos para la tabla dentro del modal */
+/* Estilos para la tabla */
 .actividad-registros {
-    width: 90%; /* Ancho reducido */
-    margin: auto; /* Centra la tabla horizontalmente */
-    border-collapse: collapse; /* Colapsa los bordes de la tabla */
+    width: 100%;
+    margin: auto;
+    border-collapse: collapse; /* Colapsar bordes de celda */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
 }
 
+/* Estilos para las celdas de la tabla */
 .actividad-registros th,
 .actividad-registros td {
-    padding: 6px; /* Espaciado interno reducido */
-    border-bottom: 1px solid #ddd; /* Borde inferior delgado */
-    text-align: left; /* Alineación del texto a la izquierda */
+    padding: 10px; /* Aumentado el padding para más espacio */
+    border-bottom: 1px solid #ddd; /* Borde inferior gris claro */
+    text-align: left;
+    font-size: 14px; /* Ajuste de tamaño de fuente */
+    border-right: 1px solid #ddd; /* Borde derecho gris claro */
 }
 
-.actividad-registros th {
-    background-color: #f2f2f2; /* Color de fondo gris claro para las cabeceras */
-}
-
+/* Estilos para las filas pares de la tabla */
 .actividad-registros tbody tr:nth-child(even) {
-    background-color: #f2f2f2; /* Color de fondo gris claro para filas pares */
+    background-color: #f9f9f9; /* Fondo gris claro para filas pares */
 }
 
-/* Estilo para el botón de cierre del modal */
+/* Estilos para los botones de opciones */
+.option a {
+    display: inline-block;
+    margin-right: 5px; /* Espacio entre botones */
+    padding: 6px 10px; /* Padding reducido para compactar */
+    border-radius: 4px;
+    text-decoration: none;
+    color: white;
+    transition: background-color 0.3s;
+    font-size: 12px; /* Ajuste de tamaño de fuente */
+}
+
+.option .editar {
+    background-color: #4CAF50;
+}
+
+.option .editar:hover {
+    background-color: #45a049;
+}
+
+.option .eliminar {
+    background-color: #f44336;
+}
+
+.option .eliminar:hover {
+    background-color: #d32f2f;
+}
+
+.option .custom-btn {
+    background-color: #008CBA;
+}
+
+.option .custom-btn:hover {
+    background-color: #007bb5;
+}
+
+/* Estilo específico para el botón de cerrar del modal */
 .modal-close-btn {
-    background-color: #f44336; /* Color de fondo rojo */
-    color: white; /* Color de texto blanco */
-    padding: 6px 12px; /* Espaciado interno reducido */
-    border: none; /* Sin borde */
-    border-radius: 4px; /* Bordes redondeados */
-    cursor: pointer; /* Cursor de tipo puntero al pasar sobre el botón */
-    font-size: 14px; /* Tamaño de fuente reducido */
-    transition: background-color 0.3s; /* Transición suave para el cambio de color de fondo */
+    background-color: #f44336;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
 }
 
 /* Cambiar el color de fondo al pasar el ratón sobre el botón */
 .modal-close-btn:hover {
-    background-color: #d32f2f; /* Color de fondo rojo oscuro */
+    background-color: #d32f2f;
 }
-
-
 
 /* Encabezado del modal */
 .modal-header-actividad {
-    background-color: #f4f4f4; /* Fondo gris claro */
-    padding: 15px; /* Espaciado interno */
-    border-bottom: 2px solid #ddd; /* Línea inferior */
-    border-radius: 10px 10px 0 0; /* Bordes superiores redondeados */
-    width: 100%; /* Asegura que el encabezado ocupe todo el ancho */
-    box-sizing: border-box; /* Incluye el padding y el borde en el ancho */
+    background-color: #4071aa;
+    padding: 15px;
+    border-bottom: 2px solid #ddd;
+    border-radius: 10px 10px 0 0;
+    width: 100%;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
 
 .modal-header-actividad h2 {
-    font-size: 24px; /* Tamaño de fuente */
-    margin: 0; /* Sin margen */
-    color: #333; /* Color de texto */
+    font-size: 20px;
+    margin: 0;
+    color: white; /* Texto blanco para contraste */
 }
 
 .modal-header-actividad p {
-    font-size: 18px; /* Tamaño de fuente */
-    margin: 10px 0 0; /* Margen superior */
-    color: #555; /* Color de texto */
+    font-size: 14px;
+    margin: 10px 0 0;
+    color: white; /* Texto blanco para contraste */
 }
 
 .modal-info p {
-    font-size: 16px; /* Tamaño de fuente */
-    color: #333; /* Color de texto */
-    margin: 10px 0; /* Margen */
+    font-size: 14px; /* Ajuste de tamaño de fuente */
+    color: #333;
+    margin: 10px 0;
 }
 
 .modal-info p strong {
-    color: #555; /* Color del texto en negrita */
+    color: #555;
 }
 
 /* Botón de actividad padre */
 .btn-actividad-padre, .btn-subactividad {
-    background-color: #52b1f0; /* Color de fondo */
-    color: white; /* Color del texto */
-    border: 2px solid transparent; /* Borde sólido transparente */
-    padding: 8px 16px; /* Espaciado interno */
-    text-align: center; /* Alineación del texto */
-    text-decoration: none; /* Sin subrayado */
-    display: inline-block; /* Muestra como bloque en línea */
-    font-size: 14px; /* Tamaño del texto */
-    margin: 5px 0; /* Margen */
+    background-color: #52b1f0;
+    color: white;
+    border: 2px solid transparent;
+    padding: 6px 10px; /* Padding reducido para compactar */
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px; /* Ajuste de tamaño de fuente */
+    margin: 5px 0;
     cursor: pointer;
-    border-radius: 5px; /* Bordes redondeados */
-    transition: background-color 0.3s, border-color 0.3s, transform 0.2s; /* Transiciones suaves */
+    border-radius: 5px;
+    transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
 }
 
-/* Efecto de hover para los botones */
 .btn-actividad-padre:hover, .btn-subactividad:hover {
-    background-color: #0e8cdd; /* Cambia el color de fondo al pasar el mouse */
-    border-color: #0e8cdd; /* Cambia el color del borde al pasar el mouse */
-    transform: translateY(-2px); /* Desplaza ligeramente hacia arriba al pasar el mouse */
+    background-color: #0e8cdd;
+    border-color: #0e8cdd;
+    transform: translateY(-2px);
 }
 
-/* Estilos para la tabla dentro del modal */
-.actividad-registros {
-    width: 100%; /* Ancho completo */
-    margin: auto; /* Centra la tabla horizontalmente */
-    border-collapse: collapse; /* Colapsa los bordes de la tabla */
-}
 
-.actividad-registros th,
-.actividad-registros td {
-    padding: 8px; /* Espaciado interno */
-    border-bottom: 1px solid #ddd; /* Borde inferior delgado */
-    text-align: left; /* Alineación del texto a la izquierda */
-}
 
-.actividad-registros th {
-    background-color: #f2f2f2; /* Color de fondo gris claro para las cabeceras */
-}
 
-.actividad-registros tbody tr:nth-child(even) {
-    background-color: #f2f2f2; /* Color de fondo gris claro para filas pares */
-}
 
 
 
@@ -796,9 +799,7 @@ input[type="number"]:focus {
     display: block; /* Para permitir que la barra de desplazamiento funcione correctamente */
 }
 
-.table-data {
-    margin-top: 20px; /* Ajuste del margen superior */
-}
+
 
 .head-container {
     background-color: var(--light);
@@ -1571,8 +1572,8 @@ select:focus {
 
 .edit-project-header {
     position: relative;
-    background-color: #007bff; /* Azul oscuro */
-    color: #fff;
+    background-color: #fffafa; /* Azul oscuro */
+    color: #000000;
     padding: 20px;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
@@ -1607,6 +1608,28 @@ select:focus {
     flex: 1;
     margin-right: 10px; /* Reducción del margen derecho */
 }
+
+
+/* Ajuste del tamaño del select */
+.edit-select {
+    width: 20px; /* Ancho reducido del select */
+    padding: 6px; /* Ajuste del padding */
+    font-size: 12px; /* Tamaño de fuente reducido */
+    border-radius: 4px; /* Radio de borde */
+    box-sizing: border-box; /* Incluir padding en el ancho total */
+}
+
+/* Ajuste del tamaño del botón */
+.edit-submit-btn {
+    padding: 8px 16px; /* Ajuste del padding vertical y horizontal */
+    font-size: 14px; /* Tamaño de fuente */
+    border-radius: 4px; /* Radio de borde */
+    display: block; /* Convertir el botón en bloque */
+    margin: 10px auto 0; /* Centrar el botón y ajustar el margen superior */
+}
+
+
+
 
 .edit-form-group:last-child {
     margin-right: 0;
@@ -1679,6 +1702,122 @@ select:focus {
 .table th {
     background-color: #f4f4f4;
 }
+
+
+
+
+
+
+
+
+.edit-form-group label {
+    display: block;
+    text-align: center;
+    margin-bottom: 8px; /* Añade algo de espacio debajo del label para separarlo de los botones */
+    font-weight: bold; /* Para que resalte un poco más */
+}
+
+.beneficiarios-label {
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+
+
+.custom-table {
+    margin-top: 24px;
+    width: 100%;
+    color: #333;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow-x: auto;
+    padding: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.custom-table table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.custom-table th,
+.custom-table td {
+    padding: 12px 16px; /* Suficiente espacio para un diseño limpio */
+    text-align: center;
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+}
+
+.custom-table th {
+    background-color: #396b94; /* Color diferente para la cabecera */
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-right: 1px solid #ffffff; /* Separador entre celdas */
+}
+
+.custom-table th:last-child {
+    border-right: none; /* Quitar borde del último encabezado */
+}
+
+.custom-table tbody tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer; /* Cambiar cursor al pasar por una fila */
+}
+
+.custom-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.custom-table tbody tr {
+    transition: background-color 0.3s; /* Transición suave para el hover */
+}
+
+.custom-table td {
+    border-right: 1px solid #ddd; /* Separador entre celdas */
+}
+
+.custom-table td:last-child {
+    border-right: none; /* Quitar borde de la última celda */
+}
+
+.custom-table td:first-child {
+    text-align: left;
+}
+
+.custom-table td:last-child {
+    text-align: right;
+}
+
+.custom-table .status {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-weight: bold;
+    color: #fff;
+    display: inline-block;
+}
+
+.custom-table .status.completed {
+    background-color: #28a745;
+}
+
+.custom-table .status.process {
+    background-color: #ffc107;
+}
+
+.custom-table .status.pending {
+    background-color: #dc3545;
+}
+
+
+
+
+
 
 
 
