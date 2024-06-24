@@ -667,7 +667,7 @@ def editar_proyecto(proyecto_id):
         db.session.commit()
 
         flash('¡Proyecto actualizado exitosamente!', 'success')
-        return redirect(url_for('proyectos'))
+        return redirect(url_for('editar_proyecto', proyecto_id=proyecto.id))
 
     # Recuperar registros de las actividades relacionadas con el proyecto, excluyendo los deshabilitados
     actividades_del_proyecto = proyecto.actividades

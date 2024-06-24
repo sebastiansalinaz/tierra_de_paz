@@ -8,7 +8,7 @@
             <h1>{{ proyecto.nombre }}</h1>
         </div>
         <div class="edit-project-body">
-            <form action="{{ url_for('editar_proyecto', proyecto_id=proyecto.id) }}" method="post">
+            <form id="editarProyectoForm" action="{{ url_for('editar_proyecto', proyecto_id=proyecto.id) }}" method="post">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                 <div class="edit-form-row">
@@ -66,19 +66,32 @@
                     <br>  <br>  
                 <div class="edit-form-row">
                     <div class="edit-form-group">
-                        <button type="submit" class="edit-submit-btn">Actualizar Proyecto</button>
+                        <button type="button" class="edit-submit-btn" onclick="mostrarConfirmarActualizarProyectoModal()">Actualizar Proyecto</button>
                     </div>
                 </div>
             </form>
         </div>
 
-
-
-
-       
-
-       
-
+    
+        <!-- Modal Confirmar Actualización de Proyecto -->
+<div id="confirmarActualizarProyectoModal" class="modal" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="closeModal('confirmarActualizarProyectoModal')">&times;</span>
+                <h2>Confirmar actualización de proyecto</h2>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas actualizar este proyecto?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="boton-act boton-act-secondary" onclick="closeModal('confirmarActualizarProyectoModal')">Cancelar</button>
+                <button id="confirmarActualizarProyectoBtn" class="btn-update btn-evento" onclick="actualizarProyecto()">Actualizar proyecto</button>
+            </div>
+        </div>
+    </div>
+</div>
+   
 
             <!-- Contenedor para los botones -->
             <div class="button-container">
@@ -565,8 +578,107 @@ function generatePDF(proyectoId) {
 
     
 
+    function mostrarConfirmarActualizarProyectoModal() {
+        var modal = document.getElementById('confirmarActualizarProyectoModal');
+        if (modal) {
+            openModal('confirmarActualizarProyectoModal');
+
+            // Asignar evento al botón de actualizar proyecto dentro del modal
+            var confirmarActualizarProyectoBtn = document.getElementById('confirmarActualizarProyectoBtn');
+            confirmarActualizarProyectoBtn.onclick = function() {
+                actualizarProyecto();
+                cerrarModal('confirmarActualizarProyectoModal');
+            };
+
+            // Asignar evento al botón de cancelar dentro del modal
+            var cancelarBtn = document.querySelector('.btn-cancel');
+            cancelarBtn.onclick = function() {
+                cerrarModal('confirmarActualizarProyectoModal');
+            };
+        }
+    }
+
+    // Función para mostrar el modal
+function openModal(modalId) {
+    var modal = document.getElementById(modalId);
+    modal.style.display = "block";
+}
+
+// Función para cerrar el modal
+function closeModal(modalId) {
+    var modal = document.getElementById(modalId);
+    modal.style.display = "none";
+}
+
+// Función para mostrar el modal de confirmar actualización
+function mostrarConfirmarActualizarProyectoModal() {
+    openModal('confirmarActualizarProyectoModal');
+}
+
+// Asignar el evento de clic a los botones de cerrar modal y actualizar proyecto
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[data-dismiss="modal"]').forEach(function(button) {
+        button.addEventListener('click', function() {
+            closeModal(button.closest('.modal').id);
+        });
+    });
+});
+
+// Función para actualizar el proyecto mediante AJAX
+function actualizarProyecto() {
+    var form = document.getElementById('editarProyectoForm');
+    var formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': '{{ csrf_token() }}' // Asegúrate de incluir el token CSRF
+        },
+    })
+    .then(function(response) {
+        if (response.ok) {
+            // Actualización exitosa, puedes redirigir o realizar otra acción necesaria
+            window.location.reload(); // Recargar la página por ejemplo
+        } else {
+            throw new Error('Hubo un problema al actualizar el proyecto.');
+        }
+    })
+    .catch(function(error) {
+        console.error('Error:', error);
+        alert('Hubo un problema al actualizar el proyecto.');
+    });
+
+    closeModal('confirmarActualizarProyectoModal');
+}
 
 
+// Esperar a que el DOM esté completamente cargado
+document.addEventListener('DOMContentLoaded', function() {
+    mostrarConfirmarActualizarProyectoModal();
+});
+
+// Event listener para cerrar todos los modales al presionar Esc
+document.addEventListener('keydown', function(event) {
+    if (event.key === "Escape") {
+        var openModals = document.querySelectorAll('.modal');
+        openModals.forEach(function(modal) {
+            modal.style.display = "none";
+        });
+    }
+});
+
+
+    const selectOption = document.getElementById("cluster_select_option");
+    const inputText = document.getElementById("cluster_text");
+    selectOption.addEventListener("change", function () {
+        if (selectOption.value === "nuevo") {
+            inputText.style.display = "block";
+            selectOption.style.display = "none";
+        }
+    });
+
+    
     // Función para mostrar el formulario de registro de personas
     function openUserForm() {
         closeModal('myModalActivity'); // Cerramos el modal de actividad
@@ -718,7 +830,6 @@ document.getElementById("crearActividadForm").addEventListener("submit", crearAc
             alert('Error al comunicarse con el servidor.');
         });
     }
-
 
 
    
