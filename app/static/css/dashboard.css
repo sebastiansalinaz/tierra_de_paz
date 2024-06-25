@@ -1701,29 +1701,33 @@ select:focus {
     background-color: #0056b3;
 }
 
+
+/* Estilos CSS para la tabla */
 .table-data {
-    overflow-x: auto; /* Agregado para el desplazamiento horizontal */
-    margin-top: 20px; /* Ajuste del margen superior */
+    overflow-x: auto;
+    margin-top: 20px;
 }
 
-
-
-.table {
-    width: 100%; /* Ancho completo */
+.table-data table {
+    width: 100%;
     border-collapse: collapse;
 }
 
-.table th, .table td {
+.table-data th,
+.table-data td {
     padding: 10px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
 
-.table th {
+.table-data th {
     background-color: #f4f4f4;
 }
 
-
+.table-data tbody td {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
 
 
 

@@ -295,6 +295,11 @@ def search_usuarios():
 
 
 
+@app.route('/historial/<int:registro_id>')
+def historial_registro(registro_id):
+    registro = Registro.query.get_or_404(registro_id)
+    return render_template('historial.html', registro=registro)
+
 
 
 @app.route('/guardar_actividad', methods=['POST'])

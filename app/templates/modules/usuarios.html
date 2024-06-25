@@ -100,69 +100,68 @@
             <button class="modal-close-btn" onclick="closeModal('myModalActivity{{ actividad.id }}')">Cerrar</button>
         </div>
 
-        <!-- Contenedor de la tabla para mostrar los registros asociados a la actividad -->
-        <div id="contenedor-tabla-{{ actividad.id }}" class="modal-tabla-contenedor">
-            <table class="actividad-registros">
-                <thead>
-                    <tr>
-                        <th>Nombres</th>
-                        <th>Apellidos</th>
-                        <th>Tipo de Documento</th>
-                        <th>Número de Documento</th>
-                        <th>País</th>
-                        <th>Departamento</th>
-                        <th>Municipio</th>
-                        <th>Género</th>
-                        <th>Edad</th>
-                        <th>Grupo de Edad</th>
-                        <th>Grupo Étnico</th>
-                        <th>Discapacidad</th>
-                        <th>Comunidad</th>
-                        <th>Actividad</th>
-                        <th>Opciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for registro in actividad.registros %}
-                    <tr class="{% if registro.estado == 'deshabilitado' %}deshabilitado{% endif %} {% if registro.inhabilitado %}inhabilitado{% endif %}">
-                        <td>{{ registro.nombres }}</td>
-                        <td>{{ registro.apellidos }}</td>
-                        <td>{{ registro.tipo_documento }}</td>
-                        <td>{{ registro.numero_documento }}</td>
-                        <td>{{ registro.pais }}</td>
-                        <td>{{ registro.departamento }}</td>
-                        <td>{{ registro.municipio }}</td>
-                        <td>{{ registro.genero }}</td>
-                        <td>{{ registro.edad }}</td>
-                        <td>
-                            {% if registro.grupo_edad == "menor_18" %}
-                                Menor de 18
-                            {% elif registro.grupo_edad == "18_49" %}
-                                18 a 49
-                            {% elif registro.grupo_edad == "50_mas" %}
-                                50 o más
-                            {% endif %}
-                        </td>
-                        <td>{{ registro.grupo_etnico }}</td>
-                        <td>{{ registro.discapacidad }}</td>
-                        <td>{{ registro.comunidad }}</td>
-                        <td>{{ registro.actividad.nombre }}</td>
-                        <td class="option">
-                            <a href="#" class="custom-btn editar" onclick="abrirModalEdicion({{ registro.id }})">Editar</a>
-                            <a href="#" class="custom-btn-eliminar eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a><!-- Botón para Inhabilitar/Habilitar -->
-                            <a href="#" class="custom-btn" data-registro-id="{{ registro.id }}" data-registro-inhabilitado="{{ 'true' if registro.inhabilitado else 'false' }}" onclick="mostrarConfirmarHabilitarRegistroModal(this)">
-                                {{ 'Habilitar' if registro.inhabilitado else 'Inhabilitar' }}
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div> <!-- Fin del contenedor de la tabla -->
+<!-- Contenedor de la tabla para mostrar los registros asociados a la actividad -->
+<div id="contenedor-tabla-{{ actividad.id }}" class="modal-tabla-contenedor">
+    <table class="actividad-registros" data-historial-table>
+        <thead>
+            <tr>
+                <th>Nombres</th>
+                <th>Apellidos</th>
+                <th>Tipo de Documento</th>
+                <th>Número de Documento</th>
+                <th>País</th>
+                <th>Departamento</th>
+                <th>Municipio</th>
+                <th>Género</th>
+                <th>Edad</th>
+                <th>Grupo de Edad</th>
+                <th>Grupo Étnico</th>
+                <th>Discapacidad</th>
+                <th>Comunidad</th>
+                <th>Actividad</th>
+                <th>Opciones</th>
+            </tr>
+        </thead>
+        <tbody id="actividad-registros-tbody">
+            {% for registro in actividad.registros %}
+            <tr class="{% if registro.estado == 'deshabilitado' %}deshabilitado{% endif %} {% if registro.inhabilitado %}inhabilitado{% endif %}" data-registro-id="{{ registro.id }}">
+                <td>{{ registro.nombres }}</td>
+                <td>{{ registro.apellidos }}</td>
+                <td>{{ registro.tipo_documento }}</td>
+                <td>{{ registro.numero_documento }}</td>
+                <td>{{ registro.pais }}</td>
+                <td>{{ registro.departamento }}</td>
+                <td>{{ registro.municipio }}</td>
+                <td>{{ registro.genero }}</td>
+                <td>{{ registro.edad }}</td>
+                <td>
+                    {% if registro.grupo_edad == "menor_18" %}
+                        Menor de 18
+                    {% elif registro.grupo_edad == "18_49" %}
+                        18 a 49
+                    {% elif registro.grupo_edad == "50_mas" %}
+                        50 o más
+                    {% endif %}
+                </td>
+                <td>{{ registro.grupo_etnico }}</td>
+                <td>{{ registro.discapacidad }}</td>
+                <td>{{ registro.comunidad }}</td>
+                <td>{{ registro.actividad.nombre }}</td>
+                <td class="option">
+                    <a href="#" class="custom-btn editar" onclick="abrirModalEdicion({{ registro.id }})">Editar</a>
+                    <a href="#" class="custom-btn-eliminar eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a>
+                    <a href="#" class="custom-btn" data-registro-id="{{ registro.id }}" data-registro-inhabilitado="{{ 'true' if registro.inhabilitado else 'false' }}" onclick="mostrarConfirmarHabilitarRegistroModal(this)">
+                        {{ 'Habilitar' if registro.inhabilitado else 'Inhabilitar' }}
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div> <!-- Fin del contenedor de la tabla -->
             </div>
         </div>
         {% endfor %}
-
 
 <!-- En usuarios.html -->
 <div class="table-data">
@@ -175,7 +174,7 @@
                 <i class='bx bx-filter'></i>
             </div>
             <div class="table-container">
-                <table id="registros-table">
+                <table id="registros-table" data-historial-table>
                     <thead>
                         <tr>
                             <th>Nombres</th>
@@ -197,7 +196,7 @@
                     </thead>
                     <tbody id="registros-tbody">
                         {% for registro in registros_paginados.items %}
-                        <tr class="{% if registro.estado == 'deshabilitado' %}deshabilitado{% endif %} {% if registro.inhabilitado %}inhabilitado{% endif %}">
+                        <tr class="{% if registro.estado == 'deshabilitado' %}deshabilitado{% endif %} {% if registro.inhabilitado %}inhabilitado{% endif %}" data-registro-id="{{ registro.id }}">
                             <td>{{ registro.nombres }}</td>
                             <td>{{ registro.apellidos }}</td>
                             <td>{{ registro.tipo_documento }}</td>
@@ -207,13 +206,21 @@
                             <td>{{ registro.municipio }}</td>
                             <td>{{ registro.genero }}</td>
                             <td>{{ registro.edad }}</td>
-                            <td>{{ registro.grupo_edad }}</td>
+                            <td>
+                                {% if registro.grupo_edad == "menor_18" %}
+                                    Menor de 18
+                                {% elif registro.grupo_edad == "18_49" %}
+                                    18 a 49
+                                {% elif registro.grupo_edad == "50_mas" %}
+                                    50 o más
+                                {% endif %}
+                            </td>
                             <td>{{ registro.grupo_etnico }}</td>
                             <td>{{ registro.discapacidad }}</td>
                             <td>{{ registro.comunidad }}</td>
                             <td>{{ registro.actividad.nombre }}</td>
                             <td class="options">
-                                <a href="#" class="custom-btn" onclick="abrirModalEdicion({{ registro.id }})">Editar</a>
+                                <a href="#" class="custom-btn editar" onclick="abrirModalEdicion({{ registro.id }})">Editar</a>
                                 <a href="#" class="custom-btn-eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a>
                                 <a href="#" class="custom-btn" data-registro-id="{{ registro.id }}" data-registro-inhabilitado="{{ 'true' if registro.inhabilitado else 'false' }}" onclick="mostrarConfirmarHabilitarRegistroModal(this)">
                                     {{ 'Habilitar' if registro.inhabilitado else 'Inhabilitar' }}
@@ -224,6 +231,7 @@
                     </tbody>
                 </table>
             </div>
+
 
             <!-- Paginación -->
             <div class="pagination">
@@ -712,6 +720,43 @@ function openModal(modalId) {
     }
 
 
+
+// Función para navegar al historial correspondiente al hacer clic en una fila (excepto en las opciones)
+document.addEventListener("DOMContentLoaded", function() {
+    // Seleccionar todas las tablas con filas que tienen data-registro-id
+    const tables = document.querySelectorAll("table[data-historial-table]");
+
+    tables.forEach(table => {
+        const rows = table.querySelectorAll("tbody tr");
+        rows.forEach(row => {
+            row.addEventListener("click", function(event) {
+                if (!event.target.classList.contains("custom-btn") && !event.target.classList.contains("custom-btn-eliminar")) {
+                    // Evita que el evento se propague cuando se hace clic en las opciones
+                    event.stopPropagation();
+                    // Obtén el registro ID desde el atributo data-registro-id del elemento tr
+                    const registroId = this.getAttribute("data-registro-id");
+                    // Redirige al historial correspondiente
+                    navigateToHistorial(registroId);
+                }
+            });
+        });
+    });
+});
+
+// Función para navegar al historial correspondiente al hacer clic en una fila
+function navigateToHistorial(registroId) {
+    // Asegúrate de que el registroId sea un número válido
+    if (!isNaN(parseInt(registroId))) {
+        window.location.href = `/historial/${registroId}`;
+    } else {
+        console.error(`Error: El ID de registro '${registroId}' no es válido.`);
+    }
+}
+
+
+
+
+    
     function abrirModalEdicion(registroId) {
         fetch(`/obtener_registro/${registroId}`)
             .then(response => response.json())

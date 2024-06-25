@@ -1,218 +1,70 @@
-{% extends "layout/layout.html" %}
-{% block title %}{{ proyecto.nombre }}{% endblock %}
-
-{% block content %}
-<section id="content">
-    <div class="edit-project-container">
-        <div class="edit-project-header">
-            <h1>{{ proyecto.nombre }}</h1>
-        </div>
-        <div class="edit-project-body">
-            <form id="editarProyectoForm" action="{{ url_for('editar_proyecto', proyecto_id=proyecto.id) }}" method="post">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-                <div class="edit-form-row">
-                    <div class="edit-form-group">
-                        <label for="nombre">Nombre:</label>
-                        <input type="text" id="nombre" name="nombre" value="{{ proyecto.nombre }}" class="edit-input" required>
-                    </div>
-
-                    <div class="edit-form-group">
-                        <label for="descripcion">Descripción:</label>
-                        <input type="text" id="descripcion" name="descripcion" value="{{ proyecto.descripcion }}" class="edit-input" required>
-                    </div>
-
-                    <div class="edit-form-group" id="cluster_select">
-                        <label for="cluster">Cluster:</label>
-                        <select id="cluster_select_option" name="cluster" class="edit-select" required>
-                            <option value="" disabled selected>Seleccione un Cluster</option>
-                            <option value="Cluster de Agua, Saneamiento e Higiene (WASH)">Cluster de Agua, Saneamiento e Higiene (WASH)</option>
-                            <option value="Cluster de Alimentación y Nutrición">Cluster de Alimentación y Nutrición</option>
-                            <option value="Cluster de Educación">Cluster de Educación</option>
-                            <option value="nuevo">Agregar Nuevo</option>
-                        </select>
-                        <input type="text" id="cluster_text" name="cluster" placeholder="Nuevo Cluster" style="display: none;" class="edit-input"><br><br>
-                    </div>
-                </div>
-
-                <div class="edit-form-row">
-                    <div class="edit-form-group">
-                        <label for="responsable">Responsable:</label>
-                        <input type="text" id="responsable" name="responsable" value="{{ proyecto.responsable }}" class="edit-input" required>
-                    </div>
-
-                    <div class="edit-form-group">
-                        <label for="fecha_inicio">Fecha de Inicio:</label>
-                        <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{ proyecto.fecha_inicio }}" class="edit-input" required>
-                    </div>
-
-                    <div class="edit-form-group">
-                        <label for="fecha_finalizacion">Fecha de Finalización:</label>
-                        <input type="date" id="fecha_finalizacion" name="fecha_finalizacion" value="{{ proyecto.fecha_finalizacion }}" class="edit-input" required>
-                    </div>
-                </div>
-
-                <div class="edit-form-row">
-                    <div class="edit-form-group estado-group">
-                        <select id="estado" name="estado" class="edit-select" required>
-                            <option value="Activo" {% if estado_proyecto == 'activo' %} selected {% endif %}>Activo</option>
-                            <option value="Inactivo" {% if estado_proyecto == 'inactivo' %} selected {% endif %}>Inactivo</option>
-                        </select>
-                    </div>
-                </div>
-
-                <br><br>  
-                <div class="edit-form-row">
-                    <div class="edit-form-group">
-                        <button type="button" class="edit-submit-btn" onclick="mostrarConfirmarActualizarProyectoModal()">Actualizar Proyecto</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <!-- Modal Confirmar Actualización de Proyecto -->
-        <div id="confirmarActualizarProyectoModal" class="modal" style="display: none;">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <span class="close" onclick="cerrarModal('confirmarActualizarProyectoModal')">&times;</span>
-                        <h2>Confirmar actualización de proyecto</h2>
-                    </div>
-                    <div class="modal-body">
-                        <p>¿Estás seguro de que deseas actualizar este proyecto?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn-cancel" onclick="cerrarModal('confirmarActualizarProyectoModal')">Cancelar</button>
-                        <button id="confirmarActualizarProyectoBtn" class="btn-update" onclick="actualizarProyecto()">Actualizar proyecto</button>
-                    </div>
-                </div>
+<div class="table-data">
+    <div class="order">
+        <div class="head-container">
+            <div class="head">
+                <h3>Registros Recientes</h3>
+                <i class='bx bx-search' id="search-icon"></i>
+                <input type="text" id="search-input" placeholder="Buscar por nombre, apellido etc." value="{{ search_query }}">
+                <i class='bx bx-filter'></i>
             </div>
-        </div>
-
-        <!-- Contenedor para los botones -->
-        <div class="button-container">
-            <!-- Botón para generar PDF -->
-            <button id="btn-generate-pdf" class="btn-delete" onclick="generatePDF({{ proyecto.id }})">
-                <i class='bx bxs-file-pdf'></i>
-                <span class="text">Generar Informe PDF</span>
-            </button>
-            <!-- Botón 1 -->
-            <button id="btn-open-modal1" class="btn-evento" onclick="openModal('myModalPreliminar')">
-                <span class="text">Crear Actividad o Usuarios</span>
-            </button>
-            <!-- Botón 2 -->
-            <button type="button" class="boton-act boton-act-secondary" data-toggle="modal" data-target="#modalSeleccionActividad">
-                Seleccionar Actividades
-            </button>
-        </div>
-        <br><br><br>
-
-        <div class="edit-form-row">
-            <div class="edit-form-group">
-                <label>Actividades Incluidas:</label>
-                <div id="actividades-incluidas">
-                    {% for actividad in proyecto.actividades %}
-                    <button class="btn-actividad" id="btn-actividad-{{ actividad.id }}" data-target="myModalActivity{{ actividad.id }}" onclick="openModal('myModalActivity{{ actividad.id }}')">
-                        <span class="text">{{ actividad.nombre }}</span>
-                    </button>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Modales para cada actividad -->
-        {% for actividad in proyecto.actividades %}
-        <div id="myModalActivity{{ actividad.id }}" class="modaly" style="display: none;">
-            <div class="modal-contentenedor">
-                <div class="modal-header-actividad">
-                    <h2>ACTIVIDAD PRINCIPAL: {{ actividad.nombre }}</h2>
-                    <!-- Botón para la actividad padre si existe -->
-                    {% if actividad.actividad_padre %}
-                    <p>ACTIVIDAD PADRE:
-                        <button class="btn-actividad-padre" onclick="openModal('myModalActivity{{ actividad.actividad_padre.id }}')">{{ actividad.actividad_padre.nombre }}</button>
-                    </p>
-                    {% endif %}
-                    <!-- Botones para subactividades relacionadas si existen -->
-                    {% if actividad.subactividad_nombres %}
-                    <p>ACTIVIDADES RELACIONADAS:
-                        {% for subactividad_nombre in actividad.subactividad_nombres %}
-                        <button class="btn-subactividad" onclick="openSubactivityModal('{{ subactividad_nombre }}')">{{ subactividad_nombre }}</button>
+            <div class="table-container">
+                <table id="registros-table" data-historial-table>
+                    <thead>
+                        <tr>
+                            <th>Nombres</th>
+                            <th>Apellidos</th>
+                            <th>Tipo Documento</th>
+                            <th>Número Documento</th>
+                            <th>País</th>
+                            <th>Departamento</th>
+                            <th>Municipio</th>
+                            <th>Género</th>
+                            <th>Edad</th>
+                            <th>Grupo Edad</th>
+                            <th>Grupo Étnico</th>
+                            <th>Discapacidad</th>
+                            <th>Comunidad</th>
+                            <th>Actividad</th>
+                            <th class="options">Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="registros-tbody">
+                        {% for registro in registros_paginados.items %}
+                        <tr class="{% if registro.estado == 'deshabilitado' %}deshabilitado{% endif %} {% if registro.inhabilitado %}inhabilitado{% endif %}" data-registro-id="{{ registro.id }}">
+                            <td>{{ registro.nombres }}</td>
+                            <td>{{ registro.apellidos }}</td>
+                            <td>{{ registro.tipo_documento }}</td>
+                            <td>{{ registro.numero_documento }}</td>
+                            <td>{{ registro.pais }}</td>
+                            <td>{{ registro.departamento }}</td>
+                            <td>{{ registro.municipio }}</td>
+                            <td>{{ registro.genero }}</td>
+                            <td>{{ registro.edad }}</td>
+                            <td>
+                                {% if registro.grupo_edad == "menor_18" %}
+                                    Menor de 18
+                                {% elif registro.grupo_edad == "18_49" %}
+                                    18 a 49
+                                {% elif registro.grupo_edad == "50_mas" %}
+                                    50 o más
+                                {% endif %}
+                            </td>
+                            <td>{{ registro.grupo_etnico }}</td>
+                            <td>{{ registro.discapacidad }}</td>
+                            <td>{{ registro.comunidad }}</td>
+                            <td>{{ registro.actividad.nombre }}</td>
+                            <td class="options">
+                                <a href="#" class="custom-btn editar" onclick="abrirModalEdicion({{ registro.id }})">Editar</a>
+                                <a href="#" class="custom-btn-eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a>
+                                <a href="#" class="custom-btn" data-registro-id="{{ registro.id }}" data-registro-inhabilitado="{{ 'true' if registro.inhabilitado else 'false' }}" onclick="mostrarConfirmarHabilitarRegistroModal(this)">
+                                    {{ 'Habilitar' if registro.inhabilitado else 'Inhabilitar' }}
+                                </a>                       
+                            </td>
+                        </tr>
                         {% endfor %}
-                    </p>
-                    {% endif %}
-                </div>
+                    </tbody>
+                </table>
             </div>
         </div>
-        {% endfor %}
     </div>
-</section>
-
-<!-- Scripts -->
-<script>
-    // Mostrar y ocultar modales
-    function openModal(modalId) {
-        var modal = document.getElementById(modalId);
-        if (modal) {
-            modal.style.display = "block";
-        }
-    }
-
-    function cerrarModal(modalId) {
-        var modal = document.getElementById(modalId);
-        if (modal) {
-            modal.style.display = "none";
-        }
-    }
-
-    // Función para mostrar el modal de confirmación de actualización de proyecto
-    function mostrarConfirmarActualizarProyectoModal() {
-        openModal('confirmarActualizarProyectoModal');
-    }
-
-    // Función para actualizar el proyecto mediante AJAX
-    function actualizarProyecto() {
-        var form = document.getElementById('editarProyectoForm');
-        var formData = new FormData(form);
-
-        fetch(form.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': '{{ csrf_token() }}' // Asegúrate de incluir el token CSRF
-            },
-        })
-        .then(function(response) {
-            if (response.ok) {
-                // Actualización exitosa, puedes redirigir o realizar otra acción necesaria
-                window.location.reload(); // Recargar la página por ejemplo
-            } else {
-                throw new Error('Hubo un problema al actualizar el proyecto.');
-            }
-        })
-        .catch(function(error) {
-            console.error('Error:', error);
-            alert('Hubo un problema al actualizar el proyecto.');
-        });
-    }
-
-    // Evento para cerrar modales al presionar la tecla Esc
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            var modals = document.querySelectorAll('.modaly');
-            modals.forEach(function(modal) {
-                modal.style.display = 'none';
-            });
-        }
-    });
-
-    // Evento para cerrar modal al hacer clic fuera del contenido del modal
-    window.onclick = function(event) {
-        var modals = document.querySelectorAll('.modaly');
-        modals.forEach(function(modal) {
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-    };
-</script>
-{% endblock %}
+</div>

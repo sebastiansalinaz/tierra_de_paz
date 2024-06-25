@@ -1,0 +1,48 @@
+{% extends "layout/layout.html" %}
+
+{% block title %}Historial del Registro{% endblock %}
+
+{% block content %}
+<section id="content">
+    <main>
+        <div class="head-title">
+            <div class="left">
+                <h1>Historial del Registro</h1>
+                <ul class="breadcrumb">
+                    <li>
+                        <a href="/dashboard">Inicio</a>
+                    </li>
+                    <li><i class='bx bx-chevron-right'></i></li>
+                    <li>
+                        <a class="active" href="#">Historial del Registro</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="registro-info">
+            <h2>{{ registro.nombres }} {{ registro.apellidos }}</h2>
+            <p><strong>Tipo de Documento:</strong> {{ registro.tipo_documento }}</p>
+            <p><strong>Número de Documento:</strong> {{ registro.numero_documento }}</p>
+            <p><strong>País:</strong> {{ registro.pais }}</p>
+            <p><strong>Departamento:</strong> {{ registro.departamento }}</p>
+            <p><strong>Municipio:</strong> {{ registro.municipio }}</p>
+            <p><strong>Género:</strong> {{ registro.genero }}</p>
+            <p><strong>Edad:</strong> {{ registro.edad }}</p>
+            <p><strong>Grupo de Edad:</strong> 
+                {% if registro.grupo_edad == "menor_18" %}
+                    Menor de 18
+                {% elif registro.grupo_edad == "18_49" %}
+                    18 a 49
+                {% elif registro.grupo_edad == "50_mas" %}
+                    50 o más
+                {% endif %}
+            </p>
+            <p><strong>Grupo Étnico:</strong> {{ registro.grupo_etnico }}</p>
+            <p><strong>Discapacidad:</strong> {{ registro.discapacidad }}</p>
+            <p><strong>Comunidad:</strong> {{ registro.comunidad }}</p>
+            <p><strong>Actividad:</strong> {{ registro.actividad.nombre }}</p>
+        </div>
+    </main>
+</section>
+{% endblock %}
