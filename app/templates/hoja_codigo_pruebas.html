@@ -1,70 +1,69 @@
-<div class="table-data">
-    <div class="order">
-        <div class="head-container">
-            <div class="head">
-                <h3>Registros Recientes</h3>
-                <i class='bx bx-search' id="search-icon"></i>
-                <input type="text" id="search-input" placeholder="Buscar por nombre, apellido etc." value="{{ search_query }}">
-                <i class='bx bx-filter'></i>
-            </div>
-            <div class="table-container">
-                <table id="registros-table" data-historial-table>
-                    <thead>
-                        <tr>
-                            <th>Nombres</th>
-                            <th>Apellidos</th>
-                            <th>Tipo Documento</th>
-                            <th>Número Documento</th>
-                            <th>País</th>
-                            <th>Departamento</th>
-                            <th>Municipio</th>
-                            <th>Género</th>
-                            <th>Edad</th>
-                            <th>Grupo Edad</th>
-                            <th>Grupo Étnico</th>
-                            <th>Discapacidad</th>
-                            <th>Comunidad</th>
-                            <th>Actividad</th>
-                            <th class="options">Opciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="registros-tbody">
-                        {% for registro in registros_paginados.items %}
-                        <tr class="{% if registro.estado == 'deshabilitado' %}deshabilitado{% endif %} {% if registro.inhabilitado %}inhabilitado{% endif %}" data-registro-id="{{ registro.id }}">
-                            <td>{{ registro.nombres }}</td>
-                            <td>{{ registro.apellidos }}</td>
-                            <td>{{ registro.tipo_documento }}</td>
-                            <td>{{ registro.numero_documento }}</td>
-                            <td>{{ registro.pais }}</td>
-                            <td>{{ registro.departamento }}</td>
-                            <td>{{ registro.municipio }}</td>
-                            <td>{{ registro.genero }}</td>
-                            <td>{{ registro.edad }}</td>
-                            <td>
-                                {% if registro.grupo_edad == "menor_18" %}
-                                    Menor de 18
-                                {% elif registro.grupo_edad == "18_49" %}
-                                    18 a 49
-                                {% elif registro.grupo_edad == "50_mas" %}
-                                    50 o más
-                                {% endif %}
-                            </td>
-                            <td>{{ registro.grupo_etnico }}</td>
-                            <td>{{ registro.discapacidad }}</td>
-                            <td>{{ registro.comunidad }}</td>
-                            <td>{{ registro.actividad.nombre }}</td>
-                            <td class="options">
-                                <a href="#" class="custom-btn editar" onclick="abrirModalEdicion({{ registro.id }})">Editar</a>
-                                <a href="#" class="custom-btn-eliminar" data-registro-id="{{ registro.id }}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a>
-                                <a href="#" class="custom-btn" data-registro-id="{{ registro.id }}" data-registro-inhabilitado="{{ 'true' if registro.inhabilitado else 'false' }}" onclick="mostrarConfirmarHabilitarRegistroModal(this)">
-                                    {{ 'Habilitar' if registro.inhabilitado else 'Inhabilitar' }}
-                                </a>                       
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
+.centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin: 0 auto;
+}
+
+
+<script>
+    function previewImage(event) {
+        var input = event.target;
+        var preview = document.getElementById('foto-preview');
+        var reader = new FileReader();
+
+        reader.onload = function() {
+            preview.src = reader.result;
+        }
+
+        reader.readAsDataURL(input.files[0]);
+
+        // Enviar el formulario automáticamente después de seleccionar la imagen
+        document.getElementById('upload-image-form').submit();
+    }
+</script>
+
+.profile-image-container {
+    position: relative;
+    width: 150px;
+    height: 200px; /* Cambiado para que sea rectangular */
+    margin-bottom: 20px;
+}
+
+.profile-image-label {
+    cursor: pointer;
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    transition: .5s ease;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.profile-image-container:hover .overlay {
+    opacity: 1;
+}
+
+.text {
+    color: white;
+    font-size: 16px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}

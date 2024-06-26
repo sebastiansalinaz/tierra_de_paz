@@ -4,45 +4,164 @@
 
 {% block content %}
 <section id="content">
-    <main>
-        <div class="head-title">
-            <div class="left">
-                <h1>Historial del Registro</h1>
-                <ul class="breadcrumb">
-                    <li>
-                        <a href="/dashboard">Inicio</a>
-                    </li>
-                    <li><i class='bx bx-chevron-right'></i></li>
-                    <li>
-                        <a class="active" href="#">Historial del Registro</a>
-                    </li>
-                </ul>
-            </div>
+    <div class="edit-project-container">
+        <div class="edit-project-header">
+            <h1>Historial del Registro</h1>
+            <ul class="breadcrumb">
+                <li>
+                    <a href="/dashboard">Inicio</a>
+                </li>
+                <li><i class='bx bx-chevron-right'></i></li>
+                <li>
+                    <a class="active" href="#">Historial del Registro</a>
+                </li>
+            </ul>
         </div>
 
-        <div class="registro-info">
-            <h2>{{ registro.nombres }} {{ registro.apellidos }}</h2>
-            <p><strong>Tipo de Documento:</strong> {{ registro.tipo_documento }}</p>
-            <p><strong>Número de Documento:</strong> {{ registro.numero_documento }}</p>
-            <p><strong>País:</strong> {{ registro.pais }}</p>
-            <p><strong>Departamento:</strong> {{ registro.departamento }}</p>
-            <p><strong>Municipio:</strong> {{ registro.municipio }}</p>
-            <p><strong>Género:</strong> {{ registro.genero }}</p>
-            <p><strong>Edad:</strong> {{ registro.edad }}</p>
-            <p><strong>Grupo de Edad:</strong> 
-                {% if registro.grupo_edad == "menor_18" %}
-                    Menor de 18
-                {% elif registro.grupo_edad == "18_49" %}
-                    18 a 49
-                {% elif registro.grupo_edad == "50_mas" %}
-                    50 o más
-                {% endif %}
-            </p>
-            <p><strong>Grupo Étnico:</strong> {{ registro.grupo_etnico }}</p>
-            <p><strong>Discapacidad:</strong> {{ registro.discapacidad }}</p>
-            <p><strong>Comunidad:</strong> {{ registro.comunidad }}</p>
-            <p><strong>Actividad:</strong> {{ registro.actividad.nombre }}</p>
+        <div class="edit-project-body">
+            <div class="registro-info">
+                <h2 class="centered">{{ registro.nombres }} {{ registro.apellidos }}</h2>
+                <br>
+                <br>
+        
+                <!-- Recuadro de imagen -->
+                <div class="profile-image-container centered">
+                    <label for="upload-image" class="profile-image-label">
+                        {% if registro.imagen_url %}
+                            <img id="foto-preview" src="{{ registro.imagen_url }}" alt="Imagen de perfil" class="profile-image">
+                        {% else %}
+                            <img id="foto-preview" src="{{ url_for('static', filename='img/sin_perfil.jpg') }}" alt="Imagen de perfil" class="profile-image">
+                        {% endif %}
+                        <div class="overlay">
+                            <div class="text">Cambiar Imagen</div>
+                        </div>
+                    </label>
+                    <form id="upload-image-form" action="{{ url_for('upload_image', registro_id=registro.id) }}" method="post" enctype="multipart/form-data" style="display: none;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="file" id="upload-image" name="imagen" accept="image/*" onchange="previewImage(event)">
+                    </form>
+                </div>
+                
+                <!-- Mensaje de éxito -->
+                <div id="registro-exitoso" class="registro-exitoso" style="display: none;">
+                    <div class="contenido">
+                        <img src="{{ url_for('static', filename='img/ok.png') }}" alt="">
+                        <p>La imagen se ha cargado exitosamente.</p>
+                    </div>
+                </div>
+        
+                <div class="edit-form-row">
+                    <div class="edit-form-group">
+                        <p><strong>Tipo de Documento:</strong> {{ registro.tipo_documento }}</p>
+                    </div>
+                    <div class="edit-form-group">
+                        <p><strong>Número de Documento:</strong> {{ registro.numero_documento }}</p>
+                    </div>
+                </div>
+                <div class="edit-form-row">
+                    <div class="edit-form-group">
+                        <p><strong>País:</strong> {{ registro.pais }}</p>
+                    </div>
+                    <div class="edit-form-group">
+                        <p><strong>Departamento:</strong> {{ registro.departamento }}</p>
+                    </div>
+                </div>
+                <div class="edit-form-row">
+                    <div class="edit-form-group">
+                        <p><strong>Municipio:</strong> {{ registro.municipio }}</p>
+                    </div>
+                    <div class="edit-form-group">
+                        <p><strong>Género:</strong> {{ registro.genero }}</p>
+                    </div>
+                </div>
+                <div class="edit-form-row">
+                    <div class="edit-form-group">
+                        <p><strong>Edad:</strong> {{ registro.edad }}</p>
+                    </div>
+                    <div class="edit-form-group">
+                        <p><strong>Grupo de Edad:</strong> 
+                            {% if registro.grupo_edad == "menor_18" %}
+                                Menor de 18
+                            {% elif registro.grupo_edad == "18_49" %}
+                                18 a 49
+                            {% elif registro.grupo_edad == "50_mas" %}
+                                50 o más
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="edit-form-row">
+                    <div class="edit-form-group">
+                        <p><strong>Grupo Étnico:</strong> {{ registro.grupo_etnico }}</p>
+                    </div>
+                    <div class="edit-form-group">
+                        <p><strong>Discapacidad:</strong> {{ registro.discapacidad }}</p>
+                    </div>
+                </div>
+                <div class="edit-form-row">
+                    <div class="edit-form-group">
+                        <p><strong>Comunidad:</strong> {{ registro.comunidad }}</p>
+                    </div>
+                    <div class="edit-form-group">
+                        <p><strong>Actividad:</strong> {{ registro.actividad.nombre }}</p>
+                    </div>
+                </div>
+            </div>
         </div>
-    </main>
+    </div>
 </section>
+
+<!-- Script para previsualizar la foto y manejar la carga de la imagen -->
+<script>
+    function previewImage(event) {
+        var input = event.target;
+        var preview = document.getElementById('foto-preview');
+        var reader = new FileReader();
+
+        reader.onload = function() {
+            preview.src = reader.result;
+        }
+
+        reader.readAsDataURL(input.files[0]);
+
+        // Enviar el formulario automáticamente después de seleccionar la imagen
+        document.getElementById('upload-image-form').submit();
+    }
+
+    // Capturar la carga exitosa de la imagen y mostrar el mensaje
+    document.getElementById('upload-image-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var formData = new FormData(this);
+
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-Token': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Mostrar mensaje de éxito
+                var mensajeExito = document.getElementById("registro-exitoso");
+                mensajeExito.style.display = "block";
+                mensajeExito.style.opacity = '1';
+
+                // Ocultar mensaje después de 3 segundos
+                setTimeout(function() {
+                    mensajeExito.style.opacity = '0';
+                    setTimeout(function() {
+                        mensajeExito.style.display = 'none';
+                    }, 300);
+                }, 3000);
+            } else {
+                alert('Error al subir la imagen.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al comunicarse con el servidor.');
+        });
+    });
+</script>
 {% endblock %}

@@ -2025,6 +2025,64 @@ input[type="file"]:focus {
 
 
 
+.centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.profile-image-container {
+    position: relative;
+    width: 150px;
+    height: 200px; /* Rectangular */
+    margin-bottom: 20px;
+}
+
+.profile-image-label {
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px; /* Slightly rounded corners */
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.37), rgba(0, 0, 0, 0.493)); /* Gradient effect */
+    border-radius: 8px; /* Match the image's rounded corners */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: translateY(20px); /* Initial position for slide effect */
+}
+
+.profile-image-container:hover .overlay {
+    opacity: 1;
+    transform: translateY(0); /* Slide into place on hover */
+}
+
+
+
+.profile-image-container:hover .text {
+    transform: translateY(0); /* Slide into place on hover */
+}
+
+
+
 
 .dropdown-content {
     display: none;

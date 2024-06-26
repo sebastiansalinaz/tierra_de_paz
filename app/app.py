@@ -100,8 +100,8 @@ class Registro(db.Model):
     actividad_id = db.Column(db.Integer, db.ForeignKey('actividad.id'), nullable=False)
     estado = db.Column(db.String(20), nullable=False, default='habilitado')
     inhabilitado = db.Column(db.Boolean, default=False)
-    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)  # Campo de fecha de creación
-
+    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow) 
+    imagen_url = db.Column(db.String(200))
 
 class Proyecto(db.Model):
     __tablename__ = 'proyecto'
@@ -182,6 +182,7 @@ def logout():
 @login_required
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 
 @app.route('/dashboard')
 @login_required
@@ -475,6 +476,33 @@ def toggle_habilitar(registro_id):
     return jsonify({'status': 'success', 'inhabilitado': registro.inhabilitado})
 
 
+@app.route('/upload_image/<int:registro_id>', methods=['POST'])
+@login_required
+def upload_image(registro_id):
+    registro = Registro.query.get_or_404(registro_id)
+    if 'imagen' not in request.files:
+        flash('No file part', 'error')
+        return redirect(request.referrer)
+    
+    file = request.files['imagen']
+    if file.filename == '':
+        flash('No selected file', 'error')
+        return redirect(request.referrer)
+    
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+        registro.imagen_url = url_for('uploaded_file', filename=filename)
+        db.session.commit()
+        flash('Imagen actualizada con éxito', 'success')
+        return redirect(url_for('historial_registro', registro_id=registro.id))
+    else:
+        flash('Invalid file type', 'error')
+        return redirect(request.referrer)
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
 
 
 
