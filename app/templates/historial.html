@@ -4,8 +4,8 @@
 
 {% block content %}
 <section id="content">
-    <div class="edit-project-container">
-        <div class="edit-project-header">
+    <div class="edit-project-container historial-container">
+        <div class="edit-project-header historial-header">
             <h1>Historial del Registro</h1>
             <ul class="breadcrumb">
                 <li>
@@ -18,7 +18,7 @@
             </ul>
         </div>
 
-        <div class="edit-project-body">
+        <div class="edit-project-body historial-body">
             <div class="registro-info">
                 <h2 class="centered">{{ registro.nombres }} {{ registro.apellidos }}</h2>
                 <br>
@@ -41,75 +41,176 @@
                         <input type="file" id="upload-image" name="imagen" accept="image/*" onchange="previewImage(event)">
                     </form>
                 </div>
-                
-                <!-- Mensaje de éxito -->
-                <div id="registro-exitoso" class="registro-exitoso" style="display: none;">
-                    <div class="contenido">
-                        <img src="{{ url_for('static', filename='img/ok.png') }}" alt="">
-                        <p>La imagen se ha cargado exitosamente.</p>
+
+                <!-- Información del registro -->
+                <div class="historial-info">
+                    <div class="historial-form-row">
+                        <div class="historial-form-group">
+                            <p><strong>Tipo de Documento:</strong></p>
+                            <p>{{ registro.tipo_documento }}</p>
+                        </div>
+                        <div class="historial-form-group">
+                            <p><strong>Número de Documento:</strong></p>
+                            <p>{{ registro.numero_documento }}</p>
+                        </div>
                     </div>
-                </div>
-        
-                <div class="edit-form-row">
-                    <div class="edit-form-group">
-                        <p><strong>Tipo de Documento:</strong> {{ registro.tipo_documento }}</p>
+                    <div class="historial-form-row">
+                        <div class="historial-form-group">
+                            <p><strong>País:</strong></p>
+                            <p>{{ registro.pais }}</p>
+                        </div>
+                        <div class="historial-form-group">
+                            <p><strong>Departamento:</strong></p>
+                            <p>{{ registro.departamento }}</p>
+                        </div>
                     </div>
-                    <div class="edit-form-group">
-                        <p><strong>Número de Documento:</strong> {{ registro.numero_documento }}</p>
+                    <div class="historial-form-row">
+                        <div class="historial-form-group">
+                            <p><strong>Municipio:</strong></p>
+                            <p>{{ registro.municipio }}</p>
+                        </div>
+                        <div class="historial-form-group">
+                            <p><strong>Género:</strong></p>
+                            <p>{{ registro.genero }}</p>
+                        </div>
                     </div>
-                </div>
-                <div class="edit-form-row">
-                    <div class="edit-form-group">
-                        <p><strong>País:</strong> {{ registro.pais }}</p>
+                    <div class="historial-form-row">
+                        <div class="historial-form-group">
+                            <p><strong>Edad:</strong></p>
+                            <p>{{ registro.edad }}</p>
+                        </div>
+                        <div class="historial-form-group">
+                            <p><strong>Grupo de Edad:</strong></p>
+                            <p>
+                                {% if registro.grupo_edad == "menor_18" %}
+                                    Menor de 18
+                                {% elif registro.grupo_edad == "18_49" %}
+                                    18 a 49
+                                {% elif registro.grupo_edad == "50_mas" %}
+                                    50 o más
+                                {% endif %}
+                            </p>
+                        </div>
                     </div>
-                    <div class="edit-form-group">
-                        <p><strong>Departamento:</strong> {{ registro.departamento }}</p>
+                    <div class="historial-form-row">
+                        <div class="historial-form-group">
+                            <p><strong>Grupo Étnico:</strong></p>
+                            <p>{{ registro.grupo_etnico }}</p>
+                        </div>
+                        <div class="historial-form-group">
+                            <p><strong>Discapacidad:</strong></p>
+                            <p>{{ registro.discapacidad }}</p>
+                        </div>
                     </div>
-                </div>
-                <div class="edit-form-row">
-                    <div class="edit-form-group">
-                        <p><strong>Municipio:</strong> {{ registro.municipio }}</p>
-                    </div>
-                    <div class="edit-form-group">
-                        <p><strong>Género:</strong> {{ registro.genero }}</p>
-                    </div>
-                </div>
-                <div class="edit-form-row">
-                    <div class="edit-form-group">
-                        <p><strong>Edad:</strong> {{ registro.edad }}</p>
-                    </div>
-                    <div class="edit-form-group">
-                        <p><strong>Grupo de Edad:</strong> 
-                            {% if registro.grupo_edad == "menor_18" %}
-                                Menor de 18
-                            {% elif registro.grupo_edad == "18_49" %}
-                                18 a 49
-                            {% elif registro.grupo_edad == "50_mas" %}
-                                50 o más
-                            {% endif %}
-                        </p>
-                    </div>
-                </div>
-                <div class="edit-form-row">
-                    <div class="edit-form-group">
-                        <p><strong>Grupo Étnico:</strong> {{ registro.grupo_etnico }}</p>
-                    </div>
-                    <div class="edit-form-group">
-                        <p><strong>Discapacidad:</strong> {{ registro.discapacidad }}</p>
-                    </div>
-                </div>
-                <div class="edit-form-row">
-                    <div class="edit-form-group">
-                        <p><strong>Comunidad:</strong> {{ registro.comunidad }}</p>
-                    </div>
-                    <div class="edit-form-group">
-                        <p><strong>Actividad:</strong> {{ registro.actividad.nombre }}</p>
+                    <div class="historial-form-row">
+                        <div class="historial-form-group">
+                            <p><strong>Comunidad:</strong></p>
+                            <p>{{ registro.comunidad }}</p>
+                        </div>
+                        <div class="historial-form-group">
+                            <p><strong>Actividad:</strong></p>
+                            <p>{{ registro.actividad.nombre }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<style>
+/* Estilo general del contenedor de historial */
+.historial-container {
+    padding: 20px;
+    background-color: #f5f7fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.historial-header h1 {
+    font-size: 24px;
+    color: #333;
+    font-family: 'Roboto', sans-serif;
+    margin-bottom: 20px;
+}
+
+.historial-header .breadcrumb {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.historial-header .breadcrumb li {
+    margin-right: 5px;
+    font-size: 14px;
+    color: #666;
+}
+
+.historial-header .breadcrumb li a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.historial-header .breadcrumb li a:hover {
+    color: #0056b3;
+}
+
+/* Contenedor de filas de formularios */
+.historial-form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    justify-content: space-between;
+}
+
+/* Grupo de formularios */
+.historial-form-group {
+    flex: 1 1 48%;
+    margin-bottom: 15px;
+    padding: 15px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efecto hover en los grupos de formularios */
+.historial-form-group:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilo de los párrafos dentro de los grupos de formularios */
+.historial-form-group p {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+}
+
+/* Estilo de los textos fuertes dentro de los grupos de formularios */
+.historial-form-group strong {
+    color: #222;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Media queries para dispositivos móviles */
+@media (max-width: 768px) {
+    .historial-form-row {
+        flex-direction: column;
+    }
+
+    .historial-form-group {
+        flex: 1 1 100%;
+        margin: 10px 0;
+    }
+}
+</style>
 
 <!-- Script para previsualizar la foto y manejar la carga de la imagen -->
 <script>

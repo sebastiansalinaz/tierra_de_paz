@@ -1556,7 +1556,6 @@ select:focus {
     margin-bottom: 20px;
 }
 
-
 /* Estilos para la tarjeta de edición de proyecto */
 
 .edit-project-container {
@@ -1566,14 +1565,14 @@ select:focus {
     border-radius: 20px;
     background-color: #fff;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    font-family: var(--poppins); /* Fuente de letra más agradable */
+    font-family: 'Roboto', sans-serif; /* Ajusta la fuente según tus preferencias */
     overflow: hidden; /* Ajuste de desbordamiento */
 }
 
 .edit-project-header {
     position: relative;
-    background-color: #fffafa; /* Azul oscuro */
-    color: #000000;
+    background-color: #88b632; /* Cambia el color de fondo según tu preferencia */
+    color: #333; /* Cambia el color de texto según tu preferencia */
     padding: 20px;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
@@ -1591,7 +1590,7 @@ select:focus {
     height: 0;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
-    border-top: 10px solid #3f729b; /* Misma tonalidad de azul */
+    border-top: 10px solid #f5f7fa; /* Ajusta el color para que coincida con el fondo de header */
 }
 
 .edit-project-body {
@@ -1601,13 +1600,35 @@ select:focus {
 .edit-form-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px; /* Reducción del margen inferior */
+    margin-bottom: 20px; /* Ajusta el margen inferior según tus necesidades */
 }
 
 .edit-form-group {
-    flex: 1;
-    margin-right: 10px; /* Reducción del margen derecho */
+    flex: 1 1 48%;
+    margin: 10px 0;
+    padding: 15px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
+.edit-form-group:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.edit-form-group p {
+    margin: 0;
+    font-size: 18px; /* Ajusta el tamaño de fuente según tus preferencias */
+    color: #444; /* Ajusta el color de texto según tus preferencias */
+    font-family: 'Roboto', sans-serif; /* Ajusta la fuente según tus preferencias */
+}
+
+.edit-form-group strong {
+    color: #222; /* Ajusta el color de texto según tus preferencias */
+}
+
 
 
 
@@ -1728,6 +1749,15 @@ select:focus {
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2083,6 +2113,100 @@ input[type="file"]:focus {
 
 
 
+
+
+
+/* Estilo general del contenedor de historial */
+.historial-container {
+    padding: 20px;
+    background-color: #f5f7fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.historial-header h1 {
+    font-size: 24px;
+    color: #333;
+    font-family: 'Roboto', sans-serif;
+    margin-bottom: 20px;
+}
+
+.historial-header .breadcrumb {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.historial-header .breadcrumb li {
+    margin-right: 5px;
+    font-size: 14px;
+    color: #666;
+}
+
+.historial-header .breadcrumb li a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.historial-header .breadcrumb li a:hover {
+    color: #0056b3;
+}
+
+/* Contenedor de filas de formularios */
+.historial-form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    justify-content: space-between;
+}
+
+/* Grupo de formularios */
+.historial-form-group {
+    flex: 1 1 48%;
+    margin-bottom: 15px;
+    padding: 15px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efecto hover en los grupos de formularios */
+.historial-form-group:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilo de los párrafos dentro de los grupos de formularios */
+.historial-form-group p {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+}
+
+/* Estilo de los textos fuertes dentro de los grupos de formularios */
+.historial-form-group strong {
+    color: #222;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Media queries para dispositivos móviles */
+@media (max-width: 768px) {
+    .historial-form-row {
+        flex-direction: column;
+    }
+
+    .historial-form-group {
+        flex: 1 1 100%;
+        margin: 10px 0;
+    }
+}
 
 .dropdown-content {
     display: none;

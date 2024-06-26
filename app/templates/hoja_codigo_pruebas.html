@@ -1,69 +1,74 @@
-.centered {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    margin: 0 auto;
-}
+{% extends "layout/layout.html" %}
+{% block title %}{{ proyecto.nombre }}{% endblock %}
 
+{% block content %}
+<section id="content">
+    <div class="edit-project-container">
+        <div class="edit-project-header">
+            <h1>{{ proyecto.nombre }}</h1>
+        </div>
+        <div class="edit-project-body">
+            <form id="editarProyectoForm" action="{{ url_for('editar_proyecto', proyecto_id=proyecto.id) }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-<script>
-    function previewImage(event) {
-        var input = event.target;
-        var preview = document.getElementById('foto-preview');
-        var reader = new FileReader();
+                <div class="edit-form-row">
+                    <div class="edit-form-group full-width">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" id="nombre" name="nombre" value="{{ proyecto.nombre }}" class="edit-input full-width" required>
+                    </div>
+                </div>
 
-        reader.onload = function() {
-            preview.src = reader.result;
-        }
+                <div class="edit-form-row">
+                    <div class="edit-form-group full-width">
+                        <label for="descripcion">Descripción:</label>
+                        <textarea id="descripcion" name="descripcion" class="edit-textarea full-width" required>{{ proyecto.descripcion }}</textarea>
+                    </div>
+                </div>
 
-        reader.readAsDataURL(input.files[0]);
+                <div class="edit-form-row">
+                    <div class="edit-form-group">
+                        <label for="cluster">Cluster:</label>
+                        <select id="cluster_select_option" name="cluster" class="edit-select" required>
+                            <option value="" disabled selected>Seleccione un Cluster</option>
+                            <option value="Cluster de Agua, Saneamiento e Higiene (WASH)">Cluster de Agua, Saneamiento e Higiene (WASH)</option>
+                            <option value="Cluster de Alimentación y Nutrición">Cluster de Alimentación y Nutrición</option>
+                            <option value="Cluster de Educación">Cluster de Educación</option>
+                            <option value="nuevo">Agregar Nuevo</option>
+                        </select>
+                        <input type="text" id="cluster_text" name="cluster" placeholder="Nuevo Cluster" style="display: none;" class="edit-input">
+                    </div>
 
-        // Enviar el formulario automáticamente después de seleccionar la imagen
-        document.getElementById('upload-image-form').submit();
-    }
-</script>
+                    <div class="edit-form-group">
+                        <label for="responsable">Responsable:</label>
+                        <input type="text" id="responsable" name="responsable" value="{{ proyecto.responsable }}" class="edit-input" required>
+                    </div>
+                </div>
 
-.profile-image-container {
-    position: relative;
-    width: 150px;
-    height: 200px; /* Cambiado para que sea rectangular */
-    margin-bottom: 20px;
-}
+                <div class="edit-form-row">
+                    <div class="edit-form-group">
+                        <label for="fecha_inicio">Fecha de Inicio:</label>
+                        <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{ proyecto.fecha_inicio }}" class="edit-input" required>
+                    </div>
 
-.profile-image-label {
-    cursor: pointer;
-}
+                    <div class="edit-form-group">
+                        <label for="fecha_finalizacion">Fecha de Finalización:</label>
+                        <input type="date" id="fecha_finalizacion" name="fecha_finalizacion" value="{{ proyecto.fecha_finalizacion }}" class="edit-input" required>
+                    </div>
 
-.profile-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+                    <div class="edit-form-group estado-group">
+                        <label for="estado">Estado:</label>
+                        <select id="estado" name="estado" class="edit-select" required>
+                            <option value="Activo" {% if estado_proyecto == 'activo' %} selected {% endif %}>Activo</option>
+                            <option value="Inactivo" {% if estado_proyecto == 'inactivo' %} selected {% endif %}>Inactivo</option>
+                        </select>
+                    </div>
+                </div>
 
-.overlay {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
-    width: 100%;
-    opacity: 0;
-    transition: .5s ease;
-    background-color: rgba(0,0,0,0.5);
-}
-
-.profile-image-container:hover .overlay {
-    opacity: 1;
-}
-
-.text {
-    color: white;
-    font-size: 16px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-}
+                <div class="edit-form-row">
+                    <button type="submit" class="btn-submit">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
