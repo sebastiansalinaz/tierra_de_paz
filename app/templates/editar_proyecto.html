@@ -25,10 +25,10 @@
                     <div class="edit-form-group" id="cluster_select">
                         <label for="cluster">Cluster:</label>
                         <select id="cluster_select_option" name="cluster" class="edit-select" required>
-                            <option value="" disabled selected>Seleccione un Cluster</option>
-                            <option value="Cluster de Agua, Saneamiento e Higiene (WASH)">Cluster de Agua, Saneamiento e Higiene (WASH)</option>
-                            <option value="Cluster de Alimentación y Nutrición">Cluster de Alimentación y Nutrición</option>
-                            <option value="Cluster de Educación">Cluster de Educación</option>
+                            <option value="" disabled {% if not proyecto.cluster %} selected {% endif %}>Seleccione un Cluster</option>
+                            <option value="Cluster de Agua, Saneamiento e Higiene (WASH)" {% if proyecto.cluster == 'Cluster de Agua, Saneamiento e Higiene (WASH)' %} selected {% endif %}>Cluster de Agua, Saneamiento e Higiene (WASH)</option>
+                            <option value="Cluster de Alimentación y Nutrición" {% if proyecto.cluster == 'Cluster de Alimentación y Nutrición' %} selected {% endif %}>Cluster de Alimentación y Nutrición</option>
+                            <option value="Cluster de Educación" {% if proyecto.cluster == 'Cluster de Educación' %} selected {% endif %}>Cluster de Educación</option>
                             <option value="nuevo">Agregar Nuevo</option>
                         </select>
                         <input type="text" id="cluster_text" name="cluster" placeholder="Nuevo Cluster" style="display: none;" class="edit-input"><br><br>
