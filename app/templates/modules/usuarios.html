@@ -1217,68 +1217,137 @@ function navigateToHistorial(registroId) {
     });    
     
         
-    document.getElementById('search-input').addEventListener('keyup', function() {
-        var input = document.getElementById('search-input').value.toLowerCase().trim();
-        var xhr = new XMLHttpRequest();
-        var currentPage = {{ registros_paginados.page }};
-        
-        // Construir la URL con paginación y búsqueda
-        var url = '/search_usuarios';
-        var params = [];
-        if (input !== '') {
-            params.push('search=' + encodeURIComponent(input));
-        }
-        if (currentPage !== undefined) {
-            params.push('page=' + currentPage);
-        }
-        if (params.length > 0) {
-            url += '?' + params.join('&');
-        }
-    
-        xhr.open('GET', url, true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                var registros = JSON.parse(xhr.responseText);
-                var tbody = document.getElementById('registros-tbody');
-                tbody.innerHTML = '';
-                registros.forEach(function(registro) {
-                    var tr = document.createElement('tr');
-                    if (registro.estado == 'deshabilitado') {
-                        tr.classList.add('deshabilitado');
-                    }
-                    if (registro.inhabilitado) {
-                        tr.classList.add('inhabilitado');
-                    }
-                    tr.innerHTML = `
-                        <td>${registro.nombres}</td>
-                        <td>${registro.apellidos}</td>
-                        <td>${registro.tipo_documento}</td>
-                        <td>${registro.numero_documento}</td>
-                        <td>${registro.pais}</td>
-                        <td>${registro.departamento}</td>
-                        <td>${registro.municipio}</td>
-                        <td>${registro.genero}</td>
-                        <td>${registro.edad}</td>
-                        <td>${registro.grupo_edad}</td>
-                        <td>${registro.grupo_etnico}</td>
-                        <td>${registro.discapacidad}</td>
-                        <td>${registro.comunidad}</td>
-                        <td>${registro.actividad}</td>
-                        <td class="options">
-                            <a href="#" class="custom-btn" onclick="abrirModalEdicion(${registro.id})">Editar</a>
-                            <a href="#" class="custom-btn-eliminar" data-registro-id="${registro.id}" onclick="mostrarConfirmarEliminarRegistroModal(this)">Eliminar</a>
-                            <a href="#" class="custom-btn" data-registro-id="${registro.id}" data-registro-inhabilitado="${registro.inhabilitado}" onclick="mostrarConfirmarHabilitarRegistroModal(this)">
-                                ${registro.inhabilitado ? 'Habilitar' : 'Inhabilitar'}
-                            </a>                       
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
+ 
+        document.getElementById('search-input').addEventListener('keyup', function() {
+            var input = document.getElementById('search-input').value.toLowerCase().trim();
+            var xhr = new XMLHttpRequest();
+            var currentPage = {{ registros_paginados.page }};
+            
+            // Construir la URL con paginación y búsqueda
+            var url = '/search_usuarios';
+            var params = [];
+            if (input !== '') {
+                params.push('search=' + encodeURIComponent(input));
             }
-        };
-        xhr.send();
-    });
+            if (currentPage !== undefined) {
+                params.push('page=' + currentPage);
+            }
+            if (params.length > 0) {
+                url += '?' + params.join('&');
+            }
+        
+            xhr.open('GET', url, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var registros = JSON.parse(xhr.responseText);
+                    var tbody = document.getElementById('registros-tbody');
+                    tbody.innerHTML = '';
+                    registros.forEach(function(registro) {
+                        var tr = document.createElement('tr');
+                        if (registro.estado == 'deshabilitado') {
+                            tr.classList.add('deshabilitado');
+                        }
+                        if (registro.inhabilitado) {
+                            tr.classList.add('inhabilitado');
+                        }
+                        tr.dataset.registroId = registro.id;
+                        tr.innerHTML = `
+                            <td>${registro.nombres}</td>
+                            <td>${registro.apellidos}</td>
+                            <td>${registro.tipo_documento}</td>
+                            <td>${registro.numero_documento}</td>
+                            <td>${registro.pais}</td>
+                            <td>${registro.departamento}</td>
+                            <td>${registro.municipio}</td>
+                            <td>${registro.genero}</td>
+                            <td>${registro.edad}</td>
+                            <td>${registro.grupo_edad}</td>
+                            <td>${registro.grupo_etnico}</td>
+                            <td>${registro.discapacidad}</td>
+                            <td>${registro.comunidad}</td>
+                            <td>${registro.actividad}</td>
+                            <td class="options">
+                                <a href="#" class="custom-btn" onclick="abrirModalEdicion(${registro.id}); event.stopPropagation();">Editar</a>
+                                <a href="#" class="custom-btn-eliminar" data-registro-id="${registro.id}" onclick="mostrarConfirmarEliminarRegistroModal(${registro.id}); event.stopPropagation();">Eliminar</a>
+                                <a href="#" class="custom-btn" data-registro-id="${registro.id}" data-registro-inhabilitado="${registro.inhabilitado ? 'true' : 'false'}" onclick="mostrarConfirmarHabilitarRegistroModal(this); event.stopPropagation();">
+                                    ${registro.inhabilitado ? 'Habilitar' : 'Inhabilitar'}
+                                </a>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+        
+                    // Reasignar los eventos de clic a los registros de la tabla
+                    asignarEventosClic();
+                }
+            };
+            xhr.send();
+        });
     
+        // Función para reasignar eventos de clic a los registros de la tabla
+        function asignarEventosClic() {
+            var registros = document.querySelectorAll('#registros-tbody tr');
+            registros.forEach(function(registro) {
+                registro.addEventListener('click', function() {
+                    var registroId = this.dataset.registroId;
+                    window.location.href = `/historial/${registroId}`;
+                });
+            });
+    
+            // Detener la propagación de clic en los botones y asegurar la ejecución de la función correspondiente
+            var botonesEditar = document.querySelectorAll('.custom-btn');
+            botonesEditar.forEach(function(boton) {
+                boton.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                });
+            });
+    
+            var botonesEliminar = document.querySelectorAll('.custom-btn-eliminar');
+            botonesEliminar.forEach(function(boton) {
+                boton.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    var registroId = this.dataset.registroId;
+                    mostrarConfirmarEliminarRegistroModal(registroId);
+                });
+            });
+        }
+    
+        // Función para mostrar el modal de confirmación de eliminación
+        function mostrarConfirmarEliminarRegistroModal(registroId) {
+            var modal = document.getElementById('confirmarEliminarRegistroModal');
+            if (modal) {
+                // Configurar el botón "Eliminar registro" para que ejecute la función eliminarRegistro
+                var confirmarEliminarRegistroBtn = document.getElementById('confirmarEliminarRegistroBtn');
+                confirmarEliminarRegistroBtn.onclick = function() {
+                    eliminarRegistro(registroId);
+                    cerrarModal('confirmarEliminarRegistroModal');
+                };
+                openModal('confirmarEliminarRegistroModal');
+            }
+        }
+    
+        // Función para eliminar el registro
+        function eliminarRegistro(registroId) {
+            fetch('/eliminar_registro/' + registroId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'  // Asegúrate de incluir el token CSRF
+                },
+            })
+            .then(function(response) {
+                if (response.ok) {
+                    // Recargar la página o actualizar la tabla de registros
+                    window.location.reload();
+                } else {
+                    throw new Error('Hubo un problema al eliminar el registro.');
+                }
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+                alert('Hubo un problema al eliminar el registro.');
+            });
+        }  
 </script>
 
 {% endblock %}
