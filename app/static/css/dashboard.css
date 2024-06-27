@@ -1597,15 +1597,17 @@ select:focus {
     padding: 20px;
 }
 
+/* Estilo de cada fila de formulario */
 .edit-form-row {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px; /* Espacio entre los grupos de formularios */
     margin-bottom: 20px; /* Ajusta el margen inferior según tus necesidades */
 }
 
+/* Grupo de formularios */
 .edit-form-group {
-    flex: 1 1 48%;
-    margin: 10px 0;
+    flex: 1 1 calc(48% - 10px); /* Ajusta el ancho de cada grupo con espacio entre ellos */
     padding: 15px;
     background-color: #ffffff;
     border-radius: 12px;
@@ -1672,16 +1674,27 @@ select:focus {
 
 
 .edit-select {
-    width: 150px; /* Ancho ajustado según necesidad */
-    padding: 6px; /* Padding interno */
-    font-size: 14px; /* Tamaño de la fuente */
-    border-radius: 4px; /* Radio del borde */
-    box-sizing: border-box; /* Incluir padding en el ancho total */
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    color: #333;
+    transition: border-color 0.3s ease;
+    font-family: 'Roboto', sans-serif;
+    box-sizing: border-box;
+}
+
+.edit-select:focus {
+    border-color: #1a1a1b;
+    outline: none;
 }
 
 
-.edit-input,
-.edit-select {
+
+
+.edit-input{
     width: auto; /* Ajusta el ancho automáticamente */
     padding: 6px; /* Padding interno */
     border: 1px solid #ced4da; /* Borde sólido */
@@ -1697,8 +1710,7 @@ select:focus {
 }
 
 
-.edit-input:focus,
-.edit-select:focus {
+.edit-input:focus{
     border-color: #1a1a1b; /* Cambiar el color del borde al tener el foco */
 }
 
@@ -1721,6 +1733,48 @@ select:focus {
 .edit-submit-btn:hover {
     background-color: #0056b3;
 }
+
+
+
+/* Estilo del contenedor */
+.estado-group {
+    position: relative;
+    display: inline-block;
+}
+
+/* Estilo del contenedor del selector */
+.estado-group {
+    position: relative;
+    display: inline-block;
+}
+
+/* Estilo del selector (select) */
+.edit-selectt {
+    position: relative;
+    display: inline-block;
+    width: 110px; /* Ajusta el ancho según necesidades */
+    padding: 10px 20px; /* Ajusta el padding según necesidades */
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 30px; /* Hace el borde más redondeado */
+    background-color: #f8f9fa; /* Color de fondo */
+    cursor: pointer;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    transition: all 0.3s ease; /* Transición suave para efectos visuales */
+}
+
+/* Estilo cuando el selector está enfocado */
+.edit-selectt:focus {
+    border-color: #1d2b75; /* Cambia el color del borde al estar enfocado */
+    box-shadow: 0 0 10px rgba(0, 47, 255, 0.6); /* Sombra al estar enfocado */
+}
+
+
+
+
 
 
 /* Estilos CSS para la tabla */
@@ -2155,18 +2209,56 @@ input[type="file"]:focus {
     color: #0056b3;
 }
 
+/* Estilo general del contenedor de historial */
+.historial-container {
+    padding: 20px;
+    background-color: #f5f7fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.historial-header h1 {
+    font-size: 24px;
+    color: #333;
+    font-family: 'Roboto', sans-serif;
+    margin-bottom: 20px;
+}
+
+.historial-header .breadcrumb {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.historial-header .breadcrumb li {
+    margin-right: 5px;
+    font-size: 14px;
+    color: #666;
+}
+
+.historial-header .breadcrumb li a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.historial-header .breadcrumb li a:hover {
+    color: #0056b3;
+}
+
 /* Contenedor de filas de formularios */
 .historial-form-row {
     display: flex;
     flex-wrap: wrap;
+    gap: 20px; /* Espacio entre los grupos de formularios */
     margin-bottom: 20px;
-    justify-content: space-between;
 }
 
 /* Grupo de formularios */
 .historial-form-group {
-    flex: 1 1 48%;
-    margin-bottom: 15px;
+    flex: 1 1 calc(48% - 10px); /* Ajusta el ancho de cada grupo con espacio entre ellos */
     padding: 15px;
     background-color: #ffffff;
     border-radius: 12px;
@@ -2204,9 +2296,10 @@ input[type="file"]:focus {
 
     .historial-form-group {
         flex: 1 1 100%;
-        margin: 10px 0;
+        margin-bottom: 10px;
     }
 }
+
 
 .dropdown-content {
     display: none;

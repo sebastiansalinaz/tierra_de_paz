@@ -36,11 +36,7 @@
                 </div>
 
                 <div class="edit-form-row">
-                    <div class="edit-form-group">
-                        <label for="responsable">Responsable:</label>
-                        <input type="text" id="responsable" name="responsable" value="{{ proyecto.responsable }}" class="edit-input" required>
-                    </div>
-
+                  
                     <div class="edit-form-group">
                         <label for="fecha_inicio">Fecha de Inicio:</label>
                         <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{ proyecto.fecha_inicio }}" class="edit-input" required>
@@ -50,15 +46,23 @@
                         <label for="fecha_finalizacion">Fecha de Finalización:</label>
                         <input type="date" id="fecha_finalizacion" name="fecha_finalizacion" value="{{ proyecto.fecha_finalizacion }}" class="edit-input" required>
                     </div>
+
+                    <div class="edit-form-group">
+                        <label for="responsable">Responsable:</label>
+                        <input type="text" id="responsable" name="responsable" value="{{ proyecto.responsable }}" class="edit-input" required>
+                    </div>
+
                 </div>
 
+                
         
-                    <div class="estado-group">
-                        <select id="estado" name="estado" class="edit-select" required>
-                            <option value="Activo" {% if estado_proyecto == 'activo' %} selected {% endif %}>Activo</option>
-                            <option value="Inactivo" {% if estado_proyecto == 'inactivo' %} selected {% endif %}>Inactivo</option>
-                        </select>
-                    </div>
+                <div class="estado-group">
+                    <select id="estado" name="estado" class="edit-selectt" required>
+                        <option value="Activo" {% if estado_proyecto == 'activo' %} selected {% endif %}>Activo</option>
+                        <option value="Inactivo" {% if estado_proyecto == 'inactivo' %} selected {% endif %}>Inactivo</option>
+                    </select>
+                </div>
+                
                
 
 
@@ -543,6 +547,27 @@
     });
 
 
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var selector = document.getElementById('estado');
+    
+        // Función para cambiar el color de fondo del selector
+        function actualizarColorFondo() {
+            var opcionSeleccionada = selector.options[selector.selectedIndex];
+            var estado = opcionSeleccionada.value;
+    
+            if (estado === 'Activo') {
+                selector.style.backgroundColor = '#28a745'; // Verde para 'Activo'
+            } else if (estado === 'Inactivo') {
+                selector.style.backgroundColor = '#dc3545'; // Rojo para 'Inactivo'
+            }
+        }
+    
+        // Ejecutar la función al cargar la página y cada vez que cambie la selección
+        actualizarColorFondo();
+        selector.addEventListener('change', actualizarColorFondo);
+    });
+    
     document.getElementById("cluster_select_option").addEventListener("change", function() {
         var clusterSelectOption = document.getElementById("cluster_select_option");
         var clusterText = document.getElementById("cluster_text");

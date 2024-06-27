@@ -1,74 +1,61 @@
-{% extends "layout/layout.html" %}
-{% block title %}{{ proyecto.nombre }}{% endblock %}
 
-{% block content %}
-<section id="content">
-    <div class="edit-project-container">
-        <div class="edit-project-header">
-            <h1>{{ proyecto.nombre }}</h1>
-        </div>
-        <div class="edit-project-body">
-            <form id="editarProyectoForm" action="{{ url_for('editar_proyecto', proyecto_id=proyecto.id) }}" method="post">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-                <div class="edit-form-row">
-                    <div class="edit-form-group full-width">
-                        <label for="nombre">Nombre:</label>
-                        <input type="text" id="nombre" name="nombre" value="{{ proyecto.nombre }}" class="edit-input full-width" required>
-                    </div>
-                </div>
+<script>
+/* Estilo general del contenedor del proyecto */
+.edit-project-body {
+    padding: 20px;
+    background-color: #f5f7fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-                <div class="edit-form-row">
-                    <div class="edit-form-group full-width">
-                        <label for="descripcion">Descripción:</label>
-                        <textarea id="descripcion" name="descripcion" class="edit-textarea full-width" required>{{ proyecto.descripcion }}</textarea>
-                    </div>
-                </div>
+/* Estilo de cada fila de formulario */
+.edit-form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Espacio entre los grupos de formularios */
+    margin-bottom: 20px; /* Ajusta el margen inferior según tus necesidades */
+}
 
-                <div class="edit-form-row">
-                    <div class="edit-form-group">
-                        <label for="cluster">Cluster:</label>
-                        <select id="cluster_select_option" name="cluster" class="edit-select" required>
-                            <option value="" disabled selected>Seleccione un Cluster</option>
-                            <option value="Cluster de Agua, Saneamiento e Higiene (WASH)">Cluster de Agua, Saneamiento e Higiene (WASH)</option>
-                            <option value="Cluster de Alimentación y Nutrición">Cluster de Alimentación y Nutrición</option>
-                            <option value="Cluster de Educación">Cluster de Educación</option>
-                            <option value="nuevo">Agregar Nuevo</option>
-                        </select>
-                        <input type="text" id="cluster_text" name="cluster" placeholder="Nuevo Cluster" style="display: none;" class="edit-input">
-                    </div>
+/* Grupo de formularios */
+.edit-form-group {
+    flex: 1 1 calc(48% - 10px); /* Ajusta el ancho de cada grupo con espacio entre ellos */
+    padding: 15px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
-                    <div class="edit-form-group">
-                        <label for="responsable">Responsable:</label>
-                        <input type="text" id="responsable" name="responsable" value="{{ proyecto.responsable }}" class="edit-input" required>
-                    </div>
-                </div>
+/* Efecto hover en los grupos de formularios */
+.edit-form-group:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
 
-                <div class="edit-form-row">
-                    <div class="edit-form-group">
-                        <label for="fecha_inicio">Fecha de Inicio:</label>
-                        <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{ proyecto.fecha_inicio }}" class="edit-input" required>
-                    </div>
+/* Estilo de los párrafos dentro de los grupos de formularios */
+.edit-form-group p {
+    margin: 0;
+    font-size: 18px; /* Ajusta el tamaño de fuente según tus preferencias */
+    color: #444; /* Ajusta el color de texto según tus preferencias */
+    font-family: 'Roboto', sans-serif; /* Ajusta la fuente según tus preferencias */
+}
 
-                    <div class="edit-form-group">
-                        <label for="fecha_finalizacion">Fecha de Finalización:</label>
-                        <input type="date" id="fecha_finalizacion" name="fecha_finalizacion" value="{{ proyecto.fecha_finalizacion }}" class="edit-input" required>
-                    </div>
+/* Estilo de los textos fuertes dentro de los grupos de formularios */
+.edit-form-group strong {
+    color: #222; /* Ajusta el color de texto según tus preferencias */
+}
 
-                    <div class="edit-form-group estado-group">
-                        <label for="estado">Estado:</label>
-                        <select id="estado" name="estado" class="edit-select" required>
-                            <option value="Activo" {% if estado_proyecto == 'activo' %} selected {% endif %}>Activo</option>
-                            <option value="Inactivo" {% if estado_proyecto == 'inactivo' %} selected {% endif %}>Inactivo</option>
-                        </select>
-                    </div>
-                </div>
+/* Media queries para dispositivos móviles */
+@media (max-width: 768px) {
+    .edit-form-row {
+        flex-direction: column;
+    }
 
-                <div class="edit-form-row">
-                    <button type="submit" class="btn-submit">Guardar Cambios</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</section>
-{% endblock %}
+    .edit-form-group {
+        flex: 1 1 100%; /* Ajusta el ancho completo en dispositivos móviles */
+        margin-bottom: 10px; /* Espacio entre los grupos de formularios */
+    }
+}
+
+</script>
