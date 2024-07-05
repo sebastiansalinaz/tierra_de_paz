@@ -137,9 +137,13 @@ class Proyecto(db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return Usuario.query.get(int(user_id))
-
 @app.route('/registro', methods=['GET', 'POST'])
+@login_required
 def registro():
+    if current_user.rol != 1:
+        flash('No tienes permiso para realizar esta acción.', 'warning')
+        return redirect(url_for('configuracion'))
+
     if request.method == 'POST':
         nombre = request.form['nombre']
         correo = request.form['correo']
@@ -160,6 +164,7 @@ def registro():
         return redirect(url_for('configuracion'))
 
     return render_template('registro.html')
+
 
 
 
@@ -888,22 +893,23 @@ def guardar_perfil():
     return redirect(url_for('editar_perfil'))
 
 
-
 @app.route('/configuracion', methods=['GET', 'POST'])
 @login_required
 def configuracion():
-    if current_user.rol != 1 and current_user.rol != 2:
+    if current_user.rol not in [1, 2]:
         flash('No tienes permiso para acceder a esta página.', 'warning')
-        return redirect(url_for('dashboard'))  # Redirige a la página de inicio o a donde desees
+        return redirect(url_for('dashboard'))
 
     usuarios = Usuario.query.all()
-    return render_template('modules/configuracion.html', usuarios=usuarios)
-
-
+    return render_template('modules/configuracion.html', usuarios=usuarios, current_user=current_user)
 
 @app.route('/editar_usuario/<int:usuario_id>', methods=['GET', 'POST'])
 @login_required
 def editar_usuario(usuario_id):
+    if current_user.rol != 1:
+        flash('No tienes permiso para realizar esta acción.', 'warning')
+        return redirect(url_for('configuracion'))
+
     usuario = Usuario.query.get_or_404(usuario_id)
 
     if request.method == 'POST':
@@ -920,6 +926,10 @@ def editar_usuario(usuario_id):
 @app.route('/eliminar_usuario/<int:usuario_id>', methods=['POST'])
 @login_required
 def eliminar_usuario(usuario_id):
+    if current_user.rol != 1:
+        flash('No tienes permiso para realizar esta acción.', 'warning')
+        return redirect(url_for('configuracion'))
+
     usuario = Usuario.query.get_or_404(usuario_id)
     db.session.delete(usuario)
     db.session.commit()

@@ -18,10 +18,13 @@
                     </li>
                 </ul>
             </div>
-            <button id="btn-open-modal1" class="btn-evento" onclick="openModal('myModalCrearUsuario')">
-                <i class='bx bx-user-plus'></i>
-                <span class="text">Crear Usuario</span>
-            </button>
+            {% if current_user.rol == 1 %}
+<button id="btn-open-modal1" class="btn-evento" onclick="openModal('myModalCrearUsuario')">
+    <i class='bx bx-user-plus'></i>
+    <span class="text">Crear Usuario</span>
+</button>
+{% endif %}
+
         </div>
 
         <!-- Modal para Crear Usuario -->
@@ -83,7 +86,9 @@
                                 <th>Nombre</th>
                                 <th class="nowrap">Correo</th>
                                 <th class="nowrap">Rol</th>
+                                {% if current_user.rol != 2 %}
                                 <th>Acciones</th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -101,20 +106,28 @@
                                     Monitor
                                     {% endif %}
                                 </td>
+                                {% if current_user.rol != 2 %}
                                 <td>
+                                    {% if current_user.rol == 1 %}
                                     <button class="custom-btn" onclick="openEditModal('{{ usuario.id }}', '{{ usuario.nombre }}', '{{ usuario.correo }}', '{{ usuario.rol }}')">Editar</button>
                                     <form action="{{ url_for('eliminar_usuario', usuario_id=usuario.id) }}" method="post" style="display:inline;">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                         <button type="submit" class="custom-btn-eliminar">Eliminar</button>
                                     </form>
+                                    {% endif %}
                                 </td>
+                                {% endif %}
                             </tr>
                             {% endfor %}
-                        </tbody>
+                        </tbody>                        
                     </table>
                 </div>
             </div>
         </div>
+        
+        
+                   
+
         
         <!-- Modal de Edición de Usuario -->
         <div id="editModal" class="new-modal" style="display: none;">
