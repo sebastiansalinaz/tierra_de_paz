@@ -1,61 +1,77 @@
+<div class="table-data">
+    <div class="order">
+        <div class="head-container">
+            <div class="head">
+                <h3>Administrar Usuarios</h3>
+                <i class='bx bx-search' id="search-icon"></i>
+                <input type="text" id="search-input" placeholder="Buscar por nombre o correo">
+                <i class='bx bx-filter'></i>
+            </div>
+        </div>
+        <div class="table-container">
+            <table class="full-width-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th class="nowrap">Correo</th>
+                        <th class="nowrap">Rol</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in usuarios %}
+                    <tr>
+                        <td>{{ usuario.id }}</td>
+                        <td>{{ usuario.nombre }}</td>
+                        <td class="nowrap">{{ usuario.correo }}</td>
+                        <td class="nowrap">
+                            {% if usuario.rol == 1 %}
+                            Administrador
+                            {% elif usuario.rol == 2 %}
+                            Coordinador
+                            {% else %}
+                            Monitor
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button class="custom-btn" onclick="openEditModal({{ usuario.id }}, '{{ usuario.nombre }}', '{{ usuario.correo }}', {{ usuario.rol }})">Editar</button>
+                            <form action="{{ url_for('eliminar_usuario', usuario_id=usuario.id) }}" method="post" style="display:inline;">
+                                <button type="submit" class="custom-btn-eliminar">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-
-<script>
-/* Estilo general del contenedor del proyecto */
-.edit-project-body {
-    padding: 20px;
-    background-color: #f5f7fa;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Estilo de cada fila de formulario */
-.edit-form-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px; /* Espacio entre los grupos de formularios */
-    margin-bottom: 20px; /* Ajusta el margen inferior según tus necesidades */
-}
-
-/* Grupo de formularios */
-.edit-form-group {
-    flex: 1 1 calc(48% - 10px); /* Ajusta el ancho de cada grupo con espacio entre ellos */
-    padding: 15px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Efecto hover en los grupos de formularios */
-.edit-form-group:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* Estilo de los párrafos dentro de los grupos de formularios */
-.edit-form-group p {
-    margin: 0;
-    font-size: 18px; /* Ajusta el tamaño de fuente según tus preferencias */
-    color: #444; /* Ajusta el color de texto según tus preferencias */
-    font-family: 'Roboto', sans-serif; /* Ajusta la fuente según tus preferencias */
-}
-
-/* Estilo de los textos fuertes dentro de los grupos de formularios */
-.edit-form-group strong {
-    color: #222; /* Ajusta el color de texto según tus preferencias */
-}
-
-/* Media queries para dispositivos móviles */
-@media (max-width: 768px) {
-    .edit-form-row {
-        flex-direction: column;
-    }
-
-    .edit-form-group {
-        flex: 1 1 100%; /* Ajusta el ancho completo en dispositivos móviles */
-        margin-bottom: 10px; /* Espacio entre los grupos de formularios */
-    }
-}
-
-</script>
+<!-- Modal para editar usuario -->
+<div id="editModal" class="new-modal">
+    <div class="new-modal-content">
+        <span class="new-close" onclick="closeEditModal()">&times;</span>
+        <form class="new-form" action="" method="post" id="editForm">
+            <input type="hidden" name="usuario_id" id="editUsuarioId">
+            <label>
+                <i class='bx bx-user'></i>
+                <input type="text" name="nombre" id="editNombre" placeholder="Nombre" required>
+            </label>
+            <label>
+                <i class='bx bx-envelope'></i>
+                <input type="email" name="correo" id="editCorreo" placeholder="Correo" required>
+            </label>
+            <label class='bx bx-lock-alt' for="editRol">Rol:</label>
+            <select class='styled-select' id="editRol" name="rol" required>
+                <option value="1">Administrador</option>
+                <option value="2">Coordinador</option>
+                <option value="3">Monitor</option>
+            </select>
+            <div class="new-modal-footer">
+                <button type="button" class="new-close-btn" onclick="closeEditModal()">Cancelar</button>
+                <button type="submit" class="new-save-btn">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,220 @@
+{% extends "layout/layout.html" %}
+{% block title %}Configuración{% endblock %}
+
+{% block content %}
+<section id="content">
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        <div class="head-title">
+            <div class="left">
+                <h1>Configuración</h1>
+                <ul class="breadcrumb">
+                    <li>
+                        <a href="#">Configuración</a>
+                    </li>
+                    <li><i class='bx bx-chevron-right'></i></li>
+                    <li>
+                        <a class="active" href="/dashboard">Inicio</a>
+                    </li>
+                </ul>
+            </div>
+            <button id="btn-open-modal1" class="btn-evento" onclick="openModal('myModalCrearUsuario')">
+                <i class='bx bx-user-plus'></i>
+                <span class="text">Crear Usuario</span>
+            </button>
+        </div>
+
+        <!-- Modal para Crear Usuario -->
+        <div id="myModalCrearUsuario" class="new-modal" style="display: none;">
+            <div class="new-modal-content">
+                <span class="new-close" onclick="closeModal('myModalCrearUsuario')">&times;</span>
+                <div class="new-form-information">
+                    <div class="new-form-information-childs">
+                        <h2>Crear Nuevo Usuario</h2>
+                        <p>Rellena los datos para crear un nuevo usuario</p>
+                        <form action="{{ url_for('registro') }}" method="post" class="new-form">
+                            <!-- Agregamos el campo CSRF -->
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <label>
+                                <i class='bx bx-user'></i>
+                                <input type="text" id="nombre" name="nombre" placeholder="Nombre Completo" required>
+                            </label>
+                            <label>
+                                <i class='bx bx-envelope'></i>
+                                <input type="email" id="correo" name="correo" placeholder="Correo Electrónico" required>
+                            </label>
+                            <label>
+                                <i class='bx bx-lock-alt'></i>
+                                <input type="password" id="contraseña" name="contraseña" placeholder="Contraseña" required>
+                            </label>
+                            <label for="rol" class="styled-label">
+                                <i class='bx bx-lock-alt'></i> Rol:
+                            </label>
+                            <select id="rol" name="rol" class="styled-select" required>
+                                <option value="1">Administrador</option>
+                                <option value="2">Coordinador</option>
+                                <option value="3">Monitor</option>
+                            </select>
+                            <div class="new-modal-footer">
+                                <button type="button" id="closeModalBtnCrearUsuario" class="new-close-btn" onclick="closeModal('myModalCrearUsuario')">Cerrar</button>
+                                <input type="submit" class="new-save-btn" value="Crear Usuario">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-data">
+            <div class="order">
+                <div class="head-container">
+                    <div class="head">
+                        <h3>Administrar Usuarios</h3>
+                        <i class='bx bx-search' id="search-icon"></i>
+                        <input type="text" id="search-input" placeholder="Buscar por nombre o correo">
+                        <i class='bx bx-filter'></i>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="full-width-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th class="nowrap">Correo</th>
+                                <th class="nowrap">Rol</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for usuario in usuarios %}
+                            <tr>
+                                <td>{{ usuario.id }}</td>
+                                <td>{{ usuario.nombre }}</td>
+                                <td class="nowrap">{{ usuario.correo }}</td>
+                                <td class="nowrap">
+                                    {% if usuario.rol == 1 %}
+                                    Administrador
+                                    {% elif usuario.rol == 2 %}
+                                    Coordinador
+                                    {% else %}
+                                    Monitor
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="custom-btn" onclick="openEditModal('{{ usuario.id }}', '{{ usuario.nombre }}', '{{ usuario.correo }}', '{{ usuario.rol }}')">Editar</button>
+                                    <form action="{{ url_for('eliminar_usuario', usuario_id=usuario.id) }}" method="post" style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="custom-btn-eliminar">Eliminar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal de Edición de Usuario -->
+        <div id="editModal" class="new-modal" style="display: none;">
+            <div class="new-modal-content">
+                <span class="new-close" onclick="closeEditModal()">&times;</span>
+                <div class="new-form-information">
+                    <div class="new-form-information-childs">
+                        <h2>Editar Usuario</h2>
+                        <form id="editForm" action="" method="post" class="new-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" id="editUsuarioId" name="id">
+                            <label>
+                                <i class='bx bx-user'></i>
+                                <input type="text" id="editNombre" name="nombre" placeholder="Nombre Completo" required>
+                            </label>
+                            <label>
+                                <i class='bx bx-envelope'></i>
+                                <input type="email" id="editCorreo" name="correo" placeholder="Correo Electrónico" required>
+                            </label>
+                            <label for="editRol" class="styled-label">
+                                <i class='bx bx-lock-alt'></i> Rol:
+                            </label>
+                            <select id="editRol" name="rol" class="styled-select" required>
+                                <option value="1">Administrador</option>
+                                <option value="2">Coordinador</option>
+                                <option value="3">Monitor</option>
+                            </select>
+                            <div class="new-modal-footer">
+                                <button type="button" class="new-close-btn" onclick="closeEditModal()">Cerrar</button>
+                                <input type="submit" class="new-save-btn" value="Guardar Cambios">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+</section>
+
+<style>
+    /* Estilos para asegurar que la tabla ocupe el ancho completo */
+    .full-width-table {
+        width: 100%;
+        table-layout: fixed; /* Fuerza a que la tabla ocupe el ancho completo */
+    }
+    
+    .table-container {
+        overflow-x: auto; /* Permite desplazarse horizontalmente si es necesario */
+    }
+
+    .nowrap {
+        white-space: nowrap; /* Evita el salto de línea */
+        overflow: hidden; /* Oculta el exceso de texto */
+        text-overflow: ellipsis; /* Muestra puntos suspensivos (...) cuando hay exceso de texto */
+    }
+
+  
+
+</style>
+
+<script>
+    // Función para abrir el modal
+    function openModal(modalId) {
+        var modal = document.getElementById(modalId);
+        modal.style.display = "flex";
+    }
+
+    // Función para cerrar el modal
+    function closeModal(modalId) {
+        var modal = document.getElementById(modalId);
+        modal.style.display = "none";
+    }
+
+    // Cerrar el modal al hacer clic en el botón de cerrar
+    document.getElementById("closeModalBtnCrearUsuario").onclick = function() {
+        closeModal('myModalCrearUsuario');
+    }
+
+    // Cerrar el modal al hacer clic fuera del contenido del modal
+    window.onclick = function(event) {
+        var modal = document.getElementById('myModalCrearUsuario');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+      // Función para abrir el modal de edición de usuarios
+      function openEditModal(id, nombre, correo, rol) {
+        document.getElementById('editUsuarioId').value = id;
+        document.getElementById('editNombre').value = nombre;
+        document.getElementById('editCorreo').value = correo;
+        document.getElementById('editRol').value = rol;
+        document.getElementById('editForm').action = `/editar_usuario/${id}`;
+        document.getElementById('editModal').style.display = 'flex';
+    }
+
+    // Función para cerrar el modal de edición de usuarios
+    function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
+    }
+</script>
+{% endblock %}

@@ -248,6 +248,186 @@ body {
 
 
 
+
+
+
+
+
+
+/* Estilos para el nuevo modal */
+.new-modal {
+    display: none; /* Oculta el modal por defecto */
+    position: fixed; /* Permite que el modal sea posicionado en relación con la ventana del navegador */
+    z-index: 1000; /* Coloca el modal por encima del resto del contenido */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Permite desplazar el contenido del modal si es necesario */
+    background-color: rgba(0, 0, 0, 0.4); /* Fondo oscuro semi-transparente */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Contenido del nuevo modal */
+.new-modal-content {
+    background-color: #fefefe; /* Fondo blanco */
+    padding: 20px;
+    border-radius: 20px; /* Bordes redondeados */
+    box-shadow: 0 5px 7px rgba(0, 0, 0, .1); /* Sombra ligera */
+    width: 80%; /* Ancho del contenido del modal */
+    max-width: 600px; /* Ancho máximo del contenido del modal */
+    position: relative; /* Añadido para el posicionamiento del botón de cierre */
+    transition: all 1s ease;
+}
+
+/* Botón de cerrar (x) */
+.new-close {
+    color: #aaa;
+    position: absolute; /* Posicionamiento absoluto para el botón de cerrar */
+    top: 10px; /* Distancia superior desde el borde superior del modal */
+    right: 10px; /* Distancia desde el borde derecho del modal */
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.new-close:hover,
+.new-close:focus {
+    color: black;
+    text-decoration: none;
+}
+
+.new-form-information {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: #fffdfdde;
+    border-radius: 20px;
+}
+
+.new-form-information-childs {
+    padding: 0 30px;
+}
+
+.new-form-information-childs h2 {
+    color: #333;
+    font-size: 2rem;
+}
+
+.new-form-information-childs p {
+    color: #555;
+}
+
+.new-icons {
+    margin: 15px 0;
+}
+
+.new-icons i {
+    border-radius: 50%;
+    padding: 15px;
+    cursor: pointer;
+    margin: 0 10px;
+    color: #8ad337;
+    border: solid thin #8ad337;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+}
+
+.new-icons i:hover {
+    background-color: #8ad337;
+    color: #fff;
+}
+
+.new-custom-icon {
+    width: 90px; /* ajusta el tamaño según sea necesario */
+    height: 75px;
+}
+
+.new-form {
+    margin: 30px 0 0 0;
+}
+
+.new-form label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    border-radius: 20px;
+    padding: 0 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+}
+
+.new-form input, .new-form select {
+    flex: 1;
+    border: none;
+    padding: 10px;
+    border-radius: 20px;
+    font-size: 1rem;
+    outline: none;
+}
+
+/* Estilo para el select */
+.styled-select {
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+    border-radius: 20px;
+    padding: 10px;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    border: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23333" d="M2 0L0 2h4zM0 3l2 2 2-2z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 10px;
+}
+
+.new-form i {
+    margin-right: 10px;
+    color: #8ad337;
+}
+
+.new-modal-footer {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.new-close-btn, .new-save-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.new-close-btn {
+    background-color: #aaa9a9;
+    color: #ffffff;
+}
+
+.new-save-btn {
+    background-color: #8ad337;
+    color: white;
+}
+
+.new-close-btn:hover {
+    background-color: #969494;
+}
+
+.new-save-btn:hover {
+    background-color: #7bb029;
+}
+
+
+
+
+
+
 .btn-group {
     display: flex;
     justify-content: center;
@@ -1779,8 +1959,13 @@ select:focus {
 
 /* Estilos CSS para la tabla */
 .table-data {
+    display: flex;
+    flex-wrap: wrap;
+    grid-gap: 24px;
+    margin-top: 24px;
+    width: 100%;
+    color: var(--dark);
     overflow-x: auto;
-    margin-top: 20px;
 }
 
 .table-data table {
@@ -2465,6 +2650,7 @@ input[type="file"]:focus {
 #content main .table-data .order table {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 24px;
 }
 
 #content main .table-data .order table th,

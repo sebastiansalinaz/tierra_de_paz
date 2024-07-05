@@ -50,7 +50,18 @@ class Usuario(db.Model, UserMixin):
     nombre = db.Column(db.String(100), nullable=False)
     correo = db.Column(db.String(100), unique=True, nullable=False)
     contraseña = db.Column(db.String(400), nullable=False)
-    foto_perfil = db.Column(db.String(200))  
+    foto_perfil = db.Column(db.String(200))
+    rol = db.Column(db.Integer, nullable=False, default=3)  # Default role as Monitor
+
+    def is_administrator(self):
+        return self.rol == 1
+
+    def is_coordinator(self):
+        return self.rol == 2
+
+    def is_monitor(self):
+        return self.rol == 3
+    
 
 
 class Actividad(db.Model):
@@ -133,21 +144,25 @@ def registro():
         nombre = request.form['nombre']
         correo = request.form['correo']
         contraseña = request.form['contraseña']
+        rol = request.form['rol']  # Obtener el rol del formulario
 
         if Usuario.query.filter_by(correo=correo).first():
             flash('El correo ya está registrado.', 'error')
             return redirect(url_for('registro'))
 
-        hashed_password = generate_password_hash(contraseña).decode('utf-8')
+        hashed_password = generate_password_hash(contraseña)
 
-        nuevo_usuario = Usuario(nombre=nombre, correo=correo, contraseña=hashed_password)
+        nuevo_usuario = Usuario(nombre=nombre, correo=correo, contraseña=hashed_password, rol=rol)
         db.session.add(nuevo_usuario)
         db.session.commit()
 
         flash('¡Registro exitoso!', 'success')
-        return redirect(url_for('login'))
+        return redirect(url_for('configuracion'))
 
     return render_template('registro.html')
+
+
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -166,9 +181,10 @@ def login():
             else:
                 error_message = 'Contraseña incorrecta. Por favor, verifica tu contraseña.'
         else:
-            error_message = 'No se encuentra el Correo electronico. Por favor, verifica tu correo.'
+            error_message = 'No se encuentra el correo electrónico. Por favor, verifica tu correo.'
 
     return render_template('login.html', error_message=error_message)
+
 
 
 @app.route('/logout')
@@ -828,7 +844,7 @@ def eventos():
 
 @app.route('/recursos')
 @login_required
-def catalogo():
+def recursos():
  return render_template('modules/recursos.html')
 
 
@@ -870,6 +886,46 @@ def guardar_perfil():
 
     flash('¡Perfil actualizado correctamente!', 'success')
     return redirect(url_for('editar_perfil'))
+
+
+
+@app.route('/configuracion', methods=['GET', 'POST'])
+@login_required
+def configuracion():
+    if current_user.rol != 1 and current_user.rol != 2:
+        flash('No tienes permiso para acceder a esta página.', 'warning')
+        return redirect(url_for('dashboard'))  # Redirige a la página de inicio o a donde desees
+
+    usuarios = Usuario.query.all()
+    return render_template('modules/configuracion.html', usuarios=usuarios)
+
+
+
+@app.route('/editar_usuario/<int:usuario_id>', methods=['GET', 'POST'])
+@login_required
+def editar_usuario(usuario_id):
+    usuario = Usuario.query.get_or_404(usuario_id)
+
+    if request.method == 'POST':
+        usuario.nombre = request.form['nombre']
+        usuario.correo = request.form['correo']
+        usuario.rol = request.form['rol']
+
+        db.session.commit()
+        flash('Usuario actualizado correctamente.', 'success')
+        return redirect(url_for('configuracion'))
+
+    return render_template('modules/editar_usuario.html', usuario=usuario)
+
+@app.route('/eliminar_usuario/<int:usuario_id>', methods=['POST'])
+@login_required
+def eliminar_usuario(usuario_id):
+    usuario = Usuario.query.get_or_404(usuario_id)
+    db.session.delete(usuario)
+    db.session.commit()
+    flash('Usuario eliminado correctamente.', 'success')
+    return redirect(url_for('configuracion'))
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug=True)

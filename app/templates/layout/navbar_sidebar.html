@@ -10,55 +10,61 @@
 </head>
 <body>
 
-    <!-- BARRA LATERAL -->
-    <section id="sidebar">
-        <a href="{{ url_for('dashboard') }}" class="brand">
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
-            <span class="text">VISOR HUMANITARIO</span>
-        </a>
+   <!-- BARRA LATERAL -->
+<section id="sidebar">
+    <a href="{{ url_for('dashboard') }}" class="brand">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
+        <span class="text">VISOR HUMANITARIO</span>
+    </a>
 
-        <ul class="side-menu top">
-            <li {% if request.path == url_for('usuarios') %}class="active"{% endif %}>
-                <a href="{{ url_for('usuarios') }}">
-                    <i class='bx bxs-group' ></i>
-                    <span class="text">Registro y Actualización<br>  de Usuarios</span>
-                </a>
-            </li>
-            <li {% if request.path == url_for('proyectos') %}class="active"{% endif %}>
-                <a href="{{ url_for('proyectos') }}">
-                    <i class='bx bxs-book' ></i>
-                    <span class="text">Proyectos</span>
-                </a>
-            </li>
-            <li {% if request.path == url_for('eventos') %}class="active"{% endif %}>
-                <a href="{{ url_for('eventos') }}">
-                    <i class='bx bx-notepad' ></i>
-                    <span class="text">Eventos y Capacitaciones</span>
-                </a>
-            </li>
-            <li {% if request.path == url_for('catalogo') %}class="active"{% endif %}>
-                <a href="{{ url_for('catalogo') }}">
-                    <i class='bx bx-dollar-circle' ></i>
-                    <span class="text">Recursos</span>
-                </a>
-            </li>
-        </ul>
-        <ul class="side-menu">
-            <li>
-                <a href="#" class="configuration">
-                    <i class='bx bx-cog' ></i>
-                    <span class="text">Configuración</span>
-                </a>
-            </li>             
-            <li>
-                <a href="{{ url_for('logout') }}" class="logout" id="logout-link">
-                    <i class='bx bx-log-out' ></i>
-                    <span class="text">Cerrar sesión</span>
-                </a>
-            </li>
-        </ul>
-    </section>
-    <!-- BARRA LATERAL -->
+    <ul class="side-menu top">
+        <li {% if request.path == url_for('usuarios') %}class="active"{% endif %}>
+            <a href="{{ url_for('usuarios') }}">
+                <i class='bx bxs-group' ></i>
+                <span class="text">Registros</span>
+            </a>
+        </li>
+        <li {% if request.path == url_for('proyectos') %}class="active"{% endif %}>
+            <a href="{{ url_for('proyectos') }}">
+                <i class='bx bxs-book' ></i>
+                <span class="text">Proyectos</span>
+            </a>
+        </li>
+        <li {% if request.path == url_for('eventos') %}class="active"{% endif %}>
+            <a href="{{ url_for('eventos') }}">
+                <i class='bx bx-notepad' ></i>
+                <span class="text">Eventos y Capacitaciones</span>
+            </a>
+        </li>
+        <li {% if request.path == url_for('recursos') %}class="active"{% endif %}>
+            <a href="{{ url_for('recursos') }}">
+                <i class='bx bx-dollar-circle' ></i>
+                <span class="text">Recursos</span>
+            </a>
+        </li>
+    </ul>
+
+    <ul class="side-menu">
+        {% if current_user.is_authenticated %}
+            {% if current_user.rol == 1 or current_user.rol == 2 %}
+                <li>
+                    <a href="{{ url_for('configuracion') }}" class="configuration">
+                        <i class='bx bx-cog' ></i>
+                        <span class="text">Configuración</span>
+                    </a>
+                </li>
+            {% endif %}
+        {% endif %}
+        <li>
+            <a href="{{ url_for('logout') }}" class="logout" id="logout-link">
+                <i class='bx bx-log-out' ></i>
+                <span class="text">Cerrar sesión</span>
+            </a>
+        </li>
+    </ul>
+</section>
+<!-- BARRA LATERAL -->
+
 
     <!-- CONTENIDO -->
     <section id="content">
