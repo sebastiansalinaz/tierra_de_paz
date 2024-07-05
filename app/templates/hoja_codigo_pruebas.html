@@ -1,38 +1,54 @@
-<!-- BARRA DE NAVEGACIÓN -->
-<nav id="navbar">
-    <i class='bx bx-menu' id="menu-icon"></i>
-    <a href="#" class="nav-link">Categorías</a>
-    <form action="#">
-        <div class="form-input">
-            <input type="search" placeholder="Buscar...">
-            <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
-        </div>
-    </form>
-    <input type="checkbox" id="switch-mode" hidden>
-    <label for="switch-mode" class="switch-mode"></label>
-    <a href="#" class="notification">
-        <i class='bx bxs-bell'></i>
-        <span class="num">8</span>
-    </a>
-    <!-- Icono de perfil -->
-    <div class="dropdown">
-        <div class="profile-dropdown">
-            {% if current_user.foto_perfil %}
-            <img src="{{ url_for('uploaded_file', filename=current_user.foto_perfil) }}" alt="Perfil" class="profile-img">
-            {% else %}
-                <img src="{{ url_for('static', filename='img/default_profile.jpg') }}" alt="Perfil" class="profile-img">
-            {% endif %}
-            <i class='bx bxs-chevron-down'></i>
-        </div>
-        <div class="dropdown-content">
-            {% if current_user.rol != 3 %}
-            <a href="{{ url_for('editar_perfil') }}">Editar</a>
-            {% endif %}
-            {% if current_user.rol == 1 %}
-            <!-- Diálogo emergente para confirmar la eliminación de cuenta -->
-            <a href="javascript:void(0);" onclick="mostrarModal()">Eliminar</a>
-            {% endif %}
-            <a href="{{ url_for('logout') }}" class="logout" id="logout-link">Salir</a>
+<!-- Modal -->
+<div class="modal fade" id="modalSeleccionActividad" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Seleccione una o más actividades</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label>Seleccione una o más actividades:</label>
+                <form id="actividadForm" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="form-check">
+                        {% for actividad in actividades %}
+                            <input class="form-check-input" type="checkbox" id="actividad{{ actividad.id }}" name="actividades[]" value="{{ actividad.id }}" {% if actividad.id in actividades_seleccionadas %} checked {% endif %}>
+                            <label class="form-check-label" for="actividad{{ actividad.id }}">
+                                {{ actividad.nombre }}
+                            </label>
+                            <br>
+                        {% endfor %}
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="boton-act boton-act-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="boton-act boton-act-primary" onclick="agregarActividadesSeleccionadas()">Agregar Actividades</button>
+                <button type="button" class="boton-act boton-act-danger" onclick="eliminarActividadesSeleccionadas()">Eliminar Actividades</button>
+            </div>
         </div>
     </div>
-</nav>
+</div>
+
+<script>
+    $(document).ready(function(){
+        $('#modalSeleccionActividad').on('shown.bs.modal', function () {
+            // Itera sobre las actividades seleccionadas y marca los checkboxes correspondientes
+            {% for actividad_id in actividades_seleccionadas %}
+                $('#actividad{{ actividad_id }}').prop('checked', true);
+            {% endfor %}
+        });
+    });
+
+    function agregarActividadesSeleccionadas() {
+        $('#actividadForm').attr('action', '/editar_proyecto/{{ proyecto.id }}');
+        $('#actividadForm').submit();
+    }
+
+    function eliminarActividadesSeleccionadas() {
+        $('#actividadForm').attr('action', '/eliminar_actividades/{{ proyecto.id }}');
+        $('#actividadForm').submit();
+    }
+</script>

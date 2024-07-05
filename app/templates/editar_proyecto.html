@@ -310,7 +310,7 @@
             </div>
             <div class="modal-body">
                 <label>Seleccione una o más actividades:</label>
-                <form id="actividadForm">
+                <form id="actividadForm" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="form-check">
                         {% for actividad in actividades %}
@@ -326,6 +326,7 @@
             <div class="modal-footer">
                 <button type="button" class="boton-act boton-act-secondary" data-dismiss="modal">Cerrar</button>
                 <button type="button" class="boton-act boton-act-primary" onclick="agregarActividadesSeleccionadas()">Agregar Actividades</button>
+                <button type="button" class="boton-act boton-act-danger" onclick="eliminarActividadesSeleccionadas()">Eliminar Actividades</button>
             </div>
         </div>
     </div>
@@ -883,6 +884,14 @@ document.getElementById("crearActividadForm").addEventListener("submit", crearAc
         });
     
         $('#modalSeleccionActividad').modal('hide');
+    }
+
+
+
+    function eliminarActividadesSeleccionadas() {
+        const form = document.querySelector('#actividadForm');
+        form.action = '/eliminar_actividades/{{ proyecto.id }}';
+        form.submit();
     }
 
 

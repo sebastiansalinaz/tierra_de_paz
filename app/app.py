@@ -537,6 +537,33 @@ def get_activities():
 
 
 
+@app.route('/eliminar_actividades/<int:proyecto_id>', methods=['POST'])
+@login_required
+def eliminar_actividades(proyecto_id):
+    proyecto = Proyecto.query.get_or_404(proyecto_id)
+    actividades_seleccionadas = request.form.getlist('actividades[]')
+    
+    if not actividades_seleccionadas:
+        flash('No se seleccionaron actividades para eliminar.', 'warning')
+        return redirect(url_for('editar_proyecto', proyecto_id=proyecto.id))
+    
+    actividades_a_eliminar = Actividad.query.filter(Actividad.id.in_(actividades_seleccionadas)).all()
+    
+    for actividad in actividades_a_eliminar:
+        # Elimina la actividad de todas las relaciones
+        if actividad in proyecto.actividades:
+            proyecto.actividades.remove(actividad)
+        # Elimina la actividad de la base de datos
+        db.session.delete(actividad)
+    
+    db.session.commit()
+    
+    flash('¡Actividades eliminadas exitosamente!', 'success')
+    return redirect(url_for('editar_proyecto', proyecto_id=proyecto.id))
+
+
+
+
 @app.route('/get_datos_tabla', methods=['GET'])
 @login_required
 def get_datos_tabla():
