@@ -1,147 +1,38 @@
-{% extends "layout/layout.html" %}
-{% block title %}Configuración{% endblock %}
-
-{% block content %}
-<section id="content">
-    <!-- CONTENIDO PRINCIPAL -->
-    <main>
-        <div class="head-title">
-            <div class="left">
-                <h1>Configuración</h1>
-                <ul class="breadcrumb">
-                    <li>
-                        <a href="#">Configuración</a>
-                    </li>
-                    <li><i class='bx bx-chevron-right'></i></li>
-                    <li>
-                        <a class="active" href="/dashboard">Inicio</a>
-                    </li>
-                </ul>
-            </div>
-            {% if current_user.rol == 1 %}
-                <button id="btn-open-modal1" class="btn-evento" onclick="openModal('myModalCrearUsuario')">
-                    <i class='bx bx-user-plus'></i>
-                    <span class="text">Crear Usuario</span>
-                </button>
+<!-- BARRA DE NAVEGACIÓN -->
+<nav id="navbar">
+    <i class='bx bx-menu' id="menu-icon"></i>
+    <a href="#" class="nav-link">Categorías</a>
+    <form action="#">
+        <div class="form-input">
+            <input type="search" placeholder="Buscar...">
+            <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+        </div>
+    </form>
+    <input type="checkbox" id="switch-mode" hidden>
+    <label for="switch-mode" class="switch-mode"></label>
+    <a href="#" class="notification">
+        <i class='bx bxs-bell'></i>
+        <span class="num">8</span>
+    </a>
+    <!-- Icono de perfil -->
+    <div class="dropdown">
+        <div class="profile-dropdown">
+            {% if current_user.foto_perfil %}
+            <img src="{{ url_for('uploaded_file', filename=current_user.foto_perfil) }}" alt="Perfil" class="profile-img">
+            {% else %}
+                <img src="{{ url_for('static', filename='img/default_profile.jpg') }}" alt="Perfil" class="profile-img">
             {% endif %}
+            <i class='bx bxs-chevron-down'></i>
         </div>
-
-        <!-- Modal para Crear Usuario -->
-        <!-- Código del modal para crear usuario omitido por brevedad -->
-
-        <div class="table-data">
-            <div class="order">
-                <div class="head-container">
-                    <div class="head">
-                        <h3>Administrar Usuarios</h3>
-                        <i class='bx bx-search' id="search-icon"></i>
-                        <input type="text" id="search-input" placeholder="Buscar por nombre o correo">
-                        <i class='bx bx-filter'></i>
-                    </div>
-                </div>
-                <div class="table-container">
-                    <table class="full-width-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th class="nowrap">Correo</th>
-                                <th class="nowrap">Rol</th>
-                                {% if current_user.rol != 2 %}
-                                    <th>Acciones</th>
-                                {% endif %}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for usuario in usuarios %}
-                                <tr>
-                                    <td>{{ usuario.id }}</td>
-                                    <td>{{ usuario.nombre }}</td>
-                                    <td class="nowrap">{{ usuario.correo }}</td>
-                                    <td class="nowrap">
-                                        {% if usuario.rol == 1 %}
-                                            Administrador
-                                        {% elif usuario.rol == 2 %}
-                                            Coordinador
-                                        {% else %}
-                                            Monitor
-                                        {% endif %}
-                                    </td>
-                                    {% if current_user.rol != 2 %}
-                                        <td>
-                                            {% if current_user.rol == 1 %}
-                                                <button class="custom-btn" onclick="openEditModal('{{ usuario.id }}', '{{ usuario.nombre }}', '{{ usuario.correo }}', '{{ usuario.rol }}')">Editar</button>
-                                                <!-- Botón para mostrar modal de confirmación de eliminación -->
-                                                <button class="custom-btn-eliminar" onclick="mostrarConfirmacion('{{ usuario.id }}')">Eliminar</button>
-                                            {% endif %}
-                                        </td>
-                                    {% endif %}
-                                </tr>
-                            {% endfor %}
-                        </tbody>                        
-                    </table>
-                </div>
-            </div>
+        <div class="dropdown-content">
+            {% if current_user.rol != 3 %}
+            <a href="{{ url_for('editar_perfil') }}">Editar</a>
+            {% endif %}
+            {% if current_user.rol == 1 %}
+            <!-- Diálogo emergente para confirmar la eliminación de cuenta -->
+            <a href="javascript:void(0);" onclick="mostrarModal()">Eliminar</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}" class="logout" id="logout-link">Salir</a>
         </div>
-
-        <!-- Modal de Confirmación de Eliminación -->
-        <div id="confirmarEliminarModaly" class="new-modal" style="display: none;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <span class="close new-close" onclick="cerrarConfirmacion()">&times;</span>
-                    <h2>Confirmar eliminación de usuario</h2>
-                </div>
-                <div class="modal-body">
-                    <div class="new-form-information">
-                        <p>¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.</p>
-                    </div>
-                </div>
-                <div class="modal-footer" style="text-align: center;">
-                    <form id="eliminarForm" action="{{ url_for('eliminar_usuario', usuario_id=0) }}" method="post">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <input type="hidden" id="usuarioIdEliminar" name="usuario_id">
-                        <div style="text-align: center;">
-                            <button type="button" class="btn-cancel new-close-btn" onclick="cerrarConfirmacion()">Cancelar</button>
-                            <button type="submit" class="btn-delete new-save-btn">Eliminar Usuario</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal de Edición de Usuario -->
-        <!-- Código del modal de edición de usuario omitido por brevedad -->
-    </main>
-</section>
-
-<style>
-    /* Estilos para asegurar que la tabla ocupe el ancho completo */
-    .full-width-table {
-        width: 100%;
-        table-layout: fixed; /* Fuerza a que la tabla ocupe el ancho completo */
-    }
-    
-    .table-container {
-        overflow-x: auto; /* Permite desplazarse horizontalmente si es necesario */
-    }
-
-    .nowrap {
-        white-space: nowrap; /* Evita el salto de línea */
-        overflow: hidden; /* Oculta el exceso de texto */
-        text-overflow: ellipsis; /* Muestra puntos suspensivos (...) cuando hay exceso de texto */
-    }
-</style>
-
-<script>
-    // Función para abrir el modal de confirmación de eliminación
-    function mostrarConfirmacion(usuarioId) {
-        document.getElementById('usuarioIdEliminar').value = usuarioId; // Establece el valor del usuario a eliminar
-        document.getElementById('confirmarEliminarModaly').style.display = 'block'; // Muestra el modal
-    }
-
-    // Función para cerrar el modal de confirmación de eliminación
-    function cerrarConfirmacion() {
-        document.getElementById('confirmarEliminarModaly').style.display = 'none'; // Oculta el modal
-    }
-</script>
-{% endblock %}
+    </div>
+</nav>

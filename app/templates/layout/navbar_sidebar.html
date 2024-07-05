@@ -95,9 +95,13 @@
                     <i class='bx bxs-chevron-down'></i>
                 </div>
                 <div class="dropdown-content">
+                    {% if current_user.rol != 3 %}
                     <a href="{{ url_for('editar_perfil') }}">Editar</a>
+                    {% endif %}
+                    {% if current_user.rol == 1 %}
                     <!-- Diálogo emergente para confirmar la eliminación de cuenta -->
                     <a href="javascript:void(0);" onclick="mostrarModal()">Eliminar</a>
+                    {% endif %}
                     <a href="{{ url_for('logout') }}" class="logout" id="logout-link">Salir</a>
                 </div>
             </div>

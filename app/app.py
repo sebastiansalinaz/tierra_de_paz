@@ -858,6 +858,9 @@ def recursos():
 @app.route('/editar_perfil')
 @login_required
 def editar_perfil():
+    if current_user.rol == 3:
+        flash('No tienes permiso para acceder a esta página.', 'danger')
+        return redirect(url_for('dashboard'))
     return render_template('edit.html')
 
 @app.route('/eliminar_perfil', methods=['GET', 'POST'])
