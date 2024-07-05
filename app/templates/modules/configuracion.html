@@ -87,45 +87,70 @@
                                 <th class="nowrap">Correo</th>
                                 <th class="nowrap">Rol</th>
                                 {% if current_user.rol != 2 %}
-                                <th>Acciones</th>
+                                    <th>Acciones</th>
                                 {% endif %}
                             </tr>
                         </thead>
                         <tbody>
                             {% for usuario in usuarios %}
-                            <tr>
-                                <td>{{ usuario.id }}</td>
-                                <td>{{ usuario.nombre }}</td>
-                                <td class="nowrap">{{ usuario.correo }}</td>
-                                <td class="nowrap">
-                                    {% if usuario.rol == 1 %}
-                                    Administrador
-                                    {% elif usuario.rol == 2 %}
-                                    Coordinador
-                                    {% else %}
-                                    Monitor
+                                <tr>
+                                    <td>{{ usuario.id }}</td>
+                                    <td>{{ usuario.nombre }}</td>
+                                    <td class="nowrap">{{ usuario.correo }}</td>
+                                    <td class="nowrap">
+                                        {% if usuario.rol == 1 %}
+                                            Administrador
+                                        {% elif usuario.rol == 2 %}
+                                            Coordinador
+                                        {% else %}
+                                            Monitor
+                                        {% endif %}
+                                    </td>
+                                    {% if current_user.rol != 2 %}
+                                        <td>
+                                            {% if current_user.rol == 1 %}
+                                                <button class="custom-btn" onclick="openEditModal('{{ usuario.id }}', '{{ usuario.nombre }}', '{{ usuario.correo }}', '{{ usuario.rol }}')">Editar</button>
+                                                <!-- Botón para mostrar modal de confirmación de eliminación -->
+                                                <button class="custom-btn-eliminar" onclick="mostrarConfirmacion('{{ usuario.id }}')">Eliminar</button>
+                                            {% endif %}
+                                        </td>
                                     {% endif %}
-                                </td>
-                                {% if current_user.rol != 2 %}
-                                <td>
-                                    {% if current_user.rol == 1 %}
-                                    <button class="custom-btn" onclick="openEditModal('{{ usuario.id }}', '{{ usuario.nombre }}', '{{ usuario.correo }}', '{{ usuario.rol }}')">Editar</button>
-                                    <form action="{{ url_for('eliminar_usuario', usuario_id=usuario.id) }}" method="post" style="display:inline;">
-                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <button type="submit" class="custom-btn-eliminar">Eliminar</button>
-                                    </form>
-                                    {% endif %}
-                                </td>
-                                {% endif %}
-                            </tr>
+                                </tr>
                             {% endfor %}
                         </tbody>                        
                     </table>
                 </div>
             </div>
         </div>
-        
-        
+
+        <!-- Modal de Confirmación de Eliminación -->
+<div id="confirmarEliminarModaly" class="new-modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close new-close" onclick="cerrarConfirmacion()">&times;</span>
+            <h2>Confirmar eliminación de usuario</h2>
+        </div>
+        <div class="modal-body">
+            <div class="new-form-information">
+                <p>¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.</p>
+            </div>
+        </div>
+        <div class="modal-footer" style="text-align: center;">
+            <form id="eliminarForm" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" id="usuarioIdEliminar" name="usuario_id">
+                <div style="text-align: center;">
+                    <button type="button" class="btn-cancel new-close-btn" onclick="cerrarConfirmacion()">Cancelar</button>
+                    <button type="submit" class="btn-delete new-save-btn">Eliminar Usuario</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+   
+
                    
 
         
@@ -147,7 +172,7 @@
                                 <i class='bx bx-envelope'></i>
                                 <input type="email" id="editCorreo" name="correo" placeholder="Correo Electrónico" required>
                             </label>
-                            <label for="editRol" class="styled-label">
+                            <labeal for="editRol" class="styled-label">
                                 <i class='bx bx-lock-alt'></i> Rol:
                             </label>
                             <select id="editRol" name="rol" class="styled-select" required>
@@ -229,5 +254,30 @@
     function closeEditModal() {
         document.getElementById('editModal').style.display = 'none';
     }
+
+    // Función para cerrar todos los modales al presionar Escape
+document.addEventListener('keydown', function(event) {
+    if (event.key === "Escape") {
+        var modals = document.getElementsByClassName('new-modal');
+        for (var i = 0; i < modals.length; i++) {
+            modals[i].style.display = "none";
+        }
+    }
+});
+
+
+
+ // Función para abrir el modal de confirmación de eliminación
+ function mostrarConfirmacion(usuarioId) {
+    document.getElementById('usuarioIdEliminar').value = usuarioId; // Establece el valor del usuario a eliminar
+    document.getElementById('eliminarForm').action = `/eliminar_usuario/${usuarioId}`; // Actualiza dinámicamente el action del formulario
+    document.getElementById('confirmarEliminarModaly').style.display = 'block'; // Muestra el modal
+}
+
+// Función para cerrar el modal de confirmación de eliminación
+function cerrarConfirmacion() {
+    document.getElementById('confirmarEliminarModaly').style.display = 'none'; // Oculta el modal
+}
+
 </script>
 {% endblock %}
