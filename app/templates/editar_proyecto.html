@@ -298,6 +298,30 @@
            
 
 
+
+<!-- Contenedor para mensajes flash -->
+<div id="flash-messages" style="display: none;"></div>
+
+<!-- Modal para mensajes de error -->
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal -->
 <div class="modal fade" id="modalSeleccionActividad" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -887,13 +911,46 @@ document.getElementById("crearActividadForm").addEventListener("submit", crearAc
     }
 
 
+     // Muestra el modal de error y ajusta el z-index de la superposición
+     function showErrorModal(message) {
+        document.getElementById('errorMessage').textContent = message;
+        $('#errorModal').modal('show');
+        
+        // Asegúrate de ajustar la superposición (backdrop) del modal de error
+        $('.modal-backdrop').last().addClass('error-backdrop');
+    }
 
     function eliminarActividadesSeleccionadas() {
         const form = document.querySelector('#actividadForm');
-        form.action = '/eliminar_actividades/{{ proyecto.id }}';
-        form.submit();
+        const formData = new FormData(form);
+        const proyectoId = form.action.split('/').pop(); // Obtiene el proyecto_id de la URL del formulario
+        
+        fetch(`/eliminar_actividades/${proyectoId}`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrf_token]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Actualiza la página o realiza alguna acción en caso de éxito
+                location.reload();
+            } else {
+                // Muestra el mensaje de error en el modal
+                document.getElementById('errorMessage').textContent = data.message;
+                $('#errorModal').modal('show');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('errorMessage').textContent = 'Ocurrió un error inesperado. Por favor, inténtelo de nuevo.';
+            $('#errorModal').modal('show');
+        });
     }
 
+document.addEventListener('DOMContentLoaded', showFlashMessages);
 
     function openModal(modalId) {
         var modal = document.getElementById(modalId);

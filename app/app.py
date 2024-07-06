@@ -22,6 +22,8 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, PageBreak
 import pdfkit
 from weasyprint import HTML
+from sqlalchemy.exc import IntegrityError
+
 
 
 
@@ -537,6 +539,10 @@ def get_activities():
 
 
 
+
+
+
+
 @app.route('/eliminar_actividades/<int:proyecto_id>', methods=['POST'])
 @login_required
 def eliminar_actividades(proyecto_id):
@@ -544,22 +550,23 @@ def eliminar_actividades(proyecto_id):
     actividades_seleccionadas = request.form.getlist('actividades[]')
     
     if not actividades_seleccionadas:
-        flash('No se seleccionaron actividades para eliminar.', 'warning')
-        return redirect(url_for('editar_proyecto', proyecto_id=proyecto.id))
+        return jsonify({'status': 'warning', 'message': 'No se seleccionaron actividades para eliminar.'}), 400
     
     actividades_a_eliminar = Actividad.query.filter(Actividad.id.in_(actividades_seleccionadas)).all()
     
-    for actividad in actividades_a_eliminar:
-        # Elimina la actividad de todas las relaciones
-        if actividad in proyecto.actividades:
-            proyecto.actividades.remove(actividad)
-        # Elimina la actividad de la base de datos
-        db.session.delete(actividad)
-    
-    db.session.commit()
-    
-    flash('¡Actividades eliminadas exitosamente!', 'success')
-    return redirect(url_for('editar_proyecto', proyecto_id=proyecto.id))
+    try:
+        for actividad in actividades_a_eliminar:
+            # Elimina la actividad de todas las relaciones
+            if actividad in proyecto.actividades:
+                proyecto.actividades.remove(actividad)
+            # Elimina la actividad de la base de datos
+            db.session.delete(actividad)
+        
+        db.session.commit()
+        return jsonify({'status': 'success', 'message': '¡Actividades eliminadas exitosamente!'}), 200
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({'status': 'danger', 'message': 'No se puede eliminar la actividad seleccionada porque contiene registros asociados.'}), 400
 
 
 
