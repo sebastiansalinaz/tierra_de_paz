@@ -1,0 +1,10 @@
+# Entorno virtual
+env/
+venv/
+
+# Archivos compilados de Python
+*.pyc
+__pycache__/
+
+# Directorios de migraciones
+migrations/
