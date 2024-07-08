@@ -105,6 +105,20 @@
             font-style: italic;
             font-size: 8px; /* Reducir el tamaño de la fuente del pie de página */
         }
+
+        .description-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .description-container h2 {
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .description-container p {
+            font-size: 10px;
+            margin: 0;
+        }
+
     </style>
 </head>
 <body>
@@ -137,12 +151,20 @@
         <br>
         <div class="project-details" style="display: flex; flex-wrap: wrap; gap: 40px; margin-bottom: 20px; text-transform: uppercase;">
             <p style="flex-basis: 33.333%; font-size: 11px; margin: 10px 20px 0 20px;"><strong>Proyecto:</strong> {{ proyecto.nombre }}</p>
-            <p style="flex-basis: 33.333%; font-size: 11px; margin: 10px 20px 0 20px;"><strong>Descripción:</strong> {{ proyecto.descripcion }}</p>
             <p style="flex-basis: 33.333%; font-size: 11px; margin: 10px 20px 0 20px; margin-right: 100px;"><strong>Responsable:</strong> {{ proyecto.responsable }}</p>
             <p style="flex-basis: 33.333%; font-size: 11px; margin: 10px 20px 0 20px;"><strong>Fecha de Inicio:</strong> {{ proyecto.fecha_inicio }}</p>
             <p style="flex-basis: 33.333%; font-size: 11px; margin: 10px 20px 0 20px;"><strong>Fecha de Finalización:</strong> {{ proyecto.fecha_finalizacion }}</p>
             <p style="flex-basis: 33.333%; font-size: 11px; margin: 10px 20px 0 20px; margin-right: 100px;"><strong>Estado:</strong> {{ proyecto.estado }}</p>
         </div>
+ 
+        
+
+        <br><br>
+        <div class="description-container">
+            <h2>Descripción:</h2>
+            <p>{{ proyecto.descripcion }}</p>
+        </div>
+
         <br><br>
         
        
