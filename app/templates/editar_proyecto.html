@@ -8,7 +8,7 @@
             <h1>{{ proyecto.nombre }}</h1>
         </div>
         <div class="edit-project-body">
-            <form id="editarProyectoForm" action="{{ url_for('editar_proyecto', proyecto_id=proyecto.id) }}" method="post">
+            <form id="editarProyectoForm" action="{{ url_for('editar_proyecto', proyecto_id=proyecto.id) }}" method="post" onsubmit="return validarFechas()">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                 <div class="edit-form-row">
@@ -36,7 +36,6 @@
                 </div>
 
                 <div class="edit-form-row">
-                  
                     <div class="edit-form-group">
                         <label for="fecha_inicio">Fecha de Inicio:</label>
                         <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{ proyecto.fecha_inicio }}" class="edit-input" required>
@@ -51,23 +50,16 @@
                         <label for="responsable">Responsable:</label>
                         <input type="text" id="responsable" name="responsable" value="{{ proyecto.responsable }}" class="edit-input" required>
                     </div>
-
                 </div>
 
-                
-        
                 <div class="estado-group">
                     <select id="estado" name="estado" class="edit-selectt" required>
                         <option value="Activo" {% if estado_proyecto == 'activo' %} selected {% endif %}>Activo</option>
                         <option value="Inactivo" {% if estado_proyecto == 'inactivo' %} selected {% endif %}>Inactivo</option>
                     </select>
                 </div>
-                
-               
 
-
-
-                    <br>  <br>  
+                <br><br>  
                 <div class="edit-form-row">
                     <div class="edit-form-group">
                         <button type="button" class="edit-submit-btn" onclick="mostrarConfirmarActualizarProyectoModal()">Actualizar Proyecto</button>
@@ -674,32 +666,33 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Función para actualizar el proyecto mediante AJAX
 function actualizarProyecto() {
-    var form = document.getElementById('editarProyectoForm');
-    var formData = new FormData(form);
+    if (validarFechas()) {
+        var form = document.getElementById('editarProyectoForm');
+        var formData = new FormData(form);
 
-    fetch(form.action, {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRFToken': '{{ csrf_token() }}' // Asegúrate de incluir el token CSRF
-        },
-    })
-    .then(function(response) {
-        if (response.ok) {
-            // Actualización exitosa, puedes redirigir o realizar otra acción necesaria
-            window.location.reload(); // Recargar la página por ejemplo
-        } else {
-            throw new Error('Hubo un problema al actualizar el proyecto.');
-        }
-    })
-    .catch(function(error) {
-        console.error('Error:', error);
-        alert('Hubo un problema al actualizar el proyecto.');
-    });
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token() }}' // Asegúrate de incluir el token CSRF
+            },
+        })
+        .then(function(response) {
+            if (response.ok) {
+                // Actualización exitosa, puedes redirigir o realizar otra acción necesaria
+                window.location.reload(); // Recargar la página por ejemplo
+            } else {
+                throw new Error('Hubo un problema al actualizar el proyecto.');
+            }
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            alert('Hubo un problema al actualizar el proyecto.');
+        });
 
-    closeModal('confirmarActualizarProyectoModal');
+        closeModal('confirmarActualizarProyectoModal');
+    }
 }
 
 
@@ -882,6 +875,21 @@ document.getElementById("crearActividadForm").addEventListener("submit", crearAc
     }
 
 
+    function validarFechas() {
+        var fechaInicio = document.getElementById("fecha_inicio").value;
+        var fechaFinalizacion = document.getElementById("fecha_finalizacion").value;
+
+        if (fechaInicio && fechaFinalizacion) {
+            var inicio = new Date(fechaInicio);
+            var finalizacion = new Date(fechaFinalizacion);
+
+            if (finalizacion < inicio) {
+                alert("La fecha de finalización debe ser posterior a la fecha de inicio.");
+                return false; // Evita el envío del formulario
+            }
+        }
+        return true; // Permite el envío del formulario
+    }
    
     
     function agregarActividadesSeleccionadas() {

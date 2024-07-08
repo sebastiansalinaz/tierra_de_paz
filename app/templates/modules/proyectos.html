@@ -51,12 +51,12 @@
             </li>
           </ul>
 
-      <!-- Modal -->
+<!-- Modal -->
 <div id="myModalPreliminar" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal('myModalPreliminar')">&times;</span>
         <h2>Registrar Nuevo Proyecto</h2>
-        <form action="{{ url_for('crear_proyecto') }}" method="post">
+        <form id="crearProyectoForm" action="{{ url_for('crear_proyecto') }}" method="post" onsubmit="return validarFechas()">
             <!-- Agregamos el campo CSRF -->
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <br><br>
@@ -304,6 +304,22 @@ document.getElementById('search-input').addEventListener('input', function() {
     });
 });
 
+
+function validarFechas() {
+    var fechaInicio = document.getElementById("fecha_inicio").value;
+    var fechaFinalizacion = document.getElementById("fecha_finalizacion").value;
+
+    if (fechaInicio && fechaFinalizacion) {
+        var inicio = new Date(fechaInicio);
+        var finalizacion = new Date(fechaFinalizacion);
+
+        if (finalizacion < inicio) {
+            alert("La fecha de finalización debe ser posterior a la fecha de inicio.");
+            return false; // Evita el envío del formulario
+        }
+    }
+    return true; // Permite el envío del formulario
+}
 
 </script>
 
