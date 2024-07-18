@@ -326,13 +326,13 @@
             </div>
             <div class="modal-body">
                 <label>Seleccione una o más actividades:</label>
-                <form id="actividadForm" method="POST">
+                <form id="actividadForm" action="{{ url_for('asignar_actividades', proyecto_id=proyecto.id) }}" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="form-check">
                         {% for actividad in actividades %}
-                            <input class="form-check-input" type="checkbox" id="actividad{{ actividad.id }}" name="actividades[]" value="{{ actividad.id }}" {% if actividad.id in actividades_seleccionadas %} checked {% endif %}>
+                            <input class="form-check-input" type="checkbox" id="actividad{{ actividad.id }}" name="actividades[]" value="{{ actividad.id }}" {% if actividad.id in actividades_seleccionadas %} checked {% endif %} {% if actividad.proyecto_id %} data-proyecto="{{ actividad.proyecto_id }}" {% endif %}>
                             <label class="form-check-label" for="actividad{{ actividad.id }}">
-                                {{ actividad.nombre }}
+                                {{ actividad.nombre }} {% if actividad.proyecto_id %} (Asignada a proyecto {{ actividad.proyecto_id }}) {% endif %}
                             </label>
                             <br>
                         {% endfor %}
@@ -347,6 +347,10 @@
         </div>
     </div>
 </div>
+
+
+
+
 
 
 
@@ -721,6 +725,8 @@ document.addEventListener('keydown', function(event) {
         }
     });
 
+
+    
     
     // Función para mostrar el formulario de registro de personas
     function openUserForm() {
@@ -917,6 +923,7 @@ document.getElementById("crearActividadForm").addEventListener("submit", crearAc
     
         $('#modalSeleccionActividad').modal('hide');
     }
+    
 
 
      // Muestra el modal de error y ajusta el z-index de la superposición

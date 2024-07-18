@@ -363,6 +363,40 @@ def guardar_actividad():
 
 
 
+@app.route('/asignar_actividades/<int:proyecto_id>', methods=['POST'])
+@login_required
+def asignar_actividades(proyecto_id):
+    proyecto = Proyecto.query.get_or_404(proyecto_id)
+    actividades_seleccionadas = request.form.getlist('actividades[]')
+
+    if not actividades_seleccionadas:
+        flash('No se seleccionaron actividades para asignar.', 'warning')
+        return redirect(url_for('editar_proyecto', proyecto_id=proyecto_id))
+
+    actividades_conflicto = []
+    for actividad_id in actividades_seleccionadas:
+        actividad = Actividad.query.get(actividad_id)
+        if actividad.proyecto_id and actividad.proyecto_id != proyecto_id:
+            actividades_conflicto.append(actividad)
+
+    if actividades_conflicto:
+        flash('Algunas actividades ya están asignadas a otro proyecto.', 'warning')
+        return redirect(url_for('editar_proyecto', proyecto_id=proyecto_id))
+
+    try:
+        for actividad_id in actividades_seleccionadas:
+            actividad = Actividad.query.get(actividad_id)
+            actividad.proyecto_id = proyecto_id
+            db.session.add(actividad)
+
+        db.session.commit()
+        flash('¡Actividades asignadas exitosamente!', 'success')
+    except IntegrityError:
+        db.session.rollback()
+        flash('Error al asignar actividades. Intente nuevamente.', 'danger')
+
+    return redirect(url_for('editar_proyecto', proyecto_id=proyecto_id))
+
 
 
 @app.route('/guardar_registro', methods=['POST'])
