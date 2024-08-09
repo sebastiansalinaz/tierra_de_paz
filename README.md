@@ -1,3 +1,4 @@
+![Uploading image.png…]()
 INSTRUCCIONES
 
 Este software utiliza una version,
